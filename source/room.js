@@ -34,29 +34,42 @@ function roomBackSVG() {
     <pattern id="rmDotsInk" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.2" fill="#8B5E45" opacity=".16"/></pattern>
   </defs>
   <rect x="-600" y="-600" width="2700" height="1470" fill="#F1F2F2"/>
-  <rect x="-600" y="478" width="2700" height="10" fill="#E6E8E8"/>
   ${tiles.join('')}
   <rect x="-600" y="866" width="2700" height="6" fill="#D9E4E8"/>
 
-  <!-- the shop sign, top left: a soft serve on a waffle cone, hanging from an iron arm -->
-  <defs><clipPath id="rmConeClip"><path d="M90 222 H282 L188 378 Z"/></clipPath></defs>
+  <!-- the shop sign, top left: a soft serve on a waffle cone, hanging from an iron arm.
+       No outlines: soft gradients, and the grain does the rest. -->
+  <defs>
+    <clipPath id="rmConeClip"><path d="M90 222 H282 L188 378 Z"/></clipPath>
+    <linearGradient id="sgScoop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFDF8"/><stop offset="1" stop-color="#FFE1E9"/></linearGradient>
+    <linearGradient id="sgScoopShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD3DE"/><stop offset="1" stop-color="#F9BFCE"/></linearGradient>
+    <linearGradient id="sgCone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FDDFA8"/><stop offset="1" stop-color="#EDAE68"/></linearGradient>
+    <linearGradient id="sgRim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFEDB7"/><stop offset="1" stop-color="#FAD58C"/></linearGradient>
+    <linearGradient id="sgIron" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9C6E53"/><stop offset="1" stop-color="#B98C6E"/></linearGradient>
+    <radialGradient id="sgGlow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFF6DD" stop-opacity=".9"/><stop offset="1" stop-color="#FFF6DD" stop-opacity="0"/></radialGradient>
+  </defs>
   <g class="rm-riso" transform="translate(0 26)">
-    <rect x="0" y="22" width="14" height="56" rx="4" fill="#8B5E45"/>
-    <path d="M10 36 H338" stroke="#8B5E45" stroke-width="7" stroke-linecap="round"/>
-    <path d="M14 68 L118 36" stroke="#8B5E45" stroke-width="5" stroke-linecap="round"/>
-    <path d="M338 36 q16 0 16 13 q0 11 -11 11 q-8 0 -8 -8" fill="none" stroke="#8B5E45" stroke-width="5" stroke-linecap="round"/>
-    <path d="M132 36 V106 M240 36 V106" stroke="#B9A396" stroke-width="4" stroke-dasharray="5 4"/>
-    <path d="M90 222 H282 L188 378 Z" fill="#F6C77F"/>
-    <g clip-path="url(#rmConeClip)"><path d="${[0, 1, 2, 3, 4, 5, 6, 7].map(k => `M${40 + k * 34} 210 l120 180 M${300 - k * 34} 210 l-120 180`).join(' ')}" stroke="#E7A75C" stroke-width="5"/><rect x="80" y="210" width="220" height="180" fill="url(#rmDotsInk)"/></g>
-    <rect x="80" y="206" width="212" height="22" rx="8" fill="#FFE29A"/>
-    <g fill="#FFF8EE" stroke="#F4BFCB" stroke-width="4">
-      <rect x="70" y="162" width="232" height="50" rx="25"/>
-      <rect x="98" y="126" width="176" height="46" rx="23"/>
-      <rect x="126" y="94" width="122" height="42" rx="21"/>
+    <ellipse cx="188" cy="190" rx="200" ry="170" fill="url(#sgGlow)"/>
+    <rect x="0" y="22" width="14" height="56" rx="4" fill="#9C6E53"/>
+    <rect x="8" y="32" width="332" height="8" rx="4" fill="url(#sgIron)"/>
+    <path d="M14 68 L118 36" stroke="#A97A5E" stroke-width="5" stroke-linecap="round"/>
+    <path d="M338 36 q16 0 16 13 q0 11 -11 11 q-8 0 -8 -8" fill="none" stroke="#B98C6E" stroke-width="5" stroke-linecap="round"/>
+    <path d="M132 36 V106 M240 36 V106" stroke="#CDB9AC" stroke-width="4" stroke-dasharray="5 4"/>
+    <path d="M90 222 H282 L188 378 Z" fill="url(#sgCone)"/>
+    <g clip-path="url(#rmConeClip)" opacity=".5"><path d="${[0, 1, 2, 3, 4, 5, 6, 7].map(k => `M${40 + k * 34} 210 l120 180 M${300 - k * 34} 210 l-120 180`).join(' ')}" stroke="#FFF1D4" stroke-width="4"/></g>
+    <rect x="80" y="206" width="212" height="22" rx="10" fill="url(#sgRim)"/>
+    <g fill="url(#sgScoopShade)">
+      <rect x="70" y="170" width="232" height="46" rx="23"/>
+      <rect x="98" y="132" width="176" height="44" rx="22"/>
+      <rect x="126" y="100" width="122" height="40" rx="20"/>
+    </g>
+    <g fill="url(#sgScoop)">
+      <rect x="70" y="162" width="232" height="46" rx="23"/>
+      <rect x="98" y="126" width="176" height="42" rx="21"/>
+      <rect x="126" y="94" width="122" height="38" rx="19"/>
       <path d="M150 100 C150 72 176 66 196 60 C206 57 212 48 210 38 C226 52 224 80 200 94 Z"/>
     </g>
-    <path d="M96 182 q60 -14 150 -4 M124 144 q50 -10 112 -2 M150 110 q30 -6 70 -1" stroke="#FFFFFF" stroke-width="5" fill="none" stroke-linecap="round" opacity=".9"/>
-    <g>${[[78, 186], [296, 186], [104, 148], [270, 148], [132, 114], [244, 114]].map(([x, y], i) => `<circle class="rm-bulb b${i % 3}" cx="${x}" cy="${y}" r="5.5" fill="#FFE9A3"/>`).join('')}</g>
+    <path d="M100 176 q56 -10 140 -4 M128 138 q46 -8 104 -2 M154 106 q28 -5 64 -1" stroke="#FFFFFF" stroke-width="6" fill="none" stroke-linecap="round" opacity=".75"/>
   </g>
 
   <!-- the wall shelves: shapes, toppings, decorations -->
@@ -198,6 +211,7 @@ function screenRoom(win) {
   const front = mode === 'making' ? ticketHTML() : mode === 'play' && g.stage === 'bite' ? biteControlsHTML() : '';
   const resume = mode === 'play';
   return `<section class="screen room-screen" id="roomScreen" data-mode="${mode}">
+    <span class="chunky room-tagline">An ice cream survival game</span>
     <header class="room-top">
       <span class="top-right">${langToggleHTML()}<button class="link" data-go="about">About</button></span>
     </header>
@@ -206,7 +220,6 @@ function screenRoom(win) {
       ${roomBackSVG()}
       ${Object.entries(ROOM_ZONES).map(([k, [a, b]]) => `<i class="rm-zone" data-zone="${k}" style="${at(a, 0, b - a, ROOM_H)}"></i>`).join('')}
       <h1 class="rm-sign" style="${at(26, 176, 330, 150)}" aria-label="Will you finish it?"><span>Will you</span><span>finish it?</span></h1>
-      <span class="chunky rm-sign-sub" style="${at(40, 412, 300, 22)}">An ice cream survival game</span>
 
       <button class="rm-freezer" data-go="freezer" style="${at(14, 560, 296, 304)}" aria-label="The Memory Freezer"><span class="chunky rm-fz-name" style="${at(58, 172, 180, null)}">THE MEMORY FREEZER</span></button>
       ${mode === 'idle' ? `<button class="rm-ghost" data-act="iResisted" style="${at(200, 436, 120, 130)}">${ghostSVG('hmm', 'rl-ghost')}<span class="chunky">I resisted one</span></button>` : ''}

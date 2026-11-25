@@ -2131,7 +2131,8 @@ function benchIceCream() {
       <text x="130" y="134" text-anchor="middle" font-family="Chubby Scoop, ZH Bold, sans-serif" font-size="66" fill="#FFFFFF">?</text></svg>`;
   }
   const added = d.toppings.length + d.decor.length;
-  return iceCream({ form: d.form, flavor: d.flavor || 'blank', toppings: d.toppings, decor: d.decor, face: !!d.flavor,
+  return iceCream({ form: d.form, flavor: d.flavor || 'blank', toppings: d.toppings, decor: d.decor, face: true,   // the face shows as soon as there's a shape
+   
     mood: added >= 6 ? 'panicked' : added >= 3 ? 'worried' : 'nervous', headroom: true, label: 'Your contestant' });
 }
 function benchThumbForTopping(k) {

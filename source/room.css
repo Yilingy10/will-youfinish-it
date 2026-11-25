@@ -19,10 +19,9 @@ body[data-screen=room] .ticket-strip { display: none; }
 
 /* the sign */
 .rm-sign { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; z-index: 2; transform: rotate(-8deg);
-  font: 400 calc(60 * var(--u))/.92 'Sign Script', 'ZH Bold', sans-serif; color: #FFF8EE; text-transform: none; letter-spacing: 0;
-  text-shadow: calc(3 * var(--u)) 0 0 #E2577A, calc(-3 * var(--u)) 0 0 #E2577A, 0 calc(3 * var(--u)) 0 #E2577A, 0 calc(-3 * var(--u)) 0 #E2577A,
-    calc(2.2 * var(--u)) calc(2.2 * var(--u)) 0 #E2577A, calc(-2.2 * var(--u)) calc(2.2 * var(--u)) 0 #E2577A, calc(2.2 * var(--u)) calc(-2.2 * var(--u)) 0 #E2577A, calc(-2.2 * var(--u)) calc(-2.2 * var(--u)) 0 #E2577A,
-    calc(4 * var(--u)) calc(7 * var(--u)) 0 #A9445F; }
+  font: 400 calc(60 * var(--u))/.94 'Sign Script', 'ZH Bold', sans-serif; text-transform: none; letter-spacing: 0;
+  background: linear-gradient(170deg, #C98F66 10%, #A4653E 55%, #8B5E45 90%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 calc(4 * var(--u)) calc(6 * var(--u)) rgba(255, 248, 238, .9)) drop-shadow(0 calc(3 * var(--u)) calc(3 * var(--u)) rgba(139, 94, 69, .18)); }
 .rm-sign span:nth-child(1) { margin-right: calc(60 * var(--u)); }
 .rm-sign span:nth-child(2) { font-size: calc(64 * var(--u)); margin-left: calc(20 * var(--u)); }
 
@@ -186,3 +185,7 @@ body[data-screen=room] .ticket-strip { display: none; }
 
 html[data-lang=zh] .rm-sign { font-size: calc(46 * var(--u)); line-height: 1.05; }
 html[data-lang=zh] .rm-sign span { margin: 0 !important; font-size: inherit !important; }
+
+/* top-left corner: what this is */
+.room-tagline { position: fixed; top: 14px; left: 18px; z-index: 30; font-size: 14px; color: var(--ink); letter-spacing: .04em; pointer-events: none; }
+@media (max-width: 819px), (max-aspect-ratio: 1/1) { .room-tagline { top: 12px; left: 12px; font-size: 12px; } }
