@@ -253,11 +253,11 @@ html[data-lang="zh"] .cover-title span:nth-child(n) { font-size: min(calc((100vw
 .cover-band { position: relative; z-index: -1; margin: -2px -20px calc(-12px - env(safe-area-inset-bottom)); padding: 8px 20px calc(9px + env(safe-area-inset-bottom)); background: none; }
 .cover-forget { display: block; margin: 0 auto 2px; padding: 2px 8px; font-size: 13px; font-weight: 500; }
 .cover-nav { display: grid; grid-template-columns: auto auto; justify-content: space-between; align-items: center; gap: 4px 8px; }
-.cover-nav .freezer-pill { display: inline-flex; align-items: center; gap: 7px; padding: 10px 16px 9px; border-radius: 999px; background: linear-gradient(180deg, #EAF6FA, #CFE8F1); box-shadow: inset 0 0 0 2px #A9D3E2, 0 3px 0 #A9D3E2; color: var(--ink); text-decoration: none; letter-spacing: .02em; }
-.cover-nav .freezer-pill svg { color: #6FAFC6; flex: none; }
-.cover-nav .freezer-pill:hover { background: linear-gradient(180deg, #F2FAFC, #D9EEF5); }
-.cover-nav .freezer-pill:active { transform: translateY(2px); box-shadow: inset 0 0 0 2px #A9D3E2, 0 1px 0 #A9D3E2; }
-.cover-nav .small-link { font-size: clamp(11.5px, 3.2vw, 14px) !important; }
+.cover-nav .freezer-link { display: inline-flex; align-items: flex-end; gap: 7px; text-decoration: none; }
+.cover-nav .freezer-link .fl-ic { width: 50px; height: auto; flex: none; margin: -20px 0 -3px; overflow: visible; }
+.cover-nav .freezer-link .fl-body { filter: url(#riso); transform-origin: 50% 100%; transform-box: fill-box; transition: transform .2s cubic-bezier(.3, 1.6, .5, 1); }
+.cover-nav .freezer-link:hover .fl-body { transform: rotate(-4deg) translateY(-2px); }
+.cover-nav .freezer-link span { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: var(--muted); }
 .cover-nav .resist-link { display: inline-flex; align-items: flex-end; gap: 1px; color: #C0607A; text-decoration: none; }
 .cover-nav .resist-link span { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: #E8A9B8; }
 .cover-nav .resist-link { grid-column: 1 / -1; justify-self: end; }
@@ -649,7 +649,8 @@ body[data-screen=graveyard] { background: linear-gradient(var(--sky) 0, var(--sk
 .fz-filter-list { position: absolute; left: 0; top: calc(100% + 6px); z-index: 900; display: flex; flex-direction: column; min-width: 160px; padding: 6px; background: #FFFEFA; border-radius: 16px; box-shadow: 0 10px 24px rgba(120, 90, 70, .16); }
 .fz-filter-list button { border: 0; background: none; text-align: left; padding: 10px 12px; border-radius: 10px; color: var(--ink); font: 500 14px/1.1 var(--text); }
 .fz-filter-list button.on { background: var(--lemon); font-weight: 700; }
-.fz-door { margin-left: auto; font-size: 13px; }
+.fz-hint { margin-left: auto; font-size: 13.5px; font-weight: 600; color: var(--muted); }
+#freezer[data-open="true"] .fz-hint { visibility: hidden; }
 
 .fz-scene { margin-top: 10px; }
 .chest-swipe { margin: 10px 0 -26px; font-size: 12.5px; color: var(--muted); }
@@ -702,7 +703,12 @@ body[data-screen=graveyard] { background: linear-gradient(var(--sky) 0, var(--sk
 
 /* the front of the chest: two drawers and a little name plate */
 .chest-front { position: absolute; left: 6.5%; right: 6.5%; top: 75.4%; height: 18.8%; z-index: 460; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 2.4cqw; }
-.chest-plate { justify-self: center; padding: .7cqw 1.6cqw .8cqw; border-radius: 999px; background: #FFFEFA; color: var(--ink); font-size: max(9px, 1.25cqw); letter-spacing: .06em; white-space: nowrap; box-shadow: inset 0 0 0 2px #E7CFC4; }
+.chest-note { justify-self: center; display: flex; flex-direction: column; align-items: center; gap: .3cqw; padding: 0; border: 0; background: none; color: var(--ink); transform: rotate(-3deg); transition: transform .15s; }
+.chest-note svg { width: 8.6cqw; min-width: 50px; height: auto; display: block; overflow: visible; }
+.chest-note .note-ic { filter: url(#riso); }
+.chest-note span { font-size: max(9px, 1.2cqw); letter-spacing: .06em; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; text-decoration-color: var(--muted); }
+.chest-note:hover { transform: rotate(1deg) translateY(-2px); }
+.chest-note.on span { text-decoration-color: #EE6B83; }
 .chest-drawer { position: relative; display: flex; align-items: center; gap: 1.4cqw; height: 100%; min-height: 44px; padding: .9cqw 1.4cqw; border: 0; border-radius: 1.6cqw; text-align: left; color: var(--ink);
   background: linear-gradient(#F3FAFC, #DDEFF5); box-shadow: inset 0 0 0 2px #B9DBE7, 0 .5cqw 0 #B9DBE7; transition: transform .12s; }
 .chest-drawer:active { transform: translateY(.4cqw); box-shadow: inset 0 0 0 2px #B9DBE7, 0 .1cqw 0 #B9DBE7; }
@@ -720,8 +726,18 @@ body[data-screen=graveyard] { background: linear-gradient(var(--sky) 0, var(--sk
 .chest-drawer.thawed .crisper-tag::after { content: ''; display: inline-block; width: 6px; height: 6px; margin-left: 5px; vertical-align: 2px; border-radius: 50%; background: #E3A6B4; }
 
 /* the stage */
-.mem-stage-panel { position: relative; margin-top: 14px; padding: 16px; border-radius: 26px; background: radial-gradient(120% 80% at 50% 0%, #FFFFFF, #FFFEFA 55%, #F8F4EC); scroll-margin-top: 10px; }
-.stage-up { display: block; margin: -4px 0 8px; padding: 8px 0; font-size: 13px; }
+.mem-stage-panel { position: relative; margin-top: 14px; padding: 0; scroll-margin-top: 10px; }
+.mem-stage-panel:empty { display: none; }
+.stage-top { position: sticky; top: 0; z-index: 6; display: flex; align-items: center; justify-content: space-between; min-height: 44px; margin-bottom: 4px; pointer-events: none; }
+.stage-top > * { pointer-events: auto; }
+.stage-top .stage-up { margin: 0; }
+.stage-close { flex: none; width: 44px; height: 44px; margin: 0; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: #FFFEFA; color: var(--ink); }
+.stage-close:hover { background: #FFE0E7; }
+.door-sub { font-size: 13.5px; font-weight: 600; margin: 2px 0 4px; }
+.door-view .magnets { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px 10px; margin-top: 14px; }
+.door-view .lane-head { font-size: clamp(24px, 5vw, 34px); }
+@container (min-width: 520px) { .door-view .magnets { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.stage-up { display: block; padding: 8px 0; font-size: 13px; }
 .stage-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 8px; min-height: 260px; padding: 18px 8px; }
 .stage-ghost { width: 96px; height: auto; animation: chestBob 3.4s ease-in-out infinite; }
 .stage-hello { font-size: clamp(17px, 4.6vw, 22px); line-height: 1.15; color: var(--ink); text-transform: uppercase; max-width: 16em; }
@@ -781,10 +797,14 @@ body[data-screen=graveyard] { background: linear-gradient(var(--sky) 0, var(--sk
 /* ---- computer: one screen, chest left (about 58%), stage right ---- */
 @media (min-width: 820px) {
   .fz-title { font-size: clamp(30px, 2.8vw, 42px); }
-  .fz-scene { --scene-h: max(440px, calc(100dvh - 166px)); display: grid; grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); gap: 22px; height: var(--scene-h); margin-top: 6px; }
+  /* closed: the chest has the whole width; open: it slides over and the stage comes in */
+  .fz-scene { --scene-h: max(440px, calc(100dvh - 166px)); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0fr); column-gap: 0; height: var(--scene-h); margin-top: 6px;
+    transition: grid-template-columns .55s cubic-bezier(.3, .8, .3, 1), column-gap .55s; }
+  #freezer[data-open="true"] .fz-scene { grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); column-gap: 22px; }
   .chest-scroll { margin: 0; padding: 0; overflow: visible; display: flex; align-items: center; justify-content: center; min-height: 0; }
   .chest { min-width: 0; width: min(100%, calc((var(--scene-h) - 30px) / .68)); }
-  .mem-stage-panel { margin: 0; height: 100%; overflow-y: auto; overscroll-behavior: contain; container-type: size; padding: 18px 20px; }
+  .mem-stage-panel, .mem-stage-panel:empty { display: block; margin: 0; height: 100%; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; container-type: size; padding: 0 2px; }
+  #freezer[data-open="true"] .mem-stage-panel > * { animation: stageIn .45s cubic-bezier(.2, 1.1, .4, 1) .12s both; }
   .stage-empty { min-height: 100%; }
   /* on a wide stage, the words sit left and the ice cream right, so it can be big */
   .bigmem.in-stage { display: grid; grid-template-columns: minmax(190px, 1fr) auto; grid-template-rows: auto auto 1fr; column-gap: 18px; align-items: start; }
@@ -792,19 +812,21 @@ body[data-screen=graveyard] { background: linear-gradient(var(--sky) 0, var(--sk
   .bigmem.in-stage .bm-under { grid-column: 1; grid-row: 2; text-align: left; margin-top: 14px; }
   .bigmem.in-stage .bm-under .bm-skip { margin: 4px 0 0; }
   .bigmem.in-stage .bm-after { grid-column: 1; grid-row: 2 / 4; margin-top: 14px; width: auto; }
-  .bigmem.in-stage .bm-stage { grid-column: 2; grid-row: 1 / 4; margin: 0; width: min(calc(100cqw - 208px), calc((100cqh - 70px) * .652)); }
+  .bigmem.in-stage .bm-stage { grid-column: 2; grid-row: 1 / 4; margin: 0; width: min(calc(100cqw - 208px), calc((100cqh - 120px) * .652)); }
   .bigmem.in-stage .mem-after-btns { align-items: flex-start; }
   .bigmem.in-stage .bm-title { font-size: clamp(21px, 1.9vw, 29px); }
   .story-pick { width: 100%; }
 }
-@media (min-width: 1360px) { .fz-scene { grid-template-columns: minmax(0, 58fr) minmax(0, 42fr); } }
+@media (min-width: 1360px) { #freezer[data-open="true"] .fz-scene { grid-template-columns: minmax(0, 58fr) minmax(0, 42fr); } }
+@keyframes stageIn { from { opacity: 0; transform: translateX(24px) } to { opacity: 1; transform: none } }
 @container (max-width: 440px) {
   .bigmem.in-stage { display: block; }
   .bigmem.in-stage .bm-stage { width: min(100%, calc((100cqh - 220px) * .652)); margin: 8px auto 0; }
   .bigmem.in-stage .bm-under { text-align: center; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .chest-mist, .cmem.k-ghost .cmem-art, .stage-ghost { animation: none; }
+  .chest-mist, .cmem.k-ghost .cmem-art, .stage-ghost, #freezer[data-open="true"] .mem-stage-panel > * { animation: none !important; }
+  .fz-scene { transition: none !important; }
   .cmem-art, .cmem, .story-pick { transition: none; }
 }
 /* --------------------------------------------------------------------------
@@ -905,7 +927,6 @@ body[data-screen=graveyard] { background: linear-gradient(var(--sky) 0, var(--sk
 @media (max-width: 819px) and (max-height: 720px) {
   .mini.m3 { top: 62%; } .mini.m4 { top: 61%; }
   .cover-nav button { padding: 5px 0; }
-  .cover-nav .freezer-pill { padding: 9px 14px 8px; }
 }
 
 /* --------------------------------------------------------------------------
@@ -2283,7 +2304,9 @@ const ZH = {
 "Not bought. Not counted as waste.": "没买。不算浪费。",
 "INTO THE FREEZER": "放进冰箱",
 "Previous": "上一支",
-"Next": "下一支"
+"Next": "下一支",
+"Put it back": "放回去",
+"The archive: everything the machine thinks it knows": "档案：机器自以为知道的关于你的一切"
 };
 // Sentences with numbers, dates or someone's own words in them.
 const ZH_MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12,
@@ -4304,8 +4327,10 @@ function screenHome() {
       <div class="cover-band">
         ${resume ? `<button class="link cover-forget" data-act="forfeit">Forget it and start a new one</button>` : ''}
         <nav class="cover-nav">
-          <button class="freezer-pill" data-go="freezer"><svg viewBox="-10 -10 20 20" width="15" height="15" aria-hidden="true"><path d="M0 -8 V8 M-7 -4 L7 4 M-7 4 L7 -4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>THE MEMORY FREEZER</span></button>
-          <button class="small-link" data-go="archive">Archive</button>
+          <button class="freezer-link" data-go="freezer"><svg class="fl-ic" viewBox="0 0 64 46" aria-hidden="true"><g class="fl-body">
+            <path d="M6 14 H58 L55 42 Q54 44 52 44 H12 Q10 44 9 42 Z" fill="#CFE8F1"/><path d="M8 24 H56 L55.4 29 H8.6 Z" fill="#FFD6DF"/>
+            <path d="M3 8 Q3 5 6 5 H58 Q61 5 61 8 V13 Q61 16 58 16 H6 Q3 16 3 13 Z" fill="#FFFEFA"/><path d="M26 9.5 H38" stroke="#E3C3B4" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="20" cy="35" r="3.2" fill="#FFFEFA"/><circle cx="44" cy="36" r="2.4" fill="#FFFEFA"/></g></svg><span>The Memory Freezer</span></button>
           ${resume ? '' : `<button class="resist-link" data-act="iResisted">${ghostSVG('hmm', 'rl-ghost')}<span>I resisted one</span></button>`}
         </nav>
       </div>
@@ -4720,24 +4745,21 @@ function learningNote(s) {
   if (diff < -.75) return `It has more data than ever and is getting worse: ${s.earlyError.toFixed(1)} bites off at first, ${s.lateError.toFixed(1)} lately.`;
   return `All this data and it’s still off by about ${s.avgError.toFixed(1)} bites. Taste remains annoyingly personal.`;
 }
-function screenArchive() {
-  setFlood('#F1F2F2', null);
+// The archive is no longer a page: it opens from the note stuck on the front of the
+// freezer, on the freezer's stage.
+function archiveBodyHTML() {
   const records = allRecords();
-  if (stillLoading()) return screenSyncing('THE FREEZER DOOR');
-  if (!allEntries().length) {
-    return `<section class="screen wide" id="archive"><div class="pagehead"><h1 class="melty" style="font-size:min(calc((100vw - 40px) / 6.2), 84px)">THE FREEZER DOOR</h1></div>
-<button class="freezer-entry" data-go="freezer"><svg viewBox="0 0 40 52" width="34" height="44" aria-hidden="true"><rect x="3" y="3" width="34" height="46" rx="9" fill="#FFFEFA" stroke="#9A7560" stroke-width="2"/><path d="M3 20 H37" stroke="#9A7560" stroke-width="2"/><rect x="28" y="8" width="4" height="8" rx="2" fill="#BC9B86"/><rect x="28" y="25" width="4" height="12" rx="2" fill="#BC9B86"/><circle cx="12" cy="33" r="4" fill="#FFC6D5"/></svg><span><b>${esc(MEMORY_COPY.archiveDoor)}</b><small>${esc(MEMORY_COPY.archiveDoorSub)}</small></span></button>
-      <div class="empty"><h2 class="melty">NOTHING ON FILE.</h2><p style="font-weight:700;margin:8px 0 18px">The machine knows nothing about you. Enjoy it while it lasts.</p>
-      <button class="btn c-strawberry" data-act="start" style="max-width:320px;margin:0 auto 6px">START A NEW ICE CREAM</button></div>${ticketStrip('archive')}</section>`;
-  }
+  if (stillLoading()) return `<div class="stage-empty"><p class="chunky stage-hello">Checking the shared archive…</p></div>`;
+  if (!allEntries().length) return `<p class="chunky stage-k">ARCHIVE</p><div class="empty"><h2 class="melty">NOTHING ON FILE.</h2><p style="font-weight:700;margin:8px 0 18px">The machine knows nothing about you. Enjoy it while it lasts.</p>
+      <button class="btn c-strawberry" data-act="start" style="max-width:320px;margin:0 auto 6px">START A NEW ICE CREAM</button></div>`;
+  return archiveFullHTML(records);
+}
+function archiveFullHTML(records) {
   const s = computeStats(records);
   const maxErr = Math.max(1, ...s.errors);
   const none = '<span class="big txt">None yet</span>';
-  return `<section class="screen wide" id="archive">
-    <div class="door-handle"></div>
-    <div class="pagehead"><h1 class="melty" style="font-size:min(calc((100vw - 40px) / 6.9), 84px)">THE FREEZER DOOR</h1>
-      <p>Everything the machine thinks it knows about you.</p>
-      <button class="freezer-entry" data-go="freezer"><svg viewBox="0 0 40 52" width="34" height="44" aria-hidden="true"><rect x="3" y="3" width="34" height="46" rx="9" fill="#FFFEFA" stroke="#9A7560" stroke-width="2"/><path d="M3 20 H37" stroke="#9A7560" stroke-width="2"/><rect x="28" y="8" width="4" height="8" rx="2" fill="#BC9B86"/><rect x="28" y="25" width="4" height="12" rx="2" fill="#BC9B86"/><circle cx="12" cy="33" r="4" fill="#FFC6D5"/></svg><span><b>${esc(MEMORY_COPY.archiveDoor)}</b><small>${esc(MEMORY_COPY.archiveDoorSub)}</small></span></button></div>
+  return `<p class="chunky stage-k">ARCHIVE</p>
+    <p class="door-sub">Everything the machine thinks it knows about you.</p>
     <div class="magnets">
       <div class="mag scoop rot-a" style="background:var(--strawberry)"><span class="cap">Total ice creams tried</span><span class="big">${s.total}</span></div>
       <div class="mag burst rot-b" style="--bc:var(--lemon)"><span class="cap">Actually finished</span><span class="big">${s.finished}</span><small>Finish rate ${Math.round(s.finishRate * 100)}%</small></div>
@@ -4769,8 +4791,7 @@ function screenArchive() {
         <span><span class="chunky n" style="display:block">${esc(r.name)}${demoMark(r)}</span><span class="v" style="display:block">${esc(v.title.charAt(0) + v.title.slice(1).toLowerCase())}</span></span>
         <span class="b"><strong>${r.actualBites}</strong>${r.actualBites === 1 ? 'bite' : 'bites'}</span>
       </button>`; }).join('')}</div>
-    ${ticketStrip('archive')}
-  </section>`;
+  `;
 }
 
 /* --- DETAIL CARD (opens from Graveyard, Hall of Fame and Archive) ---------------------- */
@@ -5092,7 +5113,7 @@ const CHEST_TAGS = [[112, 'WINTER ’25'], [272, 'SPRING ’26'], [520, 'JUNE �
 const KIND_FILTERS = { all: 'Everything', cup: 'Cups', popsicle: 'Popsicles', ghost: 'Ghosts', special: 'Specials' };
 const STORY_KEYS = Object.keys(MEMORY_SERIES).filter(k => MEMORY_SERIES[k].story);   // the ones put together by hand
 // fz: what the freezer is showing. view: 'none' (empty stage), 'memory', 'stories' (the list),
-// 'story' (one story, step by step) or 'fresh' (the Freshly Frozen drawer).
+// 'story' (one story, step by step), 'fresh' (the Freshly Frozen drawer) or 'door' (the archive).
 let fz = { mode: 'all', filter: 'all', view: 'none', sel: null, story: null, step: 0 };
 
 function chestItem(m) {
@@ -5135,7 +5156,10 @@ function chestHTML() {
     <div class="chest-front">
       <button class="crisper chest-drawer ${thawedList().includes('more') ? 'thawed' : ''}" data-act="pickMemory" data-val="more" aria-label="${esc(MEMORY_MORE.title)}">
         <span class="crisper-window" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="chunky crisper-tag">${esc(MEMORY_COPY.drawer)}</span></button>
-      <span class="chunky chest-plate">MEMORY FREEZER</span>
+      <button class="chest-note" data-act="openDoor" aria-label="The archive: everything the machine thinks it knows">
+        <svg viewBox="0 0 120 70" aria-hidden="true"><g class="note-ic"><path d="M8 6 H112 L108 64 H12 Z" fill="#FFF0A6"/><path d="M44 0 H76 V12 H44 Z" fill="#F7C9D4" opacity=".9"/>
+          <path d="M24 50 V38 M38 50 V28 M52 50 V42 M66 50 V24 M80 50 V34 M94 50 V30" stroke="#E3A6B4" stroke-width="7" stroke-linecap="round"/></g></svg>
+        <span class="chunky">ARCHIVE</span></button>
       ${freshDrawerButton()}
     </div>
   </div>`;
@@ -5153,8 +5177,8 @@ function refreshFreezerRecords() {
   const d = document.querySelector('#chest .fresh-drawer');
   if (d) d.outerHTML = freshDrawerButton();
   const want = decodeURIComponent(location.hash.split('/')[1] || '');   // a record that wasn't here yet when the page opened
-  if (want && !['fresh', 'stories', 'story'].includes(want) && fz.sel !== want && memoryById(want)) { fz = { ...fz, mode: 'all', view: 'memory', sel: want }; renderStage(false); }
-  else if (fz.view === 'fresh') renderStage(false);
+  if (want && !['fresh', 'stories', 'story', 'door'].includes(want) && fz.sel !== want && memoryById(want)) { fz = { ...fz, mode: 'all', view: 'memory', sel: want }; renderStage(false); }
+  else if (fz.view === 'fresh' || fz.view === 'door') renderStage(false);
   // a record on the stage may have gained a kept memory; redraw it unless it is halfway through melting
   else if (fz.view === 'memory' && (memoryById(fz.sel) || {}).isRecord && (!memState || memState.p === 0 || memState.done)) renderStage(false);
 }
@@ -5171,9 +5195,10 @@ function chestState() {
     if (inStory) el.dataset.order = story.ids.indexOf(id) + 1; else delete el.dataset.order;
   });
   document.querySelector('#chest .fresh-drawer')?.classList.toggle('on', fz.view === 'fresh');
+  document.querySelector('#chest .chest-note')?.classList.toggle('on', fz.view === 'door');
   drawThreads();
 }
-const freezerHash = () => fz.view === 'fresh' ? 'freezer/fresh' : fz.view === 'stories' ? 'freezer/stories'
+const freezerHash = () => fz.view === 'fresh' ? 'freezer/fresh' : fz.view === 'door' ? 'freezer/door' : fz.view === 'stories' ? 'freezer/stories'
   : fz.view === 'story' ? `freezer/story/${fz.story}/${fz.step + 1}` : fz.view === 'memory' && fz.sel ? 'freezer/' + fz.sel : 'freezer';
 // the top bar: the two ways of looking, and the small filter
 function freezerBarHTML() {
@@ -5184,15 +5209,18 @@ function freezerBarHTML() {
     </div>
     ${fz.mode === 'all' ? `<details class="fz-filter"><summary class="chunky">${fz.filter === 'all' ? 'Filter' : esc(KIND_FILTERS[fz.filter])}</summary>
       <div class="fz-filter-list">${Object.entries(KIND_FILTERS).map(([k, l]) => `<button class="${fz.filter === k ? 'on' : ''}" data-act="freezerFilter" data-val="${k}">${esc(l)}</button>`).join('')}</div></details>` : ''}
-    <button class="link fz-door" data-go="archive">The freezer door ›</button>
+    <p class="fz-hint">Pick an ice cream to remember.</p>
   </div>`;
 }
 // The stage: whatever is out of the freezer right now
 function stageHTML() {
+  if (fz.view === 'none') return '';
   const narrow = !wideFreezer();
-  const up = narrow ? `<button class="link stage-up" data-act="stageUp"><span aria-hidden="true">↑ </span><span>${esc(MEMORY_COPY.back)}</span></button>` : '';
+  const up = `<div class="stage-top">${narrow ? `<button class="link stage-up" data-act="stageUp"><span aria-hidden="true">↑ </span><span>${esc(MEMORY_COPY.back)}</span></button>` : '<span></span>'}
+    <button class="stage-close" data-act="closeStage" aria-label="Put it back"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M4 4 L16 16 M16 4 L4 16" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>`;
   if (fz.view === 'fresh') return up + freshDrawerHTML();
-  if (fz.view === 'stories') return `<div class="stage-empty stories-index"><p class="chunky stage-k">OUR STORIES</p>
+  if (fz.view === 'door') return up + `<div class="door-view">${archiveBodyHTML()}</div>`;
+  if (fz.view === 'stories') return up + `<div class="stage-empty stories-index"><p class="chunky stage-k">OUR STORIES</p>
     ${STORY_KEYS.map(k => { const s = MEMORY_SERIES[k]; return `<button class="story-pick" data-act="openStory" data-val="${k}"><b class="melty">${esc(s.title)}</b><span>${esc(s.note)}</span><small class="chunky">${s.ids.length} ICE CREAMS</small></button>`; }).join('')}</div>`;
   if (fz.view === 'story') {
     const s = MEMORY_SERIES[fz.story], id = s.ids[fz.step];
@@ -5206,18 +5234,23 @@ function stageHTML() {
     const m = memoryById(fz.sel);
     return up + (m.isRecord ? `<div class="story-bar"><button class="link" data-act="openFresh">‹ Freshly Frozen</button><span></span><button class="link" data-act="open" data-val="${esc(m.id)}">Record details</button></div>` : '') + memoryCardHTML(m, { stage: true });
   }
-  return `<div class="stage-empty"><svg class="stage-ghost" viewBox="0 0 120 150" aria-hidden="true"><path d="M60 14 C30 14 22 40 22 64 V128 L34 118 L46 130 L60 118 L74 130 L86 118 L98 128 V64 C98 40 90 14 60 14Z" fill="none" stroke="#C9B8AA" stroke-width="3" stroke-dasharray="5 7" stroke-linecap="round"/></svg>
-    <p class="chunky stage-hello">Pick an ice cream to remember.</p><p class="stage-sub">${esc(MEMORY_COPY.doorNote)}</p></div>`;
+  return '';
 }
 function renderStage(scroll) {
   const box = document.getElementById('memStagePanel');
   if (!box) return;
   box.innerHTML = stageHTML();
   box.scrollTop = 0;
-  if (document.getElementById('memory')) bindMemoryStage(thawedList().includes(document.getElementById('memory').dataset.id));
+  setStageOpen();
+  if (document.getElementById('memory')) bindMemoryStage(false);
   chestState();
   history.replaceState(null, '', '#' + freezerHash());
   if (scroll && !wideFreezer()) box.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' });
+}
+// The chest has the whole screen to itself until something is taken out of it
+function setStageOpen() {
+  const f = document.getElementById('freezer');
+  if (f) f.dataset.open = fz.view !== 'none' ? 'true' : 'false';
 }
 function refreshFreezerBar() {
   const bar = document.querySelector('#freezer .fz-bar');
@@ -5225,7 +5258,8 @@ function refreshFreezerBar() {
 }
 // read #freezer, #freezer/<id>, #freezer/fresh, #freezer/stories, #freezer/story/<key>/<n>
 function freezerFromHash(param, extra, more) {
-  if (param === 'fresh') fz = { ...fz, view: 'fresh' };
+  if (param === 'fresh') fz = { ...fz, mode: 'all', view: 'fresh' };
+  else if (param === 'door') fz = { ...fz, mode: 'all', view: 'door' };
   else if (param === 'stories') fz = { ...fz, mode: 'stories', view: 'stories' };
   else if (param === 'story' && MEMORY_SERIES[extra] && STORY_KEYS.includes(extra)) {
     const n = Math.max(0, Math.min(MEMORY_SERIES[extra].ids.length - 1, (parseInt(more, 10) || 1) - 1));
@@ -5240,7 +5274,7 @@ function freezerFromHash(param, extra, more) {
 function screenFreezer(param, extra, more) {
   setFlood('#F1F2F2', null);
   freezerFromHash(param, extra, more);
-  return `<section class="screen wide" id="freezer">
+  return `<section class="screen wide" id="freezer" data-open="${fz.view !== 'none'}">
     <div class="fz-head"><h1 class="melty fz-title">${esc(MEMORY_COPY.title)}</h1>${freezerBarHTML()}</div>
     <div class="fz-scene">
       <p class="chest-swipe" aria-hidden="true">Swipe to see the whole freezer ›</p>
@@ -5256,6 +5290,13 @@ const wideFreezer = () => matchMedia('(min-width: 820px)').matches;
 function fitFreezer() {
   const view = document.getElementById('freezer'), chest = document.getElementById('chest');
   if (!view || !chest) return;
+  if (window.ResizeObserver && !chest.dataset.watched) {
+    chest.dataset.watched = '1';
+    new ResizeObserver(() => { if (chest.isConnected) drawThreads(); }).observe(chest);
+    const panel = document.getElementById('memStagePanel');
+    let t = 0;
+    new ResizeObserver(() => { clearTimeout(t); t = setTimeout(() => { if (document.getElementById('bmText')) fitStory(); }, 60); }).observe(panel);
+  }
   chestState();
   if (document.getElementById('memory')) fitStory();
 }
@@ -5695,7 +5736,7 @@ function bindMemoryStage(startThawed) {
     if (reducedMotion()) { st.p = st.target; frame(st.p, 0); if (st.p >= 1) finish(); return; }
     if (!st.raf) { st.last = 0; st.raf = requestAnimationFrame(loop); }
   }
-  st.step = () => meltTo(Math.min(1, Math.round(st.target * 2) / 2 + .5));
+  st.step = () => meltTo(1);   // one tap: it melts all the way, and you watch it go
   st.skip = () => meltTo(1, true);
   st.again = () => {
     cancelAnimationFrame(st.raf); st.raf = 0;
@@ -5703,7 +5744,7 @@ function bindMemoryStage(startThawed) {
     st.p = st.v = st.target = 0; frame(0, 0);
     if (!view.classList.contains('in-stage')) stage.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
   };
-  // a tap melts it about halfway; dragging across it melts it as far as you drag
+  // a tap melts it all the way; dragging across it melts it as far as you drag
   let press = null;
   stage.addEventListener('pointerdown', e => {
     if (st.done || e.target.closest('button, a')) return;
@@ -6350,11 +6391,11 @@ function render() {
   // The Graveyard and the Hall of Fame now live in the freezer's Freshly Frozen drawer,
   // and a memory opens on the freezer's stage (except from the workbench).
   if (route === 'graveyard' || route === 'hall') { history.replaceState(null, '', '#freezer/fresh'); return render(); }
+  if (route === 'archive') { history.replaceState(null, '', '#freezer/door'); return render(); }   // the archive lives on the freezer now
   if (route === 'memory' && extra !== 'bench') { history.replaceState(null, '', '#freezer/' + (param || '')); return render(); }
   document.body.dataset.screen = route || 'home';
   let html = null;
   switch (route) {
-    case 'archive':   html = screenArchive(); break;
     case 'about':     html = screenAbout(); break;
     case 'freezer':   html = screenFreezer(decodeURIComponent(param || ''), extra, more); break;
     case 'resisted':  html = screenResisted(decodeURIComponent(param || '')); break;
@@ -6376,7 +6417,7 @@ function afterRender(route) {
   clearTimeout(loadingTimer);
   if (route === 'freezer') {
     const card = document.getElementById('memory');
-    if (card) bindMemoryStage(thawedList().includes(card.dataset.id));   // seen before: the story is already out, with Replay the melt
+    if (card) bindMemoryStage(false);   // it always comes out frozen, so the melt plays every time
     chestState(); history.replaceState(null, '', '#' + freezerHash());
     requestAnimationFrame(drawThreads); setTimeout(() => { fitFreezer(); }, 900);
     if (!wideFreezer() && fz.view !== 'none') requestAnimationFrame(() => document.getElementById('memStagePanel')?.scrollIntoView({ block: 'start' }));
@@ -6442,6 +6483,22 @@ const ACTIONS = {
     const s = MEMORY_SERIES[fz.story]; if (!s) return;
     fz.step = Math.max(0, Math.min(s.ids.length - 1, fz.step + Number(v))); fz.sel = s.ids[fz.step];
     renderStage(false);
+  },
+  // the note on the front of the chest: the archive, on the stage
+  openDoor() {
+    if (!document.getElementById('memStagePanel')) { go('freezer/door'); return; }
+    const wasStories = fz.mode === 'stories';
+    fz = { ...fz, mode: 'all', view: 'door', story: null };
+    if (wasStories) refreshFreezerBar();
+    renderStage(true);
+  },
+  // put it back: the chest has the screen to itself again
+  closeStage() {
+    const wasStories = fz.mode === 'stories';
+    fz = { ...fz, mode: 'all', view: 'none', story: null, sel: null };
+    if (wasStories) refreshFreezerBar();
+    renderStage(false);
+    if (!wideFreezer()) ACTIONS.stageUp();
   },
   stageUp() { document.getElementById('chestScroll')?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'center' }); },
   memSkip() { memState && memState.skip(); },
@@ -6611,6 +6668,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && overlay.classList.contains('open') && !overlay.querySelector('[data-act=react]')) closeOverlay();
+  else if (e.key === 'Escape' && !overlay.classList.contains('open') && document.getElementById('memStagePanel') && fz.view !== 'none') ACTIONS.closeStage();
 });
 // Drop-downs name their action with data-change.
 document.addEventListener('change', e => {

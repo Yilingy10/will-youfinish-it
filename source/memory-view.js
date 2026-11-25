@@ -380,7 +380,7 @@ function bindMemoryStage(startThawed) {
     if (reducedMotion()) { st.p = st.target; frame(st.p, 0); if (st.p >= 1) finish(); return; }
     if (!st.raf) { st.last = 0; st.raf = requestAnimationFrame(loop); }
   }
-  st.step = () => meltTo(Math.min(1, Math.round(st.target * 2) / 2 + .5));
+  st.step = () => meltTo(1);   // one tap: it melts all the way, and you watch it go
   st.skip = () => meltTo(1, true);
   st.again = () => {
     cancelAnimationFrame(st.raf); st.raf = 0;
@@ -388,7 +388,7 @@ function bindMemoryStage(startThawed) {
     st.p = st.v = st.target = 0; frame(0, 0);
     if (!view.classList.contains('in-stage')) stage.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
   };
-  // a tap melts it about halfway; dragging across it melts it as far as you drag
+  // a tap melts it all the way; dragging across it melts it as far as you drag
   let press = null;
   stage.addEventListener('pointerdown', e => {
     if (st.done || e.target.closest('button, a')) return;

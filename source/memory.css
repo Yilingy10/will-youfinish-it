@@ -16,7 +16,8 @@
 .fz-filter-list { position: absolute; left: 0; top: calc(100% + 6px); z-index: 900; display: flex; flex-direction: column; min-width: 160px; padding: 6px; background: #FFFEFA; border-radius: 16px; box-shadow: 0 10px 24px rgba(120, 90, 70, .16); }
 .fz-filter-list button { border: 0; background: none; text-align: left; padding: 10px 12px; border-radius: 10px; color: var(--ink); font: 500 14px/1.1 var(--text); }
 .fz-filter-list button.on { background: var(--lemon); font-weight: 700; }
-.fz-door { margin-left: auto; font-size: 13px; }
+.fz-hint { margin-left: auto; font-size: 13.5px; font-weight: 600; color: var(--muted); }
+#freezer[data-open="true"] .fz-hint { visibility: hidden; }
 
 .fz-scene { margin-top: 10px; }
 .chest-swipe { margin: 10px 0 -26px; font-size: 12.5px; color: var(--muted); }
@@ -69,7 +70,12 @@
 
 /* the front of the chest: two drawers and a little name plate */
 .chest-front { position: absolute; left: 6.5%; right: 6.5%; top: 75.4%; height: 18.8%; z-index: 460; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 2.4cqw; }
-.chest-plate { justify-self: center; padding: .7cqw 1.6cqw .8cqw; border-radius: 999px; background: #FFFEFA; color: var(--ink); font-size: max(9px, 1.25cqw); letter-spacing: .06em; white-space: nowrap; box-shadow: inset 0 0 0 2px #E7CFC4; }
+.chest-note { justify-self: center; display: flex; flex-direction: column; align-items: center; gap: .3cqw; padding: 0; border: 0; background: none; color: var(--ink); transform: rotate(-3deg); transition: transform .15s; }
+.chest-note svg { width: 8.6cqw; min-width: 50px; height: auto; display: block; overflow: visible; }
+.chest-note .note-ic { filter: url(#riso); }
+.chest-note span { font-size: max(9px, 1.2cqw); letter-spacing: .06em; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; text-decoration-color: var(--muted); }
+.chest-note:hover { transform: rotate(1deg) translateY(-2px); }
+.chest-note.on span { text-decoration-color: #EE6B83; }
 .chest-drawer { position: relative; display: flex; align-items: center; gap: 1.4cqw; height: 100%; min-height: 44px; padding: .9cqw 1.4cqw; border: 0; border-radius: 1.6cqw; text-align: left; color: var(--ink);
   background: linear-gradient(#F3FAFC, #DDEFF5); box-shadow: inset 0 0 0 2px #B9DBE7, 0 .5cqw 0 #B9DBE7; transition: transform .12s; }
 .chest-drawer:active { transform: translateY(.4cqw); box-shadow: inset 0 0 0 2px #B9DBE7, 0 .1cqw 0 #B9DBE7; }
@@ -87,8 +93,18 @@
 .chest-drawer.thawed .crisper-tag::after { content: ''; display: inline-block; width: 6px; height: 6px; margin-left: 5px; vertical-align: 2px; border-radius: 50%; background: #E3A6B4; }
 
 /* the stage */
-.mem-stage-panel { position: relative; margin-top: 14px; padding: 16px; border-radius: 26px; background: radial-gradient(120% 80% at 50% 0%, #FFFFFF, #FFFEFA 55%, #F8F4EC); scroll-margin-top: 10px; }
-.stage-up { display: block; margin: -4px 0 8px; padding: 8px 0; font-size: 13px; }
+.mem-stage-panel { position: relative; margin-top: 14px; padding: 0; scroll-margin-top: 10px; }
+.mem-stage-panel:empty { display: none; }
+.stage-top { position: sticky; top: 0; z-index: 6; display: flex; align-items: center; justify-content: space-between; min-height: 44px; margin-bottom: 4px; pointer-events: none; }
+.stage-top > * { pointer-events: auto; }
+.stage-top .stage-up { margin: 0; }
+.stage-close { flex: none; width: 44px; height: 44px; margin: 0; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: #FFFEFA; color: var(--ink); }
+.stage-close:hover { background: #FFE0E7; }
+.door-sub { font-size: 13.5px; font-weight: 600; margin: 2px 0 4px; }
+.door-view .magnets { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px 10px; margin-top: 14px; }
+.door-view .lane-head { font-size: clamp(24px, 5vw, 34px); }
+@container (min-width: 520px) { .door-view .magnets { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.stage-up { display: block; padding: 8px 0; font-size: 13px; }
 .stage-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 8px; min-height: 260px; padding: 18px 8px; }
 .stage-ghost { width: 96px; height: auto; animation: chestBob 3.4s ease-in-out infinite; }
 .stage-hello { font-size: clamp(17px, 4.6vw, 22px); line-height: 1.15; color: var(--ink); text-transform: uppercase; max-width: 16em; }
@@ -148,10 +164,14 @@
 /* ---- computer: one screen, chest left (about 58%), stage right ---- */
 @media (min-width: 820px) {
   .fz-title { font-size: clamp(30px, 2.8vw, 42px); }
-  .fz-scene { --scene-h: max(440px, calc(100dvh - 166px)); display: grid; grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); gap: 22px; height: var(--scene-h); margin-top: 6px; }
+  /* closed: the chest has the whole width; open: it slides over and the stage comes in */
+  .fz-scene { --scene-h: max(440px, calc(100dvh - 166px)); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0fr); column-gap: 0; height: var(--scene-h); margin-top: 6px;
+    transition: grid-template-columns .55s cubic-bezier(.3, .8, .3, 1), column-gap .55s; }
+  #freezer[data-open="true"] .fz-scene { grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); column-gap: 22px; }
   .chest-scroll { margin: 0; padding: 0; overflow: visible; display: flex; align-items: center; justify-content: center; min-height: 0; }
   .chest { min-width: 0; width: min(100%, calc((var(--scene-h) - 30px) / .68)); }
-  .mem-stage-panel { margin: 0; height: 100%; overflow-y: auto; overscroll-behavior: contain; container-type: size; padding: 18px 20px; }
+  .mem-stage-panel, .mem-stage-panel:empty { display: block; margin: 0; height: 100%; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; container-type: size; padding: 0 2px; }
+  #freezer[data-open="true"] .mem-stage-panel > * { animation: stageIn .45s cubic-bezier(.2, 1.1, .4, 1) .12s both; }
   .stage-empty { min-height: 100%; }
   /* on a wide stage, the words sit left and the ice cream right, so it can be big */
   .bigmem.in-stage { display: grid; grid-template-columns: minmax(190px, 1fr) auto; grid-template-rows: auto auto 1fr; column-gap: 18px; align-items: start; }
@@ -159,19 +179,21 @@
   .bigmem.in-stage .bm-under { grid-column: 1; grid-row: 2; text-align: left; margin-top: 14px; }
   .bigmem.in-stage .bm-under .bm-skip { margin: 4px 0 0; }
   .bigmem.in-stage .bm-after { grid-column: 1; grid-row: 2 / 4; margin-top: 14px; width: auto; }
-  .bigmem.in-stage .bm-stage { grid-column: 2; grid-row: 1 / 4; margin: 0; width: min(calc(100cqw - 208px), calc((100cqh - 70px) * .652)); }
+  .bigmem.in-stage .bm-stage { grid-column: 2; grid-row: 1 / 4; margin: 0; width: min(calc(100cqw - 208px), calc((100cqh - 120px) * .652)); }
   .bigmem.in-stage .mem-after-btns { align-items: flex-start; }
   .bigmem.in-stage .bm-title { font-size: clamp(21px, 1.9vw, 29px); }
   .story-pick { width: 100%; }
 }
-@media (min-width: 1360px) { .fz-scene { grid-template-columns: minmax(0, 58fr) minmax(0, 42fr); } }
+@media (min-width: 1360px) { #freezer[data-open="true"] .fz-scene { grid-template-columns: minmax(0, 58fr) minmax(0, 42fr); } }
+@keyframes stageIn { from { opacity: 0; transform: translateX(24px) } to { opacity: 1; transform: none } }
 @container (max-width: 440px) {
   .bigmem.in-stage { display: block; }
   .bigmem.in-stage .bm-stage { width: min(100%, calc((100cqh - 220px) * .652)); margin: 8px auto 0; }
   .bigmem.in-stage .bm-under { text-align: center; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .chest-mist, .cmem.k-ghost .cmem-art, .stage-ghost { animation: none; }
+  .chest-mist, .cmem.k-ghost .cmem-art, .stage-ghost, #freezer[data-open="true"] .mem-stage-panel > * { animation: none !important; }
+  .fz-scene { transition: none !important; }
   .cmem-art, .cmem, .story-pick { transition: none; }
 }
 /* --------------------------------------------------------------------------
@@ -272,5 +294,4 @@
 @media (max-width: 819px) and (max-height: 720px) {
   .mini.m3 { top: 62%; } .mini.m4 { top: 61%; }
   .cover-nav button { padding: 5px 0; }
-  .cover-nav .freezer-pill { padding: 9px 14px 8px; }
 }

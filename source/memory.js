@@ -208,7 +208,7 @@ const CHEST_TAGS = [[112, 'WINTER ’25'], [272, 'SPRING ’26'], [520, 'JUNE �
 const KIND_FILTERS = { all: 'Everything', cup: 'Cups', popsicle: 'Popsicles', ghost: 'Ghosts', special: 'Specials' };
 const STORY_KEYS = Object.keys(MEMORY_SERIES).filter(k => MEMORY_SERIES[k].story);   // the ones put together by hand
 // fz: what the freezer is showing. view: 'none' (empty stage), 'memory', 'stories' (the list),
-// 'story' (one story, step by step) or 'fresh' (the Freshly Frozen drawer).
+// 'story' (one story, step by step), 'fresh' (the Freshly Frozen drawer) or 'door' (the archive).
 let fz = { mode: 'all', filter: 'all', view: 'none', sel: null, story: null, step: 0 };
 
 function chestItem(m) {
@@ -251,7 +251,10 @@ function chestHTML() {
     <div class="chest-front">
       <button class="crisper chest-drawer ${thawedList().includes('more') ? 'thawed' : ''}" data-act="pickMemory" data-val="more" aria-label="${esc(MEMORY_MORE.title)}">
         <span class="crisper-window" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="chunky crisper-tag">${esc(MEMORY_COPY.drawer)}</span></button>
-      <span class="chunky chest-plate">MEMORY FREEZER</span>
+      <button class="chest-note" data-act="openDoor" aria-label="The archive: everything the machine thinks it knows">
+        <svg viewBox="0 0 120 70" aria-hidden="true"><g class="note-ic"><path d="M8 6 H112 L108 64 H12 Z" fill="#FFF0A6"/><path d="M44 0 H76 V12 H44 Z" fill="#F7C9D4" opacity=".9"/>
+          <path d="M24 50 V38 M38 50 V28 M52 50 V42 M66 50 V24 M80 50 V34 M94 50 V30" stroke="#E3A6B4" stroke-width="7" stroke-linecap="round"/></g></svg>
+        <span class="chunky">ARCHIVE</span></button>
       ${freshDrawerButton()}
     </div>
   </div>`;
@@ -269,8 +272,8 @@ function refreshFreezerRecords() {
   const d = document.querySelector('#chest .fresh-drawer');
   if (d) d.outerHTML = freshDrawerButton();
   const want = decodeURIComponent(location.hash.split('/')[1] || '');   // a record that wasn't here yet when the page opened
-  if (want && !['fresh', 'stories', 'story'].includes(want) && fz.sel !== want && memoryById(want)) { fz = { ...fz, mode: 'all', view: 'memory', sel: want }; renderStage(false); }
-  else if (fz.view === 'fresh') renderStage(false);
+  if (want && !['fresh', 'stories', 'story', 'door'].includes(want) && fz.sel !== want && memoryById(want)) { fz = { ...fz, mode: 'all', view: 'memory', sel: want }; renderStage(false); }
+  else if (fz.view === 'fresh' || fz.view === 'door') renderStage(false);
   // a record on the stage may have gained a kept memory; redraw it unless it is halfway through melting
   else if (fz.view === 'memory' && (memoryById(fz.sel) || {}).isRecord && (!memState || memState.p === 0 || memState.done)) renderStage(false);
 }
@@ -287,9 +290,10 @@ function chestState() {
     if (inStory) el.dataset.order = story.ids.indexOf(id) + 1; else delete el.dataset.order;
   });
   document.querySelector('#chest .fresh-drawer')?.classList.toggle('on', fz.view === 'fresh');
+  document.querySelector('#chest .chest-note')?.classList.toggle('on', fz.view === 'door');
   drawThreads();
 }
-const freezerHash = () => fz.view === 'fresh' ? 'freezer/fresh' : fz.view === 'stories' ? 'freezer/stories'
+const freezerHash = () => fz.view === 'fresh' ? 'freezer/fresh' : fz.view === 'door' ? 'freezer/door' : fz.view === 'stories' ? 'freezer/stories'
   : fz.view === 'story' ? `freezer/story/${fz.story}/${fz.step + 1}` : fz.view === 'memory' && fz.sel ? 'freezer/' + fz.sel : 'freezer';
 // the top bar: the two ways of looking, and the small filter
 function freezerBarHTML() {
@@ -300,15 +304,18 @@ function freezerBarHTML() {
     </div>
     ${fz.mode === 'all' ? `<details class="fz-filter"><summary class="chunky">${fz.filter === 'all' ? 'Filter' : esc(KIND_FILTERS[fz.filter])}</summary>
       <div class="fz-filter-list">${Object.entries(KIND_FILTERS).map(([k, l]) => `<button class="${fz.filter === k ? 'on' : ''}" data-act="freezerFilter" data-val="${k}">${esc(l)}</button>`).join('')}</div></details>` : ''}
-    <button class="link fz-door" data-go="archive">The freezer door ›</button>
+    <p class="fz-hint">Pick an ice cream to remember.</p>
   </div>`;
 }
 // The stage: whatever is out of the freezer right now
 function stageHTML() {
+  if (fz.view === 'none') return '';
   const narrow = !wideFreezer();
-  const up = narrow ? `<button class="link stage-up" data-act="stageUp"><span aria-hidden="true">↑ </span><span>${esc(MEMORY_COPY.back)}</span></button>` : '';
+  const up = `<div class="stage-top">${narrow ? `<button class="link stage-up" data-act="stageUp"><span aria-hidden="true">↑ </span><span>${esc(MEMORY_COPY.back)}</span></button>` : '<span></span>'}
+    <button class="stage-close" data-act="closeStage" aria-label="Put it back"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M4 4 L16 16 M16 4 L4 16" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>`;
   if (fz.view === 'fresh') return up + freshDrawerHTML();
-  if (fz.view === 'stories') return `<div class="stage-empty stories-index"><p class="chunky stage-k">OUR STORIES</p>
+  if (fz.view === 'door') return up + `<div class="door-view">${archiveBodyHTML()}</div>`;
+  if (fz.view === 'stories') return up + `<div class="stage-empty stories-index"><p class="chunky stage-k">OUR STORIES</p>
     ${STORY_KEYS.map(k => { const s = MEMORY_SERIES[k]; return `<button class="story-pick" data-act="openStory" data-val="${k}"><b class="melty">${esc(s.title)}</b><span>${esc(s.note)}</span><small class="chunky">${s.ids.length} ICE CREAMS</small></button>`; }).join('')}</div>`;
   if (fz.view === 'story') {
     const s = MEMORY_SERIES[fz.story], id = s.ids[fz.step];
@@ -322,18 +329,23 @@ function stageHTML() {
     const m = memoryById(fz.sel);
     return up + (m.isRecord ? `<div class="story-bar"><button class="link" data-act="openFresh">‹ Freshly Frozen</button><span></span><button class="link" data-act="open" data-val="${esc(m.id)}">Record details</button></div>` : '') + memoryCardHTML(m, { stage: true });
   }
-  return `<div class="stage-empty"><svg class="stage-ghost" viewBox="0 0 120 150" aria-hidden="true"><path d="M60 14 C30 14 22 40 22 64 V128 L34 118 L46 130 L60 118 L74 130 L86 118 L98 128 V64 C98 40 90 14 60 14Z" fill="none" stroke="#C9B8AA" stroke-width="3" stroke-dasharray="5 7" stroke-linecap="round"/></svg>
-    <p class="chunky stage-hello">Pick an ice cream to remember.</p><p class="stage-sub">${esc(MEMORY_COPY.doorNote)}</p></div>`;
+  return '';
 }
 function renderStage(scroll) {
   const box = document.getElementById('memStagePanel');
   if (!box) return;
   box.innerHTML = stageHTML();
   box.scrollTop = 0;
-  if (document.getElementById('memory')) bindMemoryStage(thawedList().includes(document.getElementById('memory').dataset.id));
+  setStageOpen();
+  if (document.getElementById('memory')) bindMemoryStage(false);
   chestState();
   history.replaceState(null, '', '#' + freezerHash());
   if (scroll && !wideFreezer()) box.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' });
+}
+// The chest has the whole screen to itself until something is taken out of it
+function setStageOpen() {
+  const f = document.getElementById('freezer');
+  if (f) f.dataset.open = fz.view !== 'none' ? 'true' : 'false';
 }
 function refreshFreezerBar() {
   const bar = document.querySelector('#freezer .fz-bar');
@@ -341,7 +353,8 @@ function refreshFreezerBar() {
 }
 // read #freezer, #freezer/<id>, #freezer/fresh, #freezer/stories, #freezer/story/<key>/<n>
 function freezerFromHash(param, extra, more) {
-  if (param === 'fresh') fz = { ...fz, view: 'fresh' };
+  if (param === 'fresh') fz = { ...fz, mode: 'all', view: 'fresh' };
+  else if (param === 'door') fz = { ...fz, mode: 'all', view: 'door' };
   else if (param === 'stories') fz = { ...fz, mode: 'stories', view: 'stories' };
   else if (param === 'story' && MEMORY_SERIES[extra] && STORY_KEYS.includes(extra)) {
     const n = Math.max(0, Math.min(MEMORY_SERIES[extra].ids.length - 1, (parseInt(more, 10) || 1) - 1));
@@ -356,7 +369,7 @@ function freezerFromHash(param, extra, more) {
 function screenFreezer(param, extra, more) {
   setFlood('#F1F2F2', null);
   freezerFromHash(param, extra, more);
-  return `<section class="screen wide" id="freezer">
+  return `<section class="screen wide" id="freezer" data-open="${fz.view !== 'none'}">
     <div class="fz-head"><h1 class="melty fz-title">${esc(MEMORY_COPY.title)}</h1>${freezerBarHTML()}</div>
     <div class="fz-scene">
       <p class="chest-swipe" aria-hidden="true">Swipe to see the whole freezer ›</p>
@@ -372,6 +385,13 @@ const wideFreezer = () => matchMedia('(min-width: 820px)').matches;
 function fitFreezer() {
   const view = document.getElementById('freezer'), chest = document.getElementById('chest');
   if (!view || !chest) return;
+  if (window.ResizeObserver && !chest.dataset.watched) {
+    chest.dataset.watched = '1';
+    new ResizeObserver(() => { if (chest.isConnected) drawThreads(); }).observe(chest);
+    const panel = document.getElementById('memStagePanel');
+    let t = 0;
+    new ResizeObserver(() => { clearTimeout(t); t = setTimeout(() => { if (document.getElementById('bmText')) fitStory(); }, 60); }).observe(panel);
+  }
   chestState();
   if (document.getElementById('memory')) fitStory();
 }

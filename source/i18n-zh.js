@@ -1135,7 +1135,9 @@ const ZH = {
 "Not bought. Not counted as waste.": "没买。不算浪费。",
 "INTO THE FREEZER": "放进冰箱",
 "Previous": "上一支",
-"Next": "下一支"
+"Next": "下一支",
+"Put it back": "放回去",
+"The archive: everything the machine thinks it knows": "档案：机器自以为知道的关于你的一切"
 };
 // Sentences with numbers, dates or someone's own words in them.
 const ZH_MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12,

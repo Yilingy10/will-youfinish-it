@@ -253,11 +253,11 @@ html[data-lang="zh"] .cover-title span:nth-child(n) { font-size: min(calc((100vw
 .cover-band { position: relative; z-index: -1; margin: -2px -20px calc(-12px - env(safe-area-inset-bottom)); padding: 8px 20px calc(9px + env(safe-area-inset-bottom)); background: none; }
 .cover-forget { display: block; margin: 0 auto 2px; padding: 2px 8px; font-size: 13px; font-weight: 500; }
 .cover-nav { display: grid; grid-template-columns: auto auto; justify-content: space-between; align-items: center; gap: 4px 8px; }
-.cover-nav .freezer-pill { display: inline-flex; align-items: center; gap: 7px; padding: 10px 16px 9px; border-radius: 999px; background: linear-gradient(180deg, #EAF6FA, #CFE8F1); box-shadow: inset 0 0 0 2px #A9D3E2, 0 3px 0 #A9D3E2; color: var(--ink); text-decoration: none; letter-spacing: .02em; }
-.cover-nav .freezer-pill svg { color: #6FAFC6; flex: none; }
-.cover-nav .freezer-pill:hover { background: linear-gradient(180deg, #F2FAFC, #D9EEF5); }
-.cover-nav .freezer-pill:active { transform: translateY(2px); box-shadow: inset 0 0 0 2px #A9D3E2, 0 1px 0 #A9D3E2; }
-.cover-nav .small-link { font-size: clamp(11.5px, 3.2vw, 14px) !important; }
+.cover-nav .freezer-link { display: inline-flex; align-items: flex-end; gap: 7px; text-decoration: none; }
+.cover-nav .freezer-link .fl-ic { width: 50px; height: auto; flex: none; margin: -20px 0 -3px; overflow: visible; }
+.cover-nav .freezer-link .fl-body { filter: url(#riso); transform-origin: 50% 100%; transform-box: fill-box; transition: transform .2s cubic-bezier(.3, 1.6, .5, 1); }
+.cover-nav .freezer-link:hover .fl-body { transform: rotate(-4deg) translateY(-2px); }
+.cover-nav .freezer-link span { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: var(--muted); }
 .cover-nav .resist-link { display: inline-flex; align-items: flex-end; gap: 1px; color: #C0607A; text-decoration: none; }
 .cover-nav .resist-link span { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: #E8A9B8; }
 .cover-nav .resist-link { grid-column: 1 / -1; justify-self: end; }
@@ -2110,8 +2110,10 @@ function screenHome() {
       <div class="cover-band">
         ${resume ? `<button class="link cover-forget" data-act="forfeit">Forget it and start a new one</button>` : ''}
         <nav class="cover-nav">
-          <button class="freezer-pill" data-go="freezer"><svg viewBox="-10 -10 20 20" width="15" height="15" aria-hidden="true"><path d="M0 -8 V8 M-7 -4 L7 4 M-7 4 L7 -4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>THE MEMORY FREEZER</span></button>
-          <button class="small-link" data-go="archive">Archive</button>
+          <button class="freezer-link" data-go="freezer"><svg class="fl-ic" viewBox="0 0 64 46" aria-hidden="true"><g class="fl-body">
+            <path d="M6 14 H58 L55 42 Q54 44 52 44 H12 Q10 44 9 42 Z" fill="#CFE8F1"/><path d="M8 24 H56 L55.4 29 H8.6 Z" fill="#FFD6DF"/>
+            <path d="M3 8 Q3 5 6 5 H58 Q61 5 61 8 V13 Q61 16 58 16 H6 Q3 16 3 13 Z" fill="#FFFEFA"/><path d="M26 9.5 H38" stroke="#E3C3B4" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="20" cy="35" r="3.2" fill="#FFFEFA"/><circle cx="44" cy="36" r="2.4" fill="#FFFEFA"/></g></svg><span>The Memory Freezer</span></button>
           ${resume ? '' : `<button class="resist-link" data-act="iResisted">${ghostSVG('hmm', 'rl-ghost')}<span>I resisted one</span></button>`}
         </nav>
       </div>
@@ -2526,24 +2528,21 @@ function learningNote(s) {
   if (diff < -.75) return `It has more data than ever and is getting worse: ${s.earlyError.toFixed(1)} bites off at first, ${s.lateError.toFixed(1)} lately.`;
   return `All this data and it’s still off by about ${s.avgError.toFixed(1)} bites. Taste remains annoyingly personal.`;
 }
-function screenArchive() {
-  setFlood('#F1F2F2', null);
+// The archive is no longer a page: it opens from the note stuck on the front of the
+// freezer, on the freezer's stage.
+function archiveBodyHTML() {
   const records = allRecords();
-  if (stillLoading()) return screenSyncing('THE FREEZER DOOR');
-  if (!allEntries().length) {
-    return `<section class="screen wide" id="archive"><div class="pagehead"><h1 class="melty" style="font-size:min(calc((100vw - 40px) / 6.2), 84px)">THE FREEZER DOOR</h1></div>
-<button class="freezer-entry" data-go="freezer"><svg viewBox="0 0 40 52" width="34" height="44" aria-hidden="true"><rect x="3" y="3" width="34" height="46" rx="9" fill="#FFFEFA" stroke="#9A7560" stroke-width="2"/><path d="M3 20 H37" stroke="#9A7560" stroke-width="2"/><rect x="28" y="8" width="4" height="8" rx="2" fill="#BC9B86"/><rect x="28" y="25" width="4" height="12" rx="2" fill="#BC9B86"/><circle cx="12" cy="33" r="4" fill="#FFC6D5"/></svg><span><b>${esc(MEMORY_COPY.archiveDoor)}</b><small>${esc(MEMORY_COPY.archiveDoorSub)}</small></span></button>
-      <div class="empty"><h2 class="melty">NOTHING ON FILE.</h2><p style="font-weight:700;margin:8px 0 18px">The machine knows nothing about you. Enjoy it while it lasts.</p>
-      <button class="btn c-strawberry" data-act="start" style="max-width:320px;margin:0 auto 6px">START A NEW ICE CREAM</button></div>${ticketStrip('archive')}</section>`;
-  }
+  if (stillLoading()) return `<div class="stage-empty"><p class="chunky stage-hello">Checking the shared archive…</p></div>`;
+  if (!allEntries().length) return `<p class="chunky stage-k">ARCHIVE</p><div class="empty"><h2 class="melty">NOTHING ON FILE.</h2><p style="font-weight:700;margin:8px 0 18px">The machine knows nothing about you. Enjoy it while it lasts.</p>
+      <button class="btn c-strawberry" data-act="start" style="max-width:320px;margin:0 auto 6px">START A NEW ICE CREAM</button></div>`;
+  return archiveFullHTML(records);
+}
+function archiveFullHTML(records) {
   const s = computeStats(records);
   const maxErr = Math.max(1, ...s.errors);
   const none = '<span class="big txt">None yet</span>';
-  return `<section class="screen wide" id="archive">
-    <div class="door-handle"></div>
-    <div class="pagehead"><h1 class="melty" style="font-size:min(calc((100vw - 40px) / 6.9), 84px)">THE FREEZER DOOR</h1>
-      <p>Everything the machine thinks it knows about you.</p>
-      <button class="freezer-entry" data-go="freezer"><svg viewBox="0 0 40 52" width="34" height="44" aria-hidden="true"><rect x="3" y="3" width="34" height="46" rx="9" fill="#FFFEFA" stroke="#9A7560" stroke-width="2"/><path d="M3 20 H37" stroke="#9A7560" stroke-width="2"/><rect x="28" y="8" width="4" height="8" rx="2" fill="#BC9B86"/><rect x="28" y="25" width="4" height="12" rx="2" fill="#BC9B86"/><circle cx="12" cy="33" r="4" fill="#FFC6D5"/></svg><span><b>${esc(MEMORY_COPY.archiveDoor)}</b><small>${esc(MEMORY_COPY.archiveDoorSub)}</small></span></button></div>
+  return `<p class="chunky stage-k">ARCHIVE</p>
+    <p class="door-sub">Everything the machine thinks it knows about you.</p>
     <div class="magnets">
       <div class="mag scoop rot-a" style="background:var(--strawberry)"><span class="cap">Total ice creams tried</span><span class="big">${s.total}</span></div>
       <div class="mag burst rot-b" style="--bc:var(--lemon)"><span class="cap">Actually finished</span><span class="big">${s.finished}</span><small>Finish rate ${Math.round(s.finishRate * 100)}%</small></div>
@@ -2575,8 +2574,7 @@ function screenArchive() {
         <span><span class="chunky n" style="display:block">${esc(r.name)}${demoMark(r)}</span><span class="v" style="display:block">${esc(v.title.charAt(0) + v.title.slice(1).toLowerCase())}</span></span>
         <span class="b"><strong>${r.actualBites}</strong>${r.actualBites === 1 ? 'bite' : 'bites'}</span>
       </button>`; }).join('')}</div>
-    ${ticketStrip('archive')}
-  </section>`;
+  `;
 }
 
 /* --- DETAIL CARD (opens from Graveyard, Hall of Fame and Archive) ---------------------- */
@@ -2709,11 +2707,11 @@ function render() {
   // The Graveyard and the Hall of Fame now live in the freezer's Freshly Frozen drawer,
   // and a memory opens on the freezer's stage (except from the workbench).
   if (route === 'graveyard' || route === 'hall') { history.replaceState(null, '', '#freezer/fresh'); return render(); }
+  if (route === 'archive') { history.replaceState(null, '', '#freezer/door'); return render(); }   // the archive lives on the freezer now
   if (route === 'memory' && extra !== 'bench') { history.replaceState(null, '', '#freezer/' + (param || '')); return render(); }
   document.body.dataset.screen = route || 'home';
   let html = null;
   switch (route) {
-    case 'archive':   html = screenArchive(); break;
     case 'about':     html = screenAbout(); break;
     case 'freezer':   html = screenFreezer(decodeURIComponent(param || ''), extra, more); break;
     case 'resisted':  html = screenResisted(decodeURIComponent(param || '')); break;
@@ -2735,7 +2733,7 @@ function afterRender(route) {
   clearTimeout(loadingTimer);
   if (route === 'freezer') {
     const card = document.getElementById('memory');
-    if (card) bindMemoryStage(thawedList().includes(card.dataset.id));   // seen before: the story is already out, with Replay the melt
+    if (card) bindMemoryStage(false);   // it always comes out frozen, so the melt plays every time
     chestState(); history.replaceState(null, '', '#' + freezerHash());
     requestAnimationFrame(drawThreads); setTimeout(() => { fitFreezer(); }, 900);
     if (!wideFreezer() && fz.view !== 'none') requestAnimationFrame(() => document.getElementById('memStagePanel')?.scrollIntoView({ block: 'start' }));
@@ -2801,6 +2799,22 @@ const ACTIONS = {
     const s = MEMORY_SERIES[fz.story]; if (!s) return;
     fz.step = Math.max(0, Math.min(s.ids.length - 1, fz.step + Number(v))); fz.sel = s.ids[fz.step];
     renderStage(false);
+  },
+  // the note on the front of the chest: the archive, on the stage
+  openDoor() {
+    if (!document.getElementById('memStagePanel')) { go('freezer/door'); return; }
+    const wasStories = fz.mode === 'stories';
+    fz = { ...fz, mode: 'all', view: 'door', story: null };
+    if (wasStories) refreshFreezerBar();
+    renderStage(true);
+  },
+  // put it back: the chest has the screen to itself again
+  closeStage() {
+    const wasStories = fz.mode === 'stories';
+    fz = { ...fz, mode: 'all', view: 'none', story: null, sel: null };
+    if (wasStories) refreshFreezerBar();
+    renderStage(false);
+    if (!wideFreezer()) ACTIONS.stageUp();
   },
   stageUp() { document.getElementById('chestScroll')?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'center' }); },
   memSkip() { memState && memState.skip(); },
@@ -2970,6 +2984,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && overlay.classList.contains('open') && !overlay.querySelector('[data-act=react]')) closeOverlay();
+  else if (e.key === 'Escape' && !overlay.classList.contains('open') && document.getElementById('memStagePanel') && fz.view !== 'none') ACTIONS.closeStage();
 });
 // Drop-downs name their action with data-change.
 document.addEventListener('change', e => {
