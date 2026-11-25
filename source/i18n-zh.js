@@ -1161,7 +1161,13 @@ const ZH = {
 "Enter the arena": "进入竞技场",
 "The machine": "机器",
 "DONE": "好了",
-"Quick record": "快速记录"
+"Quick record": "快速记录",
+"NOW EATING": "正在吃",
+"Whatever you pick.": "你挑什么就是什么。",
+"Tap it to take a bite.": "点它咬一口。",
+"Tell the truth.": "要说实话。",
+"Shape, flavor, toppings. Then press the machine.": "形状、口味、小料。然后按一下机器。",
+"FINISH IT?": "吃完它吗？"
 };
 // Sentences with numbers, dates or someone's own words in them.
 const ZH_MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12,
