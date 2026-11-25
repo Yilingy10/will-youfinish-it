@@ -457,34 +457,6 @@ function commendationsHTML(list = sortedEntries()) {
 }
 
 /* --- FRESHLY FROZEN: every game record, in its own drawer of the freezer ------------------ */
-function freezerDrawersHTML() {
-  const list = sortedEntries().reverse();
-  const kept = list.filter(r => keptOf(r));
-  return `<div class="drawers">
-    <button class="crisper ${thawedList().includes('more') ? 'thawed' : ''}" data-act="openMemory" data-val="more" aria-label="${esc(MEMORY_MORE.title)}">
-      <span class="crisper-window" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
-      <span class="chunky crisper-tag">${esc(MEMORY_COPY.drawer)}</span>
-    </button>
-    <button class="crisper fresh-drawer" data-act="openFresh" aria-label="Freshly Frozen: ${list.length} new records">
-      <span class="crisper-window fresh-window">${list.slice(0, 3).map(r => `<span class="fz">${entryThumb(r)}</span>`).join('') || '<em>Empty, for now.</em>'}</span>
-      <span class="chunky crisper-tag">FRESHLY FROZEN · ${list.length}</span>
-    </button>
-    ${kept.length ? `<button class="crisper kept-drawer" data-act="openKept" aria-label="Extended memories: ${kept.length}">
-      <span class="crisper-window fresh-window">${kept.slice(0, 3).map(r => `<span class="fz">${entryThumb(r)}</span>`).join('')}</span>
-      <span class="chunky crisper-tag">EXTENDED MEMORIES · ${kept.length}</span>
-    </button>` : ''}
-  </div>`;
-}
-function drawerSheet(title, sub, list) {
-  overlay.innerHTML = `<div class="sheet drawer-sheet"><h2 class="melty">${esc(title)}</h2><p class="q">${esc(sub)}</p>
-    ${list.length ? `<div class="fz-grid">${list.map(r => `<button class="fz-item" data-act="openMemory" data-val="${esc(r.id)}">
-      <span class="fz-art">${entryThumb(r)}</span><span class="fz-date">${esc(shortDate(r.date, true))}</span>
-      <span class="chunky fz-name">${esc((keptOf(r) || {}).title || r.name)}</span><span class="fz-stamp chunky">${esc(statusStamp(r))}</span></button>`).join('')}</div>`
-      : '<p class="center" style="font-weight:700;margin:18px 0">Nothing in here yet. Play a round and it will appear.</p>'}
-    <button class="btn small c-white" style="margin-top:12px" data-act="closeSheet">CLOSE</button></div>`;
-  overlay.classList.add('open');
-}
-
 /* --- A record, shown with the Memory Freezer's melting view ---------------------------
    The 22 memories melt into a story. A record melts into the machine's log, and
    into a story only if someone chose to keep one. */
@@ -592,8 +564,14 @@ const EXTRA_ACTIONS = {
     endGame(q.finished, null);
   },
   pickRest(v) { if (!game) return; game.rest = REST[v] ? v : null; setStage('rebuy'); },
-  openFresh() { drawerSheet('FRESHLY FROZEN', 'Every ice cream the game has recorded, newest first. Tap one to melt it.', sortedEntries().reverse()); },
-  openKept() { drawerSheet('EXTENDED MEMORIES', 'Records someone decided were worth remembering.', sortedEntries().reverse().filter(r => keptOf(r))); },
+  // the Freshly Frozen drawer opens on the freezer's stage
+  openFresh() {
+    if (!document.getElementById('memStagePanel')) { go('freezer/fresh'); return; }
+    const wasStories = fz.mode === 'stories';
+    fz = { ...fz, mode: 'all', view: 'fresh', story: null };
+    if (wasStories) refreshFreezerBar();
+    renderStage(true);
+  },
   openKeep(id) { openKeep(id); },
   saveKeep(id) {
     const r = findRecord(id);
@@ -607,6 +585,7 @@ const EXTRA_ACTIONS = {
     closeOverlay();
     toast(shared ? 'Kept, and shared with the freezer.' : 'Kept on this device.');
     if (location.hash.startsWith('#memory')) render();
+    else if (document.getElementById('memStagePanel')) renderStage();   // the freezer's stage shows it straight away
   },
   removeKeep(id) { const r = findRecord(id); if (r) writeKeep(r, null, false); closeOverlay(); toast('Memory removed. The record stays.'); render(); },
   eraseEntry(v) { confirmSheet('ERASE THIS RECORD?', 'It will be gone from the freezer, the archive and the machine’s memory.', 'YES, ERASE IT', 'eraseEntryYes', v); },

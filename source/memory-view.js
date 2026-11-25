@@ -163,36 +163,34 @@ function storyHTML(m) {
 }
 
 let memFrom = null;   // 'bench' when opened from the ice cream workbench
-function screenMemory(id, from) {
-  const m = memoryById(id);
-  if (!m) return null;
-  memFrom = from === 'bench' ? 'bench' : null;
-  setFlood('var(--cream)', null);
+// One memory, frozen and ready to melt: used on the freezer's stage, and as a page
+// of its own when opened from the workbench ("Been here before?").
+function memoryCardHTML(m, ctx = {}) {
   const spec = bigSpec(m), sid = 'bm' + (++svgId);
   const index = MEMORIES.indexOf(m);
-  const series = seriesOf(m);
+  const series = seriesOf(m).filter(([k]) => MEMORY_SERIES[k].story);
   const [wx, wy, ww, wh] = spec.win;
   const pct = (v, of) => (v / of * 100).toFixed(3) + '%';
   const hint = spec.s === 'popsicle' ? MEMORY_COPY.hints.unwrap : (MEMORY_COPY.hints[spec.s] || MEMORY_COPY.hints.cup);
-  const back = memFrom === 'bench' ? `<button class="link" data-act="memBackBench">${esc(MEMORY_COPY.backBench)}</button>` : `<button class="link" data-go="freezer">${esc(MEMORY_COPY.back)}</button>`;
-  const seriesNav = series.map(([, s]) => {
+  const drips = spec.drips.map((_, i) => `<path class="bm-drip" data-i="${i}" d=""/>`).join('');
+  const fx = spec.face;
+  const storyLinks = ctx.stage ? '' : series.map(([, s]) => {
     const at = s.ids.indexOf(m.id), prev = s.ids[at - 1], next = s.ids[at + 1];
     const link = (mid, dir) => mid ? `<button class="series-link ${dir}" data-act="openMemory" data-val="${mid}">${dir === 'prev' ? '‹ ' : ''}${esc(memoryById(mid).title)}${dir === 'next' ? ' ›' : ''}</button>` : '<span></span>';
     return `<div class="series-card"><div class="chunky series-name">${esc(s.title)}</div><div class="series-part">${esc(MEMORY_COPY.part(at + 1, s.ids.length))}</div>
       <div class="series-links">${link(prev, 'prev')}${link(next, 'next')}</div></div>`;
   }).join('');
-  const chrono = index >= 0 ? `<div class="series-links chrono">${index > 0 ? `<button class="series-link prev" data-act="openMemory" data-val="${MEMORIES[index - 1].id}">‹ ${esc(MEMORIES[index - 1].title)}</button>` : '<span></span>'}${index < MEMORIES.length - 1 ? `<button class="series-link next" data-act="openMemory" data-val="${MEMORIES[index + 1].id}">${esc(MEMORIES[index + 1].title)} ›</button>` : '<span></span>'}</div>` : '';
-  const drips = spec.drips.map((_, i) => `<path class="bm-drip" data-i="${i}" d=""/>`).join('');
-  const fx = spec.face;
-  return `<section class="screen bigmem k-${spec.s} ${m.isRecord ? 'is-record' : ''}" id="memory" data-id="${esc(m.id)}">
-    <div class="bm-top">${back}<span class="chunky bm-num">${index >= 0 ? `${m.id} / ${MEMORIES.length}` : m.isRecord ? (m.kept ? 'EXTENDED MEMORY' : 'FRESHLY FROZEN') : 'EXTRA'}</span></div>
+  // on the stage, a story chip opens that story in the freezer
+  const chips = series.length ? `<div class="bm-chips">${series.map(([k, s]) => ctx.stage && fz.view !== 'story'
+    ? `<button class="bm-chip chip-link" data-act="openStory" data-val="${k}">${esc(s.title)} ›</button>` : `<span class="bm-chip">${esc(s.title)}</span>`).join('')}</div>` : '';
+  return `<div class="bigmem k-${spec.s} ${m.isRecord ? 'is-record' : ''} ${ctx.stage ? 'in-stage' : ''}" id="memory" data-id="${esc(m.id)}">
     <header class="bm-head">
-      <p class="bm-when">${esc(m.when)}</p>
+      <p class="bm-when">${esc(m.when)}${index >= 0 ? `<span class="chunky bm-num">${m.id} / ${MEMORIES.length}</span>` : `<span class="chunky bm-num">${m.isRecord ? (m.kept ? 'EXTENDED MEMORY' : 'FRESHLY FROZEN') : 'EXTRA'}</span>`}</p>
       <p class="bm-where">${esc(m.where)}</p>
       <h1 class="bm-title">${esc(m.title)}</h1>
       <p class="bm-what">${esc(m.what)}. Flavor: ${esc(m.flavor)}</p>
       ${m.isRecord ? `<span class="bm-chip rec-chip">${m.kept ? 'A kept memory, from a game record' : 'A game record. Melts into the machine’s log.'}</span>` : ''}
-      ${series.length ? `<div class="bm-chips">${series.map(([, s]) => `<span class="bm-chip">${esc(s.title)}</span>`).join('')}</div>` : ''}
+      ${chips}
     </header>
     <div class="bm-stage" id="bigStage">
       <svg class="bm-layer bm-back" viewBox="0 0 ${BIG_W} ${BIG_H}" aria-hidden="true">${bigBack(m, spec, sid)}</svg>
@@ -218,15 +216,23 @@ function screenMemory(id, from) {
     </div>
     <div class="bm-after">
       ${recordAfterHTML(m)}
-      ${seriesNav}
-      ${chrono}
+      ${storyLinks}
       <div class="mem-after-btns">
-        ${memFrom === 'bench' ? `<button class="btn c-white" data-act="memBackBench">${esc(MEMORY_COPY.backBench.toUpperCase())}</button>` : ''}
-        <button class="btn ${memFrom === 'bench' ? 'small c-white' : 'c-white'}" data-go="freezer">${esc(MEMORY_COPY.back.toUpperCase())}</button>
+        ${ctx.bench ? `<button class="btn c-white" data-act="memBackBench">${esc(MEMORY_COPY.backBench.toUpperCase())}</button>` : ''}
         <button class="link" data-act="memAgain">${esc(MEMORY_COPY.again)}</button>
       </div>
     </div>
-    ${memFrom === 'bench' ? '' : ticketStrip('freezer')}
+  </div>`;
+}
+// A memory as a page of its own: only from the workbench, so it can lead back there.
+function screenMemory(id, from) {
+  const m = memoryById(id);
+  if (!m) return null;
+  memFrom = 'bench';
+  setFlood('var(--cream)', null);
+  return `<section class="screen bigmem-page" id="memoryPage">
+    <div class="bm-top"><button class="link" data-act="memBackBench">${esc(MEMORY_COPY.backBench)}</button></div>
+    ${memoryCardHTML(m, { bench: true })}
   </section>`;
 }
 
@@ -380,7 +386,7 @@ function bindMemoryStage(startThawed) {
     cancelAnimationFrame(st.raf); st.raf = 0;
     st.done = false; view.classList.remove('thawed');
     st.p = st.v = st.target = 0; frame(0, 0);
-    stage.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
+    if (!view.classList.contains('in-stage')) stage.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
   };
   // a tap melts it about halfway; dragging across it melts it as far as you drag
   let press = null;
@@ -398,4 +404,4 @@ function bindMemoryStage(startThawed) {
   stage.addEventListener('pointercancel', () => { press = null; });
   if (startThawed) { st.p = st.target = 1; frame(1, 0); finish(); } else frame(0, 0);
 }
-window.addEventListener('resize', () => { if (location.hash.startsWith('#memory')) fitStory(); });
+window.addEventListener('resize', () => { if (document.getElementById('bmText')) fitStory(); });

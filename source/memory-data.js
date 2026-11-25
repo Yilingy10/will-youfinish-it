@@ -310,9 +310,11 @@ const SHELVES = [
 ];
 
 // Stories that run across several memories. A string ties them together in the freezer.
+// Series tied together by hand, by id. The ones marked story are Our Stories in the freezer;
+// "never" is a kind of ending (ghosts), shown by the Ghosts filter instead.
 const MEMORY_SERIES = {
-  cinema:   { title: 'The Cinema Curse', ids: ['02', '16', '20'], note: 'Same cinema. Same ice cream shop downstairs. Three visits.' },
-  exchange: { title: 'From You', ids: ['03', '05', '06', '08', '19'], note: 'I made dessert. You brought popsicles.' },
+  cinema:   { story: true, title: 'The Cinema Curse', ids: ['02', '16', '20'], note: 'Same cinema. Same ice cream shop downstairs. Three visits.' },
+  exchange: { story: true, title: 'From You', ids: ['03', '05', '06', '08', '19'], note: 'I made dessert. You brought popsicles.' },
   never:    { title: 'Ice Creams That Never Happened', ids: ['04', '10', '11', '16', '20', '21'], note: 'You really wanted these. You didn’t buy them.' },
 };
 
@@ -332,7 +334,7 @@ const MEMORY_COPY = {
   },
   orDrag: 'Or drag across it.',
   skip: 'Skip it, just let me read',
-  again: 'Freeze it and melt it again',
+  again: 'Replay the melt',
   unsure: 'Not sure about',
   back: 'Back to the freezer',
   backBench: 'Back to your ice cream',

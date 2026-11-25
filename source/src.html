@@ -252,7 +252,12 @@ html[data-lang="zh"] .cover-title span:nth-child(n) { font-size: min(calc((100vw
 
 .cover-band { position: relative; z-index: -1; margin: -2px -20px calc(-12px - env(safe-area-inset-bottom)); padding: 8px 20px calc(9px + env(safe-area-inset-bottom)); background: none; }
 .cover-forget { display: block; margin: 0 auto 2px; padding: 2px 8px; font-size: 13px; font-weight: 500; }
-.cover-nav { display: grid; grid-template-columns: repeat(3, auto); justify-content: space-between; gap: 0 8px; }
+.cover-nav { display: grid; grid-template-columns: auto auto; justify-content: space-between; align-items: center; gap: 4px 8px; }
+.cover-nav .freezer-pill { display: inline-flex; align-items: center; gap: 7px; padding: 10px 16px 9px; border-radius: 999px; background: linear-gradient(180deg, #EAF6FA, #CFE8F1); box-shadow: inset 0 0 0 2px #A9D3E2, 0 3px 0 #A9D3E2; color: var(--ink); text-decoration: none; letter-spacing: .02em; }
+.cover-nav .freezer-pill svg { color: #6FAFC6; flex: none; }
+.cover-nav .freezer-pill:hover { background: linear-gradient(180deg, #F2FAFC, #D9EEF5); }
+.cover-nav .freezer-pill:active { transform: translateY(2px); box-shadow: inset 0 0 0 2px #A9D3E2, 0 1px 0 #A9D3E2; }
+.cover-nav .small-link { font-size: clamp(11.5px, 3.2vw, 14px) !important; }
 .cover-nav .resist-link { display: inline-flex; align-items: flex-end; gap: 1px; color: #C0607A; text-decoration: none; }
 .cover-nav .resist-link span { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: #E8A9B8; }
 .cover-nav .resist-link { grid-column: 1 / -1; justify-self: end; }
@@ -491,10 +496,10 @@ html[data-lang="zh"] .cover-title span:nth-child(n) { font-size: min(calc((100vw
 .pagehead p { font-weight: 700; margin-top: 4px; }
 .ticket-strip {
   position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 20;
-  width: min(calc(100% - 24px), 440px); display: grid; grid-template-columns: repeat(5, 1fr); padding: 4px; gap: 2px;
+  width: min(calc(100% - 24px), 340px); display: grid; grid-template-columns: repeat(3, 1fr); padding: 4px; gap: 2px;
   background: #FFFEFA; border: 2px solid transparent; border-radius: 18px; box-shadow: none;
 }
-.ticket-strip button { border: 0; background: none; border-radius: 13px; padding: 10px 1px 11px; color: var(--ink); font: 400 min(11.5px, 3vw)/1 var(--chunky); text-transform: uppercase; }
+.ticket-strip button { border: 0; background: none; border-radius: 13px; padding: 12px 1px 13px; color: var(--ink); font: 400 min(13px, 3.4vw)/1 var(--chunky); text-transform: uppercase; }
 .ticket-strip button.on { background: var(--strawberry); }
 
 /* --------------------------------------------------------------------------
@@ -1350,6 +1355,7 @@ async function pullShared() {
 function refreshIfBrowsing(force) {
   const route = location.hash.replace('#', '').split('/')[0];
   if (overlay.classList.contains('open')) return;
+  if (route === 'freezer' && document.getElementById('chest')) { refreshFreezerRecords(); return; }
   if (['graveyard', 'hall', 'archive', 'about', 'freezer'].includes(route) || (force && route === 'about')) {
     const y = window.scrollY;
     render();
@@ -2104,10 +2110,8 @@ function screenHome() {
       <div class="cover-band">
         ${resume ? `<button class="link cover-forget" data-act="forfeit">Forget it and start a new one</button>` : ''}
         <nav class="cover-nav">
-          <button data-go="graveyard">Graveyard</button>
-          <button data-go="hall">Hall of Fame</button>
-          <button data-go="archive">Archive</button>
-          <button data-go="freezer">Memories</button>
+          <button class="freezer-pill" data-go="freezer"><svg viewBox="-10 -10 20 20" width="15" height="15" aria-hidden="true"><path d="M0 -8 V8 M-7 -4 L7 4 M-7 4 L7 -4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>THE MEMORY FREEZER</span></button>
+          <button class="small-link" data-go="archive">Archive</button>
           ${resume ? '' : `<button class="resist-link" data-act="iResisted">${ghostSVG('hmm', 'rl-ghost')}<span>I resisted one</span></button>`}
         </nav>
       </div>
@@ -2434,7 +2438,6 @@ function screenResult(id) {
   const v = verdictOf(r);
   const approved = v.id === 'approved';
   setFlood(PALE[v.color] || PALE.white, null);
-  const destination = r.finished || !inGraveyard(r) ? 'hall' : 'graveyard';
   const hit = Math.abs(r.predictionError) <= ACCURACY_TOLERANCE_BITES;
   const stamp = r.predictionError === 0 ? 'BULLSEYE' : Math.abs(r.predictionError) >= 5 ? 'WAY OFF' : null;
   return `<section class="screen" id="result"><div class="verdict v2">
@@ -2450,84 +2453,69 @@ function screenResult(id) {
       <div class="vtags">${verdictTags(r).map(([t, c]) => `<span class="chunky vtag" style="background:${colorVar(c)}">${esc(t)}</span>`).join('')}</div>
       ${newStickersHTML(takeNewAchievements())}
       <div class="verdict-foot">
-        <button class="btn huge c-white" data-go="${destination}">${destination === 'hall' ? 'HALL OF FAME' : 'VISIT THE GRAVE'}</button>
-        <div class="vlinks"><button class="link" data-act="start">PLAY AGAIN</button><span aria-hidden="true">·</span><span class="vlink-freezer">${filedHTML(r, isNew)}<button class="link" data-go="freezer">OPEN FREEZER</button></span><span aria-hidden="true">·</span><button class="link" data-act="toggleDetails" aria-expanded="false" aria-controls="vdetails">MORE DETAILS</button></div>
+        <button class="btn huge c-white into-freezer" data-go="freezer/${esc(r.id)}">${filedHTML(r, isNew)}<span>INTO THE FREEZER</span></button>
+        <div class="vlinks"><button class="link" data-act="start">PLAY AGAIN</button><span aria-hidden="true">·</span><button class="link" data-act="toggleDetails" aria-expanded="false" aria-controls="vdetails">MORE DETAILS</button></div>
       </div>
       <div class="vdetails" id="vdetails" hidden>${verdictDetailsHTML(r)}</div>
     </div></section>`;
 }
 
-/* --- GRAVEYARD ----------------------------------------------------------------- */
+/* --- FRESHLY FROZEN: where every game ends up -------------------------------------
+   The Graveyard and the Hall of Fame used to be pages of their own. Now they are how
+   a record looks in the freezer's Freshly Frozen drawer: a trophy for the ones you
+   finished, a little tombstone for the ones you didn't, a ghost for the ones you
+   resisted. Each record is there once, under its own id. */
+// The strip along the bottom of the gallery screens: home, play, freezer.
 function ticketStrip(active) {
-  const tabs = [['home', 'HOME'], ['graveyard', 'GRAVES'], ['hall', 'FAME'], ['archive', 'ARCHIVE'], ['freezer', 'FREEZER']];
-  return `<nav class="ticket-strip">${tabs.map(([k, l]) => `<button class="${active === k ? 'on' : ''}" data-go="${k}">${l}</button>`).join('')}</nav>`;
+  const playing = game && game.stage !== 'loading';
+  return `<nav class="ticket-strip">
+    <button class="${active === 'home' ? 'on' : ''}" data-go="home">HOME</button>
+    <button data-act="${playing ? 'resume' : 'start'}">PLAY</button>
+    <button class="${active === 'freezer' ? 'on' : ''}" data-go="freezer">FREEZER</button></nav>`;
 }
-function screenGraveyard() {
-  setFlood(PALE.pistachio, null);
-  if (stillLoading()) return screenSyncing('THE GRAVEYARD');
-  const fallen = allRecords().filter(inGraveyard).reverse();
-  const body = fallen.length ? `<div class="plots">${fallen.map((r, i) => {
-      const risen = freshGrave === r.id;
-      return `<div class="plot ${risen ? 'rise' : ''}">
-        <button class="stone sh${i % 4}" data-act="open" data-val="${esc(r.id)}">
-          <span class="stone-char">${iceCream({ form: r.form, flavor: r.flavorCategory, toppings: r.toppings || [], decor: r.decorations || [], bites: r.actualBites, mood: 'dead', label: '' })}</span>
-          <span class="chunky nm" style="color:${nameInk(r)}">${esc(r.name)}</span>
-          <span class="melty rip">RIP</span>
-          <span class="row">Survived:<b>${plural(r.actualBites)}</b></span>
-          <span class="row">Cause of death:<b>${esc(r.stopReason ? STOP_REASONS[r.stopReason].short : 'Unknown')}</b></span>
-          <span class="row">System prediction:<b>${plural(r.predictedBites)}</b></span>
-          <span class="epi">${esc(epitaph(r))}</span>
-        </button>
-        ${r.isDemo ? '<span class="demo-mark demo-corner">DEMO</span>' : ''}
-        <div class="mound"></div>
-      </div>`; }).join('')}</div>`
-    : `<div class="empty"><h2 class="melty">${esc(COPY.graveEmpty)}</h2><p style="font-weight:700;margin:8px 0 18px">Give it time.</p><button class="btn c-strawberry" data-act="start" style="max-width:320px;margin:0 auto 6px">START A NEW ICE CREAM</button></div>`;
-  freshGrave = null;
-  return `<section class="screen wide" id="graveyard">
-    <div class="cloud" style="left:4%;top:30px"></div><div class="cloud" style="right:3%;top:196px;transform:scale(.7)"></div>
-    <div class="pagehead"><h1 class="melty" style="font-size:min(calc((100vw - 40px) / 6.9), 84px)">THE GRAVEYARD</h1>
-      <p>${fallen.length ? `${plural(fallen.length, 'ice cream')} remembered fondly, if briefly.` : ''}</p></div>
-    ${body}
-    
-    ${ticketStrip('graveyard')}
-  </section>`;
+function plaqueHTML(r) {
+  const v = verdictOf(r), approved = v.id === 'approved';
+  return `<button class="podium mini-podium ${approved ? 'gold' : ''}" data-act="pickMemory" data-val="${esc(r.id)}">
+    ${TROPHY}
+    <span class="chr">${iceCream({ form: r.form, flavor: r.flavorCategory, toppings: r.toppings || [], decor: r.decorations || [], mood: 'starry', crown: approved, label: r.name })}</span>
+    <span class="block">
+      <span class="chunky nm" style="display:block;color:${nameInk(r)}">${esc(r.name)}${demoMark(r)}</span>
+      <span class="ttl" style="display:block">${esc(v.title)}</span>
+      ${plural(r.actualBites)}, predicted ${r.predictedBites}
+    </span></button>`;
 }
-
-/* --- HALL OF FAME ---------------------------------------------------------------- */
-function screenHall() {
-  setFlood(PALE.lemon, null);
-  if (stillLoading()) return screenSyncing('HALL OF FAME');
-  const rank = r => { const v = verdictOf(r).id; return v === 'approved' ? 0 : r.finished ? 1 : 2; };
-  const legends = allRecords().filter(inHallOfFame).sort((a, b) => rank(a) - rank(b) || b.actualBites - a.actualBites);
-  const body = legends.length ? `<div class="podiums">${legends.map(r => {
-      const v = verdictOf(r), approved = v.id === 'approved';
-      return `<button class="podium ${approved ? 'gold' : ''}" data-act="open" data-val="${esc(r.id)}">
-        ${TROPHY}
-        <span class="chr">${iceCream({ form: r.form, flavor: r.flavorCategory, toppings: r.toppings || [], decor: r.decorations || [], mood: r.finished ? 'starry' : 'happy', crown: approved, label: r.name })}</span>
-        <span class="block">
-          <span class="chunky nm" style="display:block;color:${nameInk(r)}">${esc(r.name)}${demoMark(r)}</span>
-          <span class="ttl" style="display:block">${esc(r.finished ? v.title : 'Honorary: ' + v.title)}</span>
-          ${plural(r.actualBites)}, predicted ${r.predictedBites}
-        </span></button>`; }).join('')}</div>`
-    : `<div class="lonely">
-        <h2 class="melty center" style="${fitSize(COPY.hallEmpty, 50, 480, 40)}">${esc(COPY.hallEmpty)}</h2>
-        <svg class="lonely-p" viewBox="0 0 190 170" role="img" aria-label="An empty pedestal with a rope and a little ball of dust" style="margin-top:18px">
-          <path d="M0 150 q30 -40 60 -20" fill="none" stroke="#EE6B83" stroke-width="7" stroke-linecap="round"/>
-          <rect x="52" y="70" width="86" height="88" fill="#FFB3C8"/>
-          <rect x="42" y="56" width="106" height="18" rx="4" fill="#FFFDF5"/>
-          <rect x="42" y="154" width="106" height="14" rx="3" fill="#FFFDF5"/>
-          <path d="M72 106 h46 M78 120 h34" stroke="${INK}" stroke-width="2.7" stroke-linecap="round" opacity=".5"/>
-          <g transform="translate(95 40)"><circle r="11" fill="#CBB9A3"/><path d="M-8 -11 l-3 -6 M3 -12 l3 -6 M12 -4 l6 -3 M-14 -2 l-6 -2" stroke="${INK}" stroke-width="1.7" stroke-linecap="round"/></g>
-        </svg>
-        <p class="center" style="font-weight:700;margin-top:10px">The dust ball is currently in first place.</p>
-        <button class="btn c-strawberry" data-act="start" style="margin-top:14px">GIVE IT A CONTENDER</button>
-      </div>`;
-  return `<section class="screen wide" id="hall"><div class="rays"></div>
-    <div class="pagehead"><h1 class="melty" style="font-size:min(calc((100vw - 40px) / 6.9), 84px)">HALL OF FAME</h1>
-      <p>${legends.length ? 'Against all available evidence.' : ''}</p></div>
-    ${body}
-    ${ticketStrip('hall')}
-  </section>`;
+function stoneHTML(r, i) {
+  return `<div class="plot ${freshGrave === r.id ? 'rise' : ''}">
+    <button class="stone mini-stone sh${i % 4}" data-act="pickMemory" data-val="${esc(r.id)}">
+      <span class="stone-char">${iceCream({ form: r.form, flavor: r.flavorCategory, toppings: r.toppings || [], decor: r.decorations || [], bites: r.actualBites, mood: 'dead', label: '' })}</span>
+      <span class="chunky nm" style="color:${nameInk(r)}">${esc(r.name)}</span>
+      <span class="melty rip">RIP</span>
+      <span class="row">Survived:<b>${plural(r.actualBites)}</b></span>
+      <span class="row">Cause of death:<b>${esc(r.stopReason && STOP_REASONS[r.stopReason] ? STOP_REASONS[r.stopReason].short : 'Unknown')}</b></span>
+      <span class="epi">${esc(epitaph(r))}</span>
+    </button>
+    ${r.isDemo ? '<span class="demo-mark demo-corner">DEMO</span>' : ''}
+    <div class="mound"></div>
+  </div>`;
+}
+function ghostCardHTML(r) {
+  return `<button class="ghost-card" data-act="pickMemory" data-val="${esc(r.id)}">
+    <span class="gc-art">${entryThumb(r)}</span><span class="chunky gc-name">${esc((keptOf(r) || {}).title || 'Resisted')}${demoMark(r)}</span><span class="gc-date">${esc(shortDate(r.date, true))}</span></button>`;
+}
+function freshDrawerHTML() {
+  if (stillLoading()) return `<div class="stage-empty"><p class="chunky stage-hello">Checking the shared archive…</p></div>`;
+  const all = sortedEntries().reverse();
+  const won = all.filter(r => !isResisted(r) && r.finished), lost = all.filter(r => !isResisted(r) && !r.finished), ghosts = all.filter(isResisted);
+  const group = (cls, title, sub, body) => `<div class="fd-group ${cls}"><h3 class="chunky fd-h">${esc(title)}<small>${esc(sub)}</small></h3>${body}</div>`;
+  const html = `<div class="fresh-view">
+    <p class="chunky stage-k">FRESHLY FROZEN</p>
+    ${all.length ? '' : `<div class="stage-empty"><p class="chunky stage-hello">Nothing in here yet. Play a round and it will appear.</p><button class="btn c-strawberry" data-act="start">START A NEW ICE CREAM</button></div>`}
+    ${won.length ? group('fd-hall', 'HALL OF FAME', 'Finished. Against all available evidence.', `<div class="podiums fd-podiums">${won.map(plaqueHTML).join('')}</div>`) : ''}
+    ${lost.length ? group('fd-graves', 'THE GRAVEYARD', `${plural(lost.length, 'ice cream')} remembered fondly, if briefly.`, `<div class="plots fd-plots">${lost.map(stoneHTML).join('')}</div>`) : ''}
+    ${ghosts.length ? group('fd-ghosts', 'RESISTED', 'Not bought. Not counted as waste.', `<div class="fd-ghost-row">${ghosts.map(ghostCardHTML).join('')}</div>`) : ''}
+  </div>`;
+  freshGrave = null;   // the new tombstone rises once
+  return html;
 }
 
 /* --- ARCHIVE: magnets on a freezer door -------------------------------------------- */
@@ -2715,17 +2703,19 @@ function go(route) {
 let loadingTimer = null;
 function render() {
   closeOverlay();
-  const [route, param, extra] = location.hash.replace('#', '').split('/');
+  const [route, param, extra, more] = location.hash.replace('#', '').split('/');
   // The old “OH. YOU AGAIN?” step is gone: an old #tempt link just opens the workbench.
   if (route === 'tempt') { history.replaceState(null, '', '#create'); return render(); }
+  // The Graveyard and the Hall of Fame now live in the freezer's Freshly Frozen drawer,
+  // and a memory opens on the freezer's stage (except from the workbench).
+  if (route === 'graveyard' || route === 'hall') { history.replaceState(null, '', '#freezer/fresh'); return render(); }
+  if (route === 'memory' && extra !== 'bench') { history.replaceState(null, '', '#freezer/' + (param || '')); return render(); }
   document.body.dataset.screen = route || 'home';
   let html = null;
   switch (route) {
-    case 'graveyard': html = screenGraveyard(); break;
-    case 'hall':      html = screenHall(); break;
     case 'archive':   html = screenArchive(); break;
     case 'about':     html = screenAbout(); break;
-    case 'freezer':   html = screenFreezer(); break;
+    case 'freezer':   html = screenFreezer(decodeURIComponent(param || ''), extra, more); break;
     case 'resisted':  html = screenResisted(decodeURIComponent(param || '')); break;
     case 'memory':    html = screenMemory(decodeURIComponent(param || ''), extra); break;
     case 'result':    html = screenResult(decodeURIComponent(param || '')); break;
@@ -2743,8 +2733,14 @@ function render() {
 }
 function afterRender(route) {
   clearTimeout(loadingTimer);
-  if (route === 'freezer') { fitFreezer(); requestAnimationFrame(drawThreads); setTimeout(() => { fitFreezer(); drawThreads(); }, 900); }
-  if (route === 'memory') bindMemoryStage(false);   // every visit starts frozen, so it can melt again; the freezer still remembers which ones you've thawed
+  if (route === 'freezer') {
+    const card = document.getElementById('memory');
+    if (card) bindMemoryStage(thawedList().includes(card.dataset.id));   // seen before: the story is already out, with Replay the melt
+    chestState(); history.replaceState(null, '', '#' + freezerHash());
+    requestAnimationFrame(drawThreads); setTimeout(() => { fitFreezer(); }, 900);
+    if (!wideFreezer() && fz.view !== 'none') requestAnimationFrame(() => document.getElementById('memStagePanel')?.scrollIntoView({ block: 'start' }));
+  }
+  if (route === 'memory') bindMemoryStage(false);   // from the workbench: starts frozen
   if (route === 'play' && game && game.stage === 'loading') {
     loadingTimer = setTimeout(() => { if (game && game.stage === 'loading') setStage('predict'); }, reducedMotion() ? 500 : 1150);
   }
@@ -2775,12 +2771,38 @@ function setStage(stage) { game.stage = stage; saveCurrentGame(); render(); }
 const ACTIONS = {
   setLang(v) { if ((v === 'zh' || v === 'en') && v !== LANG) setLanguage(v); },
   // Memory Freezer
-  openMemory(v, el) { go('memory/' + v + (el && el.dataset.from === 'bench' ? '/bench' : '')); },
-  filterFreezer(v) {
-    freezerFilter = freezerFilter === v ? 'all' : v;
-    const y = window.scrollY; render(); window.scrollTo(0, y);
+  openMemory(v, el) {
+    if (el && el.dataset.from === 'bench') { go('memory/' + v + '/bench'); return; }
+    if (document.getElementById('memStagePanel')) { if (overlay.classList.contains('open')) closeOverlay(); ACTIONS.pickMemory(v); return; }
+    go('freezer/' + v);
   },
-  findMemory() { openFindSheet(); },
+  // taking one out of the chest: it shows on the stage, no new page
+  pickMemory(v) {
+    if (!memoryById(v)) return;
+    const s = fz.view === 'story' && MEMORY_SERIES[fz.story];
+    if (s && s.ids.includes(v)) fz = { ...fz, step: s.ids.indexOf(v), sel: v };
+    else { const wasStories = fz.mode === 'stories'; fz = { ...fz, mode: 'all', view: 'memory', sel: v }; if (wasStories) refreshFreezerBar(); }
+    renderStage(true);
+  },
+  freezerMode(v) {
+    fz = v === 'stories' ? { ...fz, mode: 'stories', view: 'stories', story: null, sel: null } : { ...fz, mode: 'all', view: fz.sel && fz.view === 'story' ? 'memory' : 'none', story: null };
+    refreshFreezerBar(); renderStage(false);
+  },
+  freezerFilter(v) {
+    fz = { ...fz, filter: KIND_FILTERS[v] ? v : 'all' };
+    refreshFreezerBar(); chestState();
+  },
+  openStory(v) {
+    const s = MEMORY_SERIES[v]; if (!s || !s.story) return;
+    fz = { ...fz, mode: 'stories', view: 'story', story: v, step: 0, sel: s.ids[0] };
+    refreshFreezerBar(); renderStage(true);
+  },
+  storyStep(v) {
+    const s = MEMORY_SERIES[fz.story]; if (!s) return;
+    fz.step = Math.max(0, Math.min(s.ids.length - 1, fz.step + Number(v))); fz.sel = s.ids[fz.step];
+    renderStage(false);
+  },
+  stageUp() { document.getElementById('chestScroll')?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'center' }); },
   memSkip() { memState && memState.skip(); },
   memAgain() { memState && memState.again(); },
   memBackBench() { go('create'); },

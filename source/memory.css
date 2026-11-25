@@ -1,124 +1,186 @@
 /* --------------------------------------------------------------------------
-   MEMORY FREEZER: a retro fridge full of real memories
+   MEMORY FREEZER: a retro chest freezer on the left, a stage on the right
    -------------------------------------------------------------------------- */
-.fridge-wrap { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
-.fridge-door { display: flex; flex-direction: column; gap: 10px; }
-.door-magnets { display: flex; gap: 7px; overflow-x: auto; padding: 4px 2px 8px; margin: 0 -20px; padding-inline: 20px; scrollbar-width: none; }
-.door-magnets::-webkit-scrollbar { display: none; }
-.magnet {
-  flex: none; border: 2px solid transparent; border-radius: 999px; padding: 7px 13px 8px; color: var(--ink);
-  font: 400 12.5px/1 var(--chunky); text-transform: uppercase; box-shadow: none; transition: transform .1s;
-}
-.magnet.mg0 { background: #FFFEFA; } .magnet.mg1 { background: var(--strawberry); } .magnet.mg2 { background: var(--pistachio); }
-.magnet.mg3 { background: var(--blueberry); } .magnet.mg4 { background: var(--lemon); }
-.magnet.on { transform: translateY(-2px) rotate(-2deg); box-shadow: none; }
-.door-note { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: 14px; line-height: 1.35; }
-.door-note p:first-child { flex: 1 1 100%; }
-.door-count { font-weight: 700; color: var(--ink); }
-.door-find { width: auto; margin: 0 0 3px auto; padding-inline: 14px; }
+#freezer.screen.wide { width: min(100%, 1480px); padding-top: 14px; }
+.fz-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; }
+.fz-title { font-size: clamp(30px, 8.4vw, 44px); line-height: .95; margin: 0; }
+.fz-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; flex: 1 1 auto; }
+.fz-modes { display: inline-flex; padding: 3px; gap: 2px; background: #FFFEFA; border-radius: 999px; }
+.fz-modes button { border: 0; background: none; border-radius: 999px; padding: 10px 15px 11px; min-height: 40px; font-size: 13px; color: var(--ink); text-transform: uppercase; }
+.fz-modes button.on { background: var(--blueberry); }
+.fz-filter { position: relative; }
+.fz-filter summary { list-style: none; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 9px 14px 10px; border-radius: 999px; background: #FFFEFA; font-size: 12.5px; text-transform: uppercase; cursor: pointer; color: var(--ink); }
+.fz-filter summary::-webkit-details-marker { display: none; }
+.fz-filter summary::after { content: ''; width: 7px; height: 7px; border: solid var(--ink); border-width: 0 2px 2px 0; transform: translateY(-2px) rotate(45deg); }
+.fz-filter[open] summary::after { transform: translateY(1px) rotate(-135deg); }
+.fz-filter-list { position: absolute; left: 0; top: calc(100% + 6px); z-index: 900; display: flex; flex-direction: column; min-width: 160px; padding: 6px; background: #FFFEFA; border-radius: 16px; box-shadow: 0 10px 24px rgba(120, 90, 70, .16); }
+.fz-filter-list button { border: 0; background: none; text-align: left; padding: 10px 12px; border-radius: 10px; color: var(--ink); font: 500 14px/1.1 var(--text); }
+.fz-filter-list button.on { background: var(--lemon); font-weight: 700; }
+.fz-door { margin-left: auto; font-size: 13px; }
 
-.fridge { position: relative; }
-.fridge-head {
-  position: relative; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px 10px;
-  background: #E9EAE6; border: 2px solid transparent; border-bottom: 0; border-radius: 34px 34px 0 0;
-}
-.fridge-badge { font-size: 13px; color: var(--ink); background: #FFFEFA; border: 2px solid transparent; border-radius: 999px; padding: 4px 12px 5px; }
-.fridge-dial { width: 26px; height: 26px; border-radius: 50%; background: #FFFEFA; border: 2px solid transparent; position: relative; }
-.fridge-dial::after { content: ''; position: absolute; left: 50%; top: 3px; width: 3px; height: 9px; margin-left: -1.5px; border-radius: 2px; background: #EE6B83; transform: rotate(35deg); transform-origin: 50% 9px; }
-.fridge-inside {
-  position: relative; padding: 18px 12px 12px; background: linear-gradient(#FAFAF8, #F0F1F0);
-  border: 10px solid #E9EAE6; border-top-width: 4px;
-  box-shadow: inset 0 10px 30px rgba(120,120,110,.06); overflow: hidden; perspective: 900px;
-}
-.fridge-light { position: absolute; left: 50%; top: -60px; width: 70%; height: 140px; margin-left: -35%; background: radial-gradient(closest-side, rgba(255, 255, 255, .9), transparent); pointer-events: none; }
-.threads { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-.shelf { position: relative; padding: 6px 0 0; margin-bottom: 22px; }
-.shelf-tag { position: relative; z-index: 3; display: inline-block; margin: 0 0 4px 2px; padding: 3px 9px 4px; font-size: 11px; background: var(--lemon); border: 1px solid rgba(188, 155, 134, .5); transform: rotate(-2deg); color: var(--ink); }
-.shelf-items:hover, .shelf-items:focus-within { z-index: 6; }
-.shelf-items { position: relative; z-index: 3; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 2px 0; padding: 0 2px; }
-.shelf-glass { position: relative; z-index: 2; height: 9px; margin: 0 -12px; background: linear-gradient(#FFFFFF, #E4E7E6); border-top: var(--line) solid var(--stroke); border-bottom: var(--line) solid rgba(188, 155, 134, .5); box-shadow: 0 6px 10px rgba(120, 120, 110, .08); }
+.fz-scene { margin-top: 10px; }
+.chest-swipe { margin: 10px 0 -26px; font-size: 12.5px; color: var(--muted); }
+@media (min-width: 820px) { .chest-swipe { display: none; } }
+.chest-scroll { position: relative; overflow-x: auto; overflow-y: visible; margin: 0 -20px; padding: 34px 20px 8px; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
+.chest { position: relative; width: 100%; min-width: 780px; aspect-ratio: 1000 / 680; container-type: inline-size; }
+.chest-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
+.chest-over { z-index: 450; pointer-events: none; }
+.chest-mist { opacity: .32; animation: mistDrift 14s ease-in-out infinite alternate; }
+@keyframes mistDrift { from { transform: translateX(-18px) } to { transform: translateX(22px) } }
+.chest-tag { position: absolute; top: 2.4%; z-index: 3; transform: translateX(-50%) rotate(var(--t)); padding: .35cqw .9cqw .45cqw; font-size: max(9px, 1.15cqw); line-height: 1; white-space: nowrap; color: var(--ink); background: var(--lemon); border-radius: 4px; pointer-events: none; }
+.threads { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; overflow: visible; }
 
-/* one memory on a shelf */
-.mem {
-  position: relative; flex: none; width: var(--mw); margin-right: calc(var(--mw) * -.11); padding: 0; background: none; border: 0; color: var(--ink);
-  display: flex; flex-direction: column; align-items: center; transition: opacity .2s, filter .2s;
-}
-.mem-two { width: calc(var(--mw) * 1.12); }
-.mem-art { display: block; width: 100%; aspect-ratio: 152 / 192; transform: rotate(var(--tilt)); transition: transform .18s cubic-bezier(.3,1.6,.5,1); }
-.mem-art .memsvg { width: 100%; height: 100%; display: block; overflow: visible; }
-.mem:hover .mem-art, .mem:focus-visible .mem-art { transform: rotate(calc(var(--tilt) * -1)) translateY(-6px) scale(1.08); }
-.mem.frozen .mem-art::after { content: ''; }
-.mem.frozen .mem-art { filter: brightness(1.03); }
-.mem.frozen::before { content: ''; position: absolute; inset: 6% 8% 26%; border-radius: 40%; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.5), rgba(230,244,250,.16) 60%, transparent 75%); pointer-events: none; z-index: 1; }
-.mem.thawed .mem-date::after { content: ''; display: inline-block; width: 5px; height: 5px; margin-left: 4px; vertical-align: 2px; border-radius: 50%; background: #E3A6B4; }
-.mem-date { font-size: clamp(8.5px, calc(var(--mw) * .13), 11.5px); font-weight: 700; line-height: 1; margin-top: 1px; white-space: nowrap; }
-.mem-badges { position: absolute; right: 8px; bottom: 12px; display: flex; gap: 1px; z-index: 2; }
-.mem.dim { opacity: .22; filter: grayscale(.7); }
-.mem[data-order]::after {
-  content: attr(data-order); position: absolute; left: 2px; top: 2px; z-index: 3; width: 18px; height: 18px; border-radius: 50%;
-  background: #E3A6B4; color: #fff; font: 400 11px/18px var(--chunky); text-align: center; box-shadow: 0 0 0 2px #fff;
-}
-/* hover note: date and place */
+/* one memory lying in the chest. The button itself lets clicks through; only
+   the painted drawing catches them, so overlapping ice creams stay easy to pick. */
+.cmem { position: absolute; width: calc(11.8cqw * var(--s)); padding: 0; margin: 0; border: 0; background: none; color: var(--ink);
+  transform: translate(-50%, -100%) rotate(var(--r)); transform-origin: 50% 100%; pointer-events: none; transition: opacity .25s, filter .25s; }
+.cmem.two { width: calc(13.2cqw * var(--s)); }
+.cmem-art { display: block; width: 100%; aspect-ratio: 152 / 192; transform-origin: 50% 100%; transition: transform .28s cubic-bezier(.3, 1.5, .5, 1), filter .25s; }
+.cmem-art .memsvg { width: 100%; height: 100%; display: block; overflow: visible; }
+.cmem .memsvg * { pointer-events: visiblePainted; }
+.cmem.frozen .cmem-art { filter: brightness(1.03) saturate(.92); }
+.cmem.frozen::before { content: ''; position: absolute; inset: 6% 8% 22%; border-radius: 40%; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.5), rgba(230,244,250,.16) 60%, transparent 75%); pointer-events: none; z-index: 1; }
+.cmem.thawed::before { content: ''; position: absolute; right: 8%; bottom: 2%; width: 7px; height: 7px; border-radius: 50%; background: #E3A6B4; box-shadow: 0 0 0 2px #FFFEFA; z-index: 2; }
+.cmem.k-ghost { opacity: .86; }
+.cmem.k-ghost .cmem-art { animation: chestBob 3.4s ease-in-out infinite; }
+.cmem.k-ghost:nth-child(odd) .cmem-art { animation-delay: -1.7s; }
+@keyframes chestBob { 0%, 100% { translate: 0 0 } 50% { translate: 0 -5% } }
+.cmem:focus-visible { outline: none; }
+.cmem:focus-visible .cmem-art { outline: 3px solid #EE6B83; outline-offset: 3px; border-radius: 14px; }
 @media (hover: hover) {
-  .mem .mem-art::before { display: none; }
-  .mem::after { pointer-events: none; }
-  /* the date and place on hover: a real element, so it can be translated; on the top
-     shelf it opens below the ice cream so the freezer's top edge can't cut it off */
-  .mem:not([data-order]):hover .mem-tip { display: flex; }
+  .cmem:hover { z-index: 800 !important; }
+  .cmem:hover .cmem-art { transform: translateY(-6%) scale(1.07); }
+  .cmem:hover .cmem-tip { display: flex; }
 }
-.mem-tip { display: none; flex-direction: column; align-items: center; position: absolute; bottom: calc(100% - 4px); left: 50%; transform: translateX(-50%); z-index: 6;
-  background: #FFFEFA; border-radius: 12px; padding: 6px 10px; font: 500 12px/1.3 var(--text); color: var(--ink); white-space: nowrap; pointer-events: none;
-  box-shadow: 0 4px 10px rgba(150, 110, 80, .12); }
-.shelf-top .mem-tip { bottom: auto; top: calc(100% + 2px); }
-/* the first and last ice cream on a shelf: the note lines up with the freezer's edge instead of running off it */
-.shelf-seg:first-child .mem:first-of-type .mem-tip { left: 0; transform: none; }
-.shelf-seg:last-child .mem:last-of-type .mem-tip { left: auto; right: 0; transform: none; }
-.mem-ghost .mx-float, .mem-art .mx-float { animation: ghostFloat 3.2s ease-in-out infinite; }
-@keyframes ghostFloat { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+.cmem:focus-visible { z-index: 800 !important; }
+.cmem:focus-visible .cmem-tip { display: flex; }
+.cmem.on { z-index: 700 !important; }
+.cmem.on .cmem-art { transform: translateY(-12%) scale(1.13); filter: drop-shadow(0 0 10px rgba(255, 255, 255, .95)) drop-shadow(0 10px 8px rgba(120, 90, 70, .22)); }
+.cmem.lift .cmem-art { transform: translateY(-7%) scale(1.06); filter: drop-shadow(0 0 7px rgba(255, 157, 184, .75)); }
+.cmem.on.lift .cmem-art { transform: translateY(-12%) scale(1.13); filter: drop-shadow(0 0 10px rgba(255, 255, 255, .95)) drop-shadow(0 0 10px rgba(255, 157, 184, .9)); }
+.cmem.dim { opacity: .26; filter: grayscale(.75); }
+.cmem.dim .cmem-art { transform: scale(.97); }
+.cmem[data-order]::after { content: attr(data-order); position: absolute; left: -4%; top: 2%; z-index: 3; width: 22px; height: 22px; border-radius: 50%;
+  background: #FF9DB8; color: #FFFEFA; font: 400 12px/22px var(--chunky); text-align: center; box-shadow: 0 0 0 2.5px #FFFEFA; transform: rotate(calc(var(--r) * -1)); }
+.cmem-tip { display: none; flex-direction: column; align-items: center; position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%) rotate(calc(var(--r) * -1)); z-index: 6;
+  background: #FFFEFA; border-radius: 12px; padding: 6px 10px; font: 500 12px/1.3 var(--text); color: var(--ink); white-space: nowrap; pointer-events: none; box-shadow: 0 4px 10px rgba(150, 110, 80, .14); }
+.cmem-tip b { font-weight: 700; }
+.cmem[data-order] .cmem-tip { bottom: auto; top: calc(100% + 4px); }
 
-/* the crisper drawer */
-.crisper {
-  position: relative; z-index: 2; display: block; width: 100%; margin-top: 4px; padding: 10px 10px 12px; color: var(--ink);
-  background: #E9EAE6; border: 2px solid transparent; border-radius: 14px 14px 18px 18px; box-shadow: none;
-}
-.crisper-window { position: relative; display: flex; justify-content: space-around; align-items: center; height: 54px; overflow: hidden; border-radius: 10px; background: rgba(255,255,255,.65); border: 2px solid transparent; }
-.crisper-window i { width: 30px; height: 36px; border-radius: 40% 40% 30% 30%; filter: blur(5px); opacity: .8; }
-.crisper-window i:nth-child(1) { background: #FFC6D5; } .crisper-window i:nth-child(2) { background: #FFE29A; height: 24px; }
-.crisper-window i:nth-child(3) { background: #D3D5FB; } .crisper-window i:nth-child(4) { background: #D6EDBC; height: 28px; } .crisper-window i:nth-child(5) { background: #E2C7AB; }
-.crisper-tag { display: inline-block; margin-top: 8px; font-size: 12px; background: #FFFEFA; border: 2px solid transparent; border-radius: 6px; padding: 3px 10px 4px; }
-.crisper:hover .crisper-window i { filter: blur(3px); }
-.fridge-feet { display: flex; justify-content: space-between; padding: 0 30px; }
-.fridge-feet i { width: 26px; height: 10px; background: #C9C3BA; border-radius: 0 0 8px 8px; }
+/* the front of the chest: two drawers and a little name plate */
+.chest-front { position: absolute; left: 6.5%; right: 6.5%; top: 75.4%; height: 18.8%; z-index: 460; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 2.4cqw; }
+.chest-plate { justify-self: center; padding: .7cqw 1.6cqw .8cqw; border-radius: 999px; background: #FFFEFA; color: var(--ink); font-size: max(9px, 1.25cqw); letter-spacing: .06em; white-space: nowrap; box-shadow: inset 0 0 0 2px #E7CFC4; }
+.chest-drawer { position: relative; display: flex; align-items: center; gap: 1.4cqw; height: 100%; min-height: 44px; padding: .9cqw 1.4cqw; border: 0; border-radius: 1.6cqw; text-align: left; color: var(--ink);
+  background: linear-gradient(#F3FAFC, #DDEFF5); box-shadow: inset 0 0 0 2px #B9DBE7, 0 .5cqw 0 #B9DBE7; transition: transform .12s; }
+.chest-drawer:active { transform: translateY(.4cqw); box-shadow: inset 0 0 0 2px #B9DBE7, 0 .1cqw 0 #B9DBE7; }
+.chest-drawer.on { background: linear-gradient(#FFF4F6, #FFE0E7); box-shadow: inset 0 0 0 2px #FFB9CA, 0 .5cqw 0 #FFB9CA; }
+.chest-drawer .crisper-window { flex: 0 0 42%; display: flex; justify-content: space-around; align-items: center; height: 100%; overflow: hidden; border-radius: 1cqw; background: rgba(255, 255, 255, .7); }
+.chest-drawer .crisper-window i { width: 22%; height: 62%; border-radius: 40% 40% 30% 30%; filter: blur(3px); opacity: .85; }
+.crisper-window i:nth-child(1) { background: #FFC6D5; } .crisper-window i:nth-child(2) { background: #FFE29A; height: 44%; }
+.crisper-window i:nth-child(3) { background: #D3D5FB; } .crisper-window i:nth-child(4) { background: #D6EDBC; height: 50%; } .crisper-window i:nth-child(5) { background: #E2C7AB; }
+.chest-drawer:hover .crisper-window i { filter: blur(1.5px); }
+.chest-drawer .crisper-tag { font-size: max(9px, 1.15cqw); line-height: 1.15; }
+.fresh-window { justify-content: center !important; gap: 2%; }
+.fresh-window .fz { width: 30%; height: 90%; display: flex; align-items: center; justify-content: center; }
+.fresh-window .fz svg { width: 100%; height: 100%; }
+.fresh-window em { font-size: max(9px, 1cqw); font-style: normal; color: var(--muted); }
+.chest-drawer.thawed .crisper-tag::after { content: ''; display: inline-block; width: 6px; height: 6px; margin-left: 5px; vertical-align: 2px; border-radius: 50%; background: #E3A6B4; }
 
-/* the door swings open once per visit */
-.fridge-swing { position: absolute; inset: 0; z-index: 8; transform-origin: 0 50%; background: #E9EAE6; border-right: var(--line) solid var(--stroke); animation: doorSwing .75s cubic-bezier(.5,0,.3,1) .15s forwards; pointer-events: none; }
-.fridge-swing span { position: absolute; right: 14px; top: 30%; width: 12px; height: 26%; border-radius: 8px; background: #FFFEFA; border: 2px solid transparent; }
-@keyframes doorSwing { 0% { transform: rotateY(0) } 99% { transform: rotateY(-102deg); opacity: 1 } 100% { transform: rotateY(-102deg); opacity: 0; visibility: hidden } }
+/* the stage */
+.mem-stage-panel { position: relative; margin-top: 14px; padding: 16px; border-radius: 26px; background: radial-gradient(120% 80% at 50% 0%, #FFFFFF, #FFFEFA 55%, #F8F4EC); scroll-margin-top: 10px; }
+.stage-up { display: block; margin: -4px 0 8px; padding: 8px 0; font-size: 13px; }
+.stage-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 8px; min-height: 260px; padding: 18px 8px; }
+.stage-ghost { width: 96px; height: auto; animation: chestBob 3.4s ease-in-out infinite; }
+.stage-hello { font-size: clamp(17px, 4.6vw, 22px); line-height: 1.15; color: var(--ink); text-transform: uppercase; max-width: 16em; }
+.stage-sub { font-size: 13.5px; line-height: 1.4; max-width: 26em; }
+.stage-k { font-size: 12px; letter-spacing: .08em; color: var(--muted); }
+.stories-index { justify-content: flex-start; gap: 12px; }
+.story-pick { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; width: min(100%, 420px); padding: 16px 18px; text-align: left; border: 0; border-radius: 20px; background: #F2F7F9; color: var(--ink); transition: transform .12s; }
+.story-pick:nth-of-type(2) { background: #FFF2F5; }
+.story-pick:hover { transform: translateY(-2px) rotate(-.4deg); }
+.story-pick b { font-size: clamp(22px, 5.6vw, 28px); }
+.story-pick span { font-size: 14px; line-height: 1.35; }
+.story-pick small { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.story-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; min-height: 44px; }
+.story-bar .link { padding: 10px 0; font-size: 13px; }
+.story-name { flex: 1; text-align: center; font-size: 13px; color: #D9708C; text-transform: uppercase; }
+.story-steps { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+.step-btn { width: 44px; height: 44px; border-radius: 50%; border: 0; background: #FFE0E7; color: var(--ink); font: 700 22px/1 var(--text); }
+.step-btn:disabled { opacity: .35; cursor: default; }
+.chip-link { border: 0; cursor: pointer; background: #FFE0E7; color: var(--ink); }
 
+/* a memory on the stage */
+.bigmem.in-stage { padding: 0; }
+.bigmem.in-stage .bm-title { font-size: clamp(24px, 6.4vw, 32px); }
+.bigmem.in-stage .bm-stage { width: min(100%, 400px, calc(62svh * .652)); margin-top: 8px; }
+
+/* Freshly Frozen: every new record once, shown as how it ended */
+.fresh-view .stage-k { margin-bottom: 6px; }
+.fd-group { margin-top: 14px; }
+.fd-h { font-size: 15px; color: var(--ink); display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; }
+.fd-h small { font: 500 12.5px/1.3 var(--text); text-transform: none; color: var(--muted); }
+.fd-podiums, .fd-plots { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 22px 12px; margin-top: 4px; align-items: end; }
+.fd-plots { margin-top: 10px; padding-bottom: 14px; }
+.fd-plots > :nth-child(even) { transform: none; }
+.mini-podium .chr { width: 66%; }
+.mini-podium .trophy { width: 30px; height: 38px; }
+.mini-podium .block { font-size: 11.5px; padding: 8px 6px 9px; }
+.mini-podium .block .nm { font-size: 13.5px; }
+.mini-podium .block .ttl { font-size: 11px; }
+.mini-stone { padding: 14px 8px 11px; font-size: 11.5px; }
+.mini-stone .rip { font-size: 24px; }
+.mini-stone .nm { font-size: 13.5px; }
+.mini-stone .row b { font-size: 13px; }
+.mini-stone .epi { font-size: 11px; }
+.fd-plots .mound { bottom: -10px; height: 22px; }
+.fd-ghost-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.ghost-card { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 112px; padding: 10px 8px; border: 0; border-radius: 18px; background: #F2F3FB; color: var(--ink); text-align: center; }
+.ghost-card .gc-art { width: 56px; height: 60px; opacity: .85; }
+.ghost-card .gc-art svg { width: 100%; height: 100%; }
+.gc-name { font-size: 12px; line-height: 1.1; }
+.gc-date { font-size: 11px; color: var(--muted); }
+.fresh-view .stage-empty .btn { max-width: 300px; }
+
+/* a memory opened from the workbench keeps its own page */
+.bigmem-page { padding-top: 14px; }
+@media (min-width: 820px) { .bigmem-page .bigmem .bm-stage { margin-top: 10px; width: min(420px, calc((100vh - 280px) * .652)); } }
+
+/* ---- computer: one screen, chest left (about 58%), stage right ---- */
 @media (min-width: 820px) {
-  .fridge-wrap { flex-direction: row; align-items: flex-start; gap: 0; margin-top: 22px; }
-  .fridge-door {
-    flex: 0 0 250px; position: sticky; top: 16px; padding: 22px 18px; margin-right: -6px; 
-    background: #E9EAE6; border: 2px solid transparent; border-radius: 30px 8px 8px 30px; box-shadow: none;
-    transform: perspective(900px) rotateY(16deg); transform-origin: 100% 50%;
-  }
-  .door-magnets { flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; gap: 9px; }
-  .magnet:nth-child(odd) { transform: rotate(-3deg); } .magnet:nth-child(even) { transform: rotate(2deg); }
-  .magnet.on { transform: translateY(-2px) rotate(-2deg); }
-  .door-note { flex-direction: column; align-items: flex-start; margin-top: 8px; padding: 14px; background: var(--lemon); font-family: var(--hand); font-size: 16px; transform: rotate(-1.5deg); box-shadow: none; }
-  .door-find { margin: 6px 0 0; }
-  .fridge { flex: 1; }
-  .fridge-inside { padding: 24px 22px 16px; }
-  .shelf-glass { margin: 0 -22px; }
+  .fz-title { font-size: clamp(30px, 2.8vw, 42px); }
+  .fz-scene { --scene-h: max(440px, calc(100dvh - 166px)); display: grid; grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); gap: 22px; height: var(--scene-h); margin-top: 6px; }
+  .chest-scroll { margin: 0; padding: 0; overflow: visible; display: flex; align-items: center; justify-content: center; min-height: 0; }
+  .chest { min-width: 0; width: min(100%, calc((var(--scene-h) - 30px) / .68)); }
+  .mem-stage-panel { margin: 0; height: 100%; overflow-y: auto; overscroll-behavior: contain; container-type: size; padding: 18px 20px; }
+  .stage-empty { min-height: 100%; }
+  /* on a wide stage, the words sit left and the ice cream right, so it can be big */
+  .bigmem.in-stage { display: grid; grid-template-columns: minmax(190px, 1fr) auto; grid-template-rows: auto auto 1fr; column-gap: 18px; align-items: start; }
+  .bigmem.in-stage .bm-head { grid-column: 1; grid-row: 1; margin-top: 2px; }
+  .bigmem.in-stage .bm-under { grid-column: 1; grid-row: 2; text-align: left; margin-top: 14px; }
+  .bigmem.in-stage .bm-under .bm-skip { margin: 4px 0 0; }
+  .bigmem.in-stage .bm-after { grid-column: 1; grid-row: 2 / 4; margin-top: 14px; width: auto; }
+  .bigmem.in-stage .bm-stage { grid-column: 2; grid-row: 1 / 4; margin: 0; width: min(calc(100cqw - 208px), calc((100cqh - 70px) * .652)); }
+  .bigmem.in-stage .mem-after-btns { align-items: flex-start; }
+  .bigmem.in-stage .bm-title { font-size: clamp(21px, 1.9vw, 29px); }
+  .story-pick { width: 100%; }
 }
-
+@media (min-width: 1360px) { .fz-scene { grid-template-columns: minmax(0, 58fr) minmax(0, 42fr); } }
+@container (max-width: 440px) {
+  .bigmem.in-stage { display: block; }
+  .bigmem.in-stage .bm-stage { width: min(100%, calc((100cqh - 220px) * .652)); margin: 8px auto 0; }
+  .bigmem.in-stage .bm-under { text-align: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chest-mist, .cmem.k-ghost .cmem-art, .stage-ghost { animation: none; }
+  .cmem-art, .cmem, .story-pick { transition: none; }
+}
 /* --------------------------------------------------------------------------
    ONE MEMORY: a big ice cream, the story frozen inside it
    -------------------------------------------------------------------------- */
 .bigmem { padding-top: 14px; padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 .bm-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .bm-top .link { padding-left: 0; }
-.bm-num { font-size: 12px; color: var(--muted); }
+.bm-num { font-size: 12px; color: var(--muted); margin-left: 10px; white-space: nowrap; }
 .bm-head { text-align: left; margin-top: 8px; max-width: 30em; }
 .bm-when, .bm-where { font-size: 13px; line-height: 1.35; color: var(--muted); }
 .bm-where { color: var(--ink); font-weight: 700; }
@@ -206,68 +268,9 @@
 .find-title { display: block; font-size: 14px; line-height: 1.15; }
 .find-state { font-size: 11px; color: #E25D7B; }
 
-/* the cover's four links: two tidy rows on a phone */
-@media (max-width: 819px) {
-  .cover-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
-  .cover-nav button:nth-child(even) { text-align: right; }
-}
 /* short phones: lift the two lower little ice creams above the start button */
 @media (max-width: 819px) and (max-height: 720px) {
   .mini.m3 { top: 62%; } .mini.m4 { top: 61%; }
   .cover-nav button { padding: 5px 0; }
-}
-
-
-/* --------------------------------------------------------------------------
-   FREEZER LAYOUT, two versions
-   Computer (for showing it): the whole freezer on one screen. The title moves
-   onto the door, the ice creams spread along each shelf, and fitFreezer() picks
-   the biggest size (--mw) that still fits above the menu bar.
-   Phone: its own layout, three ice creams to a row so they're big enough to
-   see; the page scrolls.
-   -------------------------------------------------------------------------- */
-.fridge-head { padding: 8px 16px 6px; }
-.shelf { margin-bottom: 12px; padding-top: 4px; }
-.shelf-tag { position: absolute; left: 6px; bottom: -21px; margin: 0; z-index: 4; font-size: 10px; padding: 2px 7px 3px; }   /* 13px of glass below the items */
-.shelf-seg { display: contents; }
-.crisper { padding: 6px 8px 7px; margin-top: 10px; }
-.crisper-window { height: 34px; }
-.crisper-window i { height: 26px; }
-.crisper-tag { margin-top: 5px; font-size: 11px; }
-.door-title, .door-sub { display: none; }
-#freezer .door-note { font-size: 13px; line-height: 1.3; }
-
-@media (max-width: 819px) {
-  #freezer .pagehead { padding-top: 12px; }
-  #freezer .pagehead h1 { font-size: min(calc((100vw - 40px) / 6.4), 56px) !important; }
-  #freezer .fridge-wrap { margin-top: 12px; }
-  .fridge-inside { padding: 14px 8px 10px; border-width: 4px 6px 6px; }
-  .shelf-glass { margin: 0 -8px; }
-  .shelf { margin-bottom: 18px; }
-  .shelf-items { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 10px; padding: 0 6px; }
-  .mem, .mem-two { width: 100%; margin: 0; }
-  .mem-date { font-size: 11px; margin-top: 2px; }
-}
-
-@media (min-width: 820px) {
-  #freezer.screen.wide { width: min(100%, 1480px); padding-top: 16px; }
-  #freezer .pagehead { display: none; }
-  .door-title { display: block; font-size: clamp(30px, 3.1vw, 46px); line-height: .98; margin: 0; }
-  .door-sub { display: block; font-weight: 700; font-size: 14px; line-height: 1.3; margin: 2px 0 6px; }
-  #freezer .fridge-wrap { margin-top: 0; align-items: stretch; }
-  #freezer .fridge { flex: 1 1 auto; min-width: 0; }
-  .fridge-door { position: relative; top: 0; flex: 0 0 270px; padding: 30px 18px 20px; }
-  .fridge-inside { --mw: 90px; padding: 14px 26px 12px; }
-  .shelf-glass { margin: 0 -26px; }
-  .shelf-items { justify-content: space-evenly; padding: 0; flex-wrap: nowrap; }
-  .shelf-seg { position: relative; display: flex; align-items: flex-end; justify-content: space-evenly; flex: var(--n) 1 0; min-width: 0; }
-  .shelf-seg .shelf-tag { left: 0; }
-  /* two seasons on one shelf: a little divider between them */
-  .shelf-shared .shelf-seg + .shelf-seg { border-left: 2px dashed rgba(188, 155, 134, .32); }
-  .shelf-shared .shelf-seg + .shelf-seg .shelf-tag { left: 8px; }
-  .mem { margin-right: 0; }
-  .mem-date { font-size: 12px; margin-top: 3px; }
-  .shelf-tag { font-size: 11px; }
-  #freezer .door-note { font-size: 15px; }
-  #freezer .door-note p:first-child { flex: none; }
+  .cover-nav .freezer-pill { padding: 9px 14px 8px; }
 }

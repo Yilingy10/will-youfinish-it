@@ -84,6 +84,11 @@ const ZH_PATTERNS = [
   [new RegExp('^' + ZH_MONTH_RE + ' (\\d{1,2}), (\\d{4}), that night$'), (_, m, d, y) => `${y}年${zhMon(m)}月${d}日，那天晚上`],
   // a sentence followed by a date: "Finished an ice cream. Sep 6, 2026."
   [new RegExp('^(.+\\.) (' + ZH_MONTH_RE + ' \\d{1,2}, \\d{4})\\.$'), (_, a, d) => { const t = zhOf(a); return t ? `${t}${zhDate(d)}。` : null; }],
+  // an ice cream in the chest: "Title, Sep 6, 2026" (or "…, that night")
+  [new RegExp('^(.+?), (' + ZH_MONTH_RE + ' \\d{1,2}, \\d{4})(, that night)?$'), (_, t, d, m1, night) => {
+    const x = zhOf(t); if (!x) return null; return `${x}，${zhDate(d) || d}${night ? '，那天晚上' : ''}`; }],
+  // "3 ICE CREAMS" in a story
+  [/^(\d+) ICE CREAMS$/, '$1 支雪糕'],
   // a memory's label: "Title, Sep 6, 2026, Place"
   [new RegExp('^(.+?), (' + ZH_MONTH_RE + ' \\d{1,2}, \\d{4}|' + ZH_MONTH_RE + ' \\d{4})(, that night)?, (.+)$'), (_, t, d, m1, m2, night, place) => {
     const x = zhOf(t); if (!x) return null; return `${x}，${zhDate(d) || d}${night ? '，那天晚上' : ''}，${zhBit(place)}`; }],

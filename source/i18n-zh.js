@@ -1115,7 +1115,27 @@ const ZH = {
 "Edit its memory": "编辑这段回忆",
 "It’s only a guess. Eat accordingly.": "这只是猜测。你看着吃吧。",
 "The sheet said no": "共享表格拒绝了",
-"Unexpected answer": "意外的回复"
+"Unexpected answer": "意外的回复",
+"All Ice Creams": "所有雪糕",
+"Our Stories": "我们的故事",
+"OUR STORIES": "我们的故事",
+"Filter": "筛选",
+"Cups": "杯装",
+"Popsicles": "冰棍",
+"Ghosts": "没吃成的",
+"Swipe to see the whole freezer ›": "左右滑动，看看整个冰柜 ›",
+"Pick an ice cream to remember.": "挑一支雪糕，想起一件事。",
+"PLAY": "开始玩",
+"The freezer door ›": "冰箱门 ›",
+"‹ Our Stories": "‹ 我们的故事",
+"‹ Freshly Frozen": "‹ 新鲜冷冻",
+"Record details": "记录详情",
+"Replay the melt": "再融化一次",
+"Finished. Against all available evidence.": "吃完了。尽管所有证据都不看好。",
+"Not bought. Not counted as waste.": "没买。不算浪费。",
+"INTO THE FREEZER": "放进冰箱",
+"Previous": "上一支",
+"Next": "下一支"
 };
 // Sentences with numbers, dates or someone's own words in them.
 const ZH_MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12,
@@ -1203,6 +1223,11 @@ const ZH_PATTERNS = [
   [new RegExp('^' + ZH_MONTH_RE + ' (\\d{1,2}), (\\d{4}), that night$'), (_, m, d, y) => `${y}年${zhMon(m)}月${d}日，那天晚上`],
   // a sentence followed by a date: "Finished an ice cream. Sep 6, 2026."
   [new RegExp('^(.+\\.) (' + ZH_MONTH_RE + ' \\d{1,2}, \\d{4})\\.$'), (_, a, d) => { const t = zhOf(a); return t ? `${t}${zhDate(d)}。` : null; }],
+  // an ice cream in the chest: "Title, Sep 6, 2026" (or "…, that night")
+  [new RegExp('^(.+?), (' + ZH_MONTH_RE + ' \\d{1,2}, \\d{4})(, that night)?$'), (_, t, d, m1, night) => {
+    const x = zhOf(t); if (!x) return null; return `${x}，${zhDate(d) || d}${night ? '，那天晚上' : ''}`; }],
+  // "3 ICE CREAMS" in a story
+  [/^(\d+) ICE CREAMS$/, '$1 支雪糕'],
   // a memory's label: "Title, Sep 6, 2026, Place"
   [new RegExp('^(.+?), (' + ZH_MONTH_RE + ' \\d{1,2}, \\d{4}|' + ZH_MONTH_RE + ' \\d{4})(, that night)?, (.+)$'), (_, t, d, m1, m2, night, place) => {
     const x = zhOf(t); if (!x) return null; return `${x}，${zhDate(d) || d}${night ? '，那天晚上' : ''}，${zhBit(place)}`; }],
