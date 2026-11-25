@@ -171,6 +171,7 @@ function biteControlsHTML() {
   const g = game;
   return `<div class="rm-ticket rm-bitebar">
     <div class="status" id="status" aria-live="polite">${esc(biteStatus(g))}</div>
+    ${reactRowHTML('bite')}
     <div class="pair">
       <button class="btn c-white" data-act="done">I’M DONE.</button>
       <button class="btn c-pistachio" data-act="finished">I FINISHED IT</button>
@@ -178,6 +179,34 @@ function biteControlsHTML() {
     <div class="undo"><span id="undoWrap" ${g.bites ? '' : 'style="visibility:hidden"'}><button class="link" data-act="undoBite">Oops, that wasn’t a bite</button></span><button class="link" data-act="goQuick">Quick record</button></div>
   </div>`;
 }
+
+/* --- HOW IS IT? A quiet row of little faces on the counter ----------------------
+   Instead of a window popping up every few bites, five small faces sit by the
+   buttons. Tap one whenever you like; the ice cream's face follows. It only
+   nudges once, after the first bite. If you never tapped, the last window asks
+   once how it was overall. The answers feed the same verdicts as before. */
+const REACTS = [
+  { score: 5, mood: 'delighted', tint: '#E4F2D6', label: 'WAIT THIS IS ACTUALLY GOOD', later: 'Still good. Suspicious.' },
+  { score: 4, mood: 'happy',     tint: '#FFF4C9', label: 'PRETTY GOOD',                later: 'Still pretty good. Noted.' },
+  { score: 3, mood: 'ok',        tint: '#F7F3EC', label: 'IT’S FINE',                  later: 'Fine. Holding steady.' },
+  { score: 2, mood: 'worried',   tint: '#F6E6D6', label: 'HMMMM…',                     later: 'The hmmmm is growing.' },
+  { score: 1, mood: 'panicked',  tint: '#FBE0E6', label: 'WHY DID I BUY THIS',         later: 'And yet it’s still in your hand.' },
+];
+const reactFace = x => `<svg viewBox="-50 -50 100 100" aria-hidden="true"><circle r="47" fill="${x.tint}"/>${faceSVG(x.mood, 0, 3, .98, FLAVORS.vanilla)}</svg>`;
+function currentReactScore() {
+  if (!game) return null;
+  const later = game.laterReactions[game.laterReactions.length - 1];
+  return later ? later.score : game.firstReaction ? game.firstReaction.score : null;
+}
+function reactRowHTML(kind = 'bite') {
+  const now = currentReactScore();
+  return `<div class="rm-react ${kind}" data-kind="${kind}" role="group" aria-label="${kind === 'overall' ? 'How was it, overall?' : 'How is it?'}">
+    <span class="rr-q">${kind === 'overall' ? 'How was it, overall?' : 'How is it?'}</span>
+    ${REACTS.map(x => `<button class="rr-face ${now === x.score ? 'on' : ''}" data-act="tapReact" data-val="${x.score}" aria-pressed="${now === x.score}" aria-label="${esc(x.label)}" title="${esc(x.label)}">${reactFace(x)}</button>`).join('')}
+  </div>`;
+}
+// the last window asks once, only if no face was ever tapped
+const overallAskHTML = () => game && !game.firstReaction && !game.laterReactions.length ? reactRowHTML('overall') : '';
 
 // The room, with whatever is happening in it. `win` is a small window on top.
 function screenRoom(win) {
@@ -373,4 +402,21 @@ const ROOM_ACTIONS = {
   openTicket(v) { openTicket(v); },
   closeTicket() { closeOverlay(); refreshTicket(); },
   closeWindow() { go(game ? 'play' : 'home'); },
+  // a face tapped: how it's going right now (tapping again at the same bite changes your mind)
+  tapReact(v) {
+    const x = REACTS.find(k => k.score === +v);
+    if (!game || !x) return;
+    const entry = { checkpoint: 'tap', label: x.label, score: x.score };
+    const lastLater = game.laterReactions[game.laterReactions.length - 1];
+    if (!game.firstReaction) game.firstReaction = { ...entry, checkpoint: 'first' };
+    else if (!game.laterReactions.length && game.firstReactionBite === game.bites) game.firstReaction = { ...entry, checkpoint: 'first' };
+    else if (lastLater && lastLater.bite === game.bites) game.laterReactions[game.laterReactions.length - 1] = { bite: game.bites, ...entry };
+    else game.laterReactions.push({ bite: game.bites, ...entry });
+    if (game.firstReaction && game.firstReactionBite == null) game.firstReactionBite = game.bites;
+    game.lastSay = game.bites <= 1 ? (CHECKPOINTS.first.options.find(o => o.score === x.score) || {}).say || x.later : x.later;
+    game.lastSayBite = game.bites;
+    saveCurrentGame();
+    document.querySelectorAll('.rm-react').forEach(el => { el.outerHTML = reactRowHTML(el.dataset.kind); });
+    if (game.stage === 'bite') updateBiteScreen(false);
+  },
 };

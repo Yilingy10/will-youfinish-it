@@ -2408,6 +2408,7 @@ function screenRebuy() {
   setFlood(PALE.strawberry, null);
   return `<section class="screen" id="rebuy">
     <div class="mini-char" style="height:min(30vh,240px)">${iceCream({ form: g.form, flavor: g.flavor, toppings: g.toppings, decor: g.decor, bites: g.bites, mood: 'dead', label: g.name })}</div>
+    ${overallAskHTML()}
     <h1 class="melty bighead">WOULD YOU BUY IT AGAIN?</h1>
     <div class="stack" style="margin-top:12px">
       <button class="btn huge c-pistachio" data-act="rebuy" data-val="yes">${REBUY_QUIT.yes}</button>
@@ -2424,6 +2425,7 @@ function screenFinish() {
     <h1 class="melty finish-head slam" style="${fitSize(COPY.finishHead, 74)}">${esc(COPY.finishHead)}</h1>
     <p class="chunky historic">${esc(COPY.finishSub)}</p>
     <div class="mini-char bounce" style="height:min(26vh,210px)">${iceCream({ form: g.form, flavor: g.flavor, toppings: g.toppings, decor: g.decor, bites: Math.max(g.bites, 12), mood: 'cool', label: g.name })}</div>
+    ${overallAskHTML()}
     <h2 class="chunky center" style="font-size:24px;margin:6px 0 10px">Would you buy it again?</h2>
     <div class="stack">
       <button class="btn huge c-pistachio" data-act="finishRebuy" data-val="yes">${REBUY_FINISH.yes}</button>
@@ -2767,10 +2769,7 @@ function afterRender(route) {
   if (route === 'play' && game && game.stage === 'loading') {
     loadingTimer = setTimeout(() => { if (game && game.stage === 'loading') setStage('predict'); }, reducedMotion() ? 500 : 1150);
   }
-  if (route === 'play' && game && game.stage === 'bite') {
-    const cp = checkpointFor(game.bites);
-    if (cp && !game.asked.includes(game.bites)) openCheckpoint(cp);
-  }
+
   if (route === 'play' && game && game.stage === 'finish') confetti();
   if (route === 'result' && fresh) {
     const r = findRecord(fresh);
@@ -2948,10 +2947,8 @@ const ACTIONS = {
     updateBiteScreen(true);
     if (line) showMachineSay(BITE_LINES[line]);
     try { navigator.vibrate && navigator.vibrate(15); } catch (e) {}
-    const cp = checkpointFor(game.bites);
-    if (cp && !game.asked.includes(game.bites)) {
-      setTimeout(() => { if (game && game.stage === 'bite' && !overlay.classList.contains('open')) openCheckpoint(cp); }, reducedMotion() ? 0 : 430);
-    }
+    // no window between bites any more: after the first one, the little faces nudge once
+    if (game.bites === 1 && !game.firstReaction) document.querySelector('.rm-react.bite')?.classList.add('hint');
   },
   undoBite() {
     if (game.bites > 0) { game.bites--; saveCurrentGame(); updateBiteScreen(false); }

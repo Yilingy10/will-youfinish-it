@@ -1167,7 +1167,14 @@ const ZH = {
 "Tap it to take a bite.": "点它咬一口。",
 "Tell the truth.": "要说实话。",
 "Shape, flavor, toppings. Then press the machine.": "形状、口味、小料。然后按一下机器。",
-"FINISH IT?": "吃完它吗？"
+"FINISH IT?": "吃完它吗？",
+"How is it?": "怎么样？",
+"How was it, overall?": "总体来说怎么样？",
+"Still good. Suspicious.": "还是很好吃。有点可疑。",
+"Still pretty good. Noted.": "还是挺好吃。记下了。",
+"Fine. Holding steady.": "还行。保持稳定。",
+"The hmmmm is growing.": "这个“嗯……”越来越长了。",
+"And yet it’s still in your hand.": "可它还在你手里。"
 };
 // Sentences with numbers, dates or someone's own words in them.
 const ZH_MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12,
