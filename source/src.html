@@ -633,6 +633,7 @@ body[data-screen=graveyard] { background: linear-gradient(var(--sky) 0, var(--sk
 
 /*__MEMORY_CSS__*/
 /*__EXPANSION_CSS__*/
+/*__ROOM_CSS__*/
 
 /* Motion off: everything still works, just still */
 @media (prefers-reduced-motion: reduce) {
@@ -2194,9 +2195,11 @@ function screenCreate() {
 }
 // Only the things that changed are redrawn, so the trays keep their scroll position.
 function refreshBench(line, plop) {
-  const d = draft, fl = d.flavor ? FLAVORS[d.flavor] : null;
-  setFlood(fl ? fl.flood : 'var(--cream)', fl ? fl.base : '#FFB3C8');
+  const d = draft;
+  if (!d) return;
+  refreshTicket();
   const prev = document.getElementById('preview');
+  if (!prev) return;
   prev.innerHTML = benchIceCream();
   const syncGroup = (act, isOn) => document.querySelectorAll(`[data-act=${act}]`).forEach(b => {
     const on = isOn(b.dataset.val); b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
@@ -2230,8 +2233,8 @@ function refreshBench(line, plop) {
 }
 function nudgeTray(id, line) {
   const tray = document.getElementById(id), b = document.getElementById('benchBubble');
-  b.textContent = line;
-  tray.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
+  if (b) b.textContent = line;
+  roomShow(tray);
   tray.classList.remove('nudge'); void tray.offsetWidth; tray.classList.add('nudge');
 }
 
@@ -2652,7 +2655,7 @@ function screenAbout() {
         <button class="link" data-act="askReset">Delete all my data</button>
       </div>
     </div>
-    <div style="margin-top:auto"><button class="btn c-white" data-go="home">BACK TO THE FREEZER</button></div>
+    <div style="margin-top:auto"><button class="btn c-white" data-go="home">BACK TO THE COUNTER</button></div>
   </section>`;
 }
 function confirmSheet(title, question, confirmLabel, act, val = '') {
@@ -2689,6 +2692,7 @@ function toast(msg) {
 //__MEMORY_JS__
 //__MEMORY_VIEW__
 //__EXPANSION__
+//__ROOM__
 
 /* ==========================================================================
    ROUTER: the part after # in the address decides the screen, which keeps the
@@ -2709,8 +2713,28 @@ function render() {
   if (route === 'graveyard' || route === 'hall') { history.replaceState(null, '', '#freezer/fresh'); return render(); }
   if (route === 'archive') { history.replaceState(null, '', '#freezer/door'); return render(); }   // the archive lives on the freezer now
   if (route === 'memory' && extra !== 'bench') { history.replaceState(null, '', '#freezer/' + (param || '')); return render(); }
+  // The cover and the workbench are one room now; so are eating and the verdict.
+  if ((!route || route === 'home' || route === 'create') && game) { history.replaceState(null, '', '#play'); return render(); }
+  // an ice cream with nothing picked yet isn't kept: home is just the room
+  if ((!route || route === 'home') && draft && !draft.form && !draft.flavor && !draft.toppings.length && !draft.decor.length && !draft.name && !draft.place && !draft.reason && !draft.loc) draft = null;
+  if ((!route || route === 'home') && draft) { history.replaceState(null, '', '#create'); return render(); }
+  if (route === 'play' && !game) { history.replaceState(null, '', '#home'); return render(); }
+  const prevMode = document.getElementById('roomScreen')?.dataset.mode;
+  roomScrollKeep = document.getElementById('roomScroll')?.scrollLeft ?? null;
   document.body.dataset.screen = route || 'home';
   let html = null;
+  if (['', 'home', 'create', 'play', 'result', 'about', 'resisted'].includes(route || '')) {
+    if (route === 'create' && !draft) startDraft();
+    const win = roomWindowFor(route, decodeURIComponent(param || ''));
+    if (!(['result', 'resisted'].includes(route) && win === null)) {
+      document.body.dataset.screen = 'room';
+      app.innerHTML = screenRoom(win);
+      window.scrollTo(0, 0);
+      afterRender(route);
+      afterRoom(prevMode);
+      return;
+    }
+  }
   switch (route) {
     case 'about':     html = screenAbout(); break;
     case 'freezer':   html = screenFreezer(decodeURIComponent(param || ''), extra, more); break;
@@ -2724,7 +2748,7 @@ function render() {
       }
       break;
   }
-  if (html === null) { document.body.dataset.screen = 'home'; html = screenHome(); }
+  if (html === null) { history.replaceState(null, '', '#home'); return render(); }
   app.innerHTML = html;
   window.scrollTo(0, 0);
   afterRender(route);
@@ -2847,14 +2871,16 @@ const ACTIONS = {
   },
 
   // The workbench
-  pickForm(v)   { draft.form = v; refreshBench(FORM_SAYS[v], true); },
-  pickFlavor(v) { draft.flavor = v; refreshBench(FLAVOR_SAYS[v], true); },
+  pickForm(v)   { ensureMaking(); draft.form = v; refreshBench(FORM_SAYS[v], true); },
+  pickFlavor(v) { ensureMaking(); draft.flavor = v; refreshBench(FLAVOR_SAYS[v], true); },
   pickTopping(v) {
+    ensureMaking();
     const on = draft.toppings.includes(v);
     draft.toppings = on ? draft.toppings.filter(x => x !== v) : [...draft.toppings, v];
     refreshBench(on ? 'Fine. Take it off.' : TOPPINGS[v].say, !on);
   },
   pickDecor(v) {
+    ensureMaking();
     const on = draft.decor.includes(v);
     draft.decor = on ? draft.decor.filter(x => x !== v) : [...draft.decor, v];
     refreshBench(on ? 'Fine. Take it off.' : DECORATIONS[v].say, !on);
@@ -2862,6 +2888,8 @@ const ACTIONS = {
   // Random ice cream: changes shape, flavor, toppings and decorations.
   // The name, place and reason are left alone.
   randomize(_, el) {
+    ensureMaking();
+    el = document.getElementById('diceBtn') || el;
     const another = (list, current) => pick(list.filter(x => x !== current));
     const some = (list, max) => [...list].sort(() => Math.random() - .5).slice(0, Math.floor(Math.random() * (max + 1)));
     draft.form = another(Object.keys(FORMS), draft.form);
@@ -2882,6 +2910,7 @@ const ACTIONS = {
     refreshBench();
     updatePlaceMemory();
     const other = document.getElementById('fPlace');
+    if (!other) return;
     other.hidden = draft.place !== PLACE_OTHER_LABEL;
     if (!other.hidden) other.focus();
   },
@@ -2966,6 +2995,7 @@ const ACTIONS = {
   },
 };
 Object.assign(ACTIONS, EXTRA_ACTIONS);
+Object.assign(ACTIONS, ROOM_ACTIONS);
 function fallbackCopy(text, done) {
   const t = document.createElement('textarea');
   t.value = text; t.style.position = 'fixed'; t.style.opacity = '0';

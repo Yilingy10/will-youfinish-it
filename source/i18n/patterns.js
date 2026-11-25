@@ -44,6 +44,8 @@ const ZH_PATTERNS = [
   [/^(\d+) bites?$/i, '$1 口'],
   [/^(\d+) bites?, predicted (\d+)$/, '$1 口，预测 $2 口'],
   [/^BITE (\d+)$/, '第 $1 口'],
+  [/^MACHINE SAYS (\d+)$/, '机器说 $1 口'],
+  [/^TODAY: (.+)$/, (_, f) => { const t = zhOf(f); return t ? '今日：' + t : null; }],
   [/^Bite (\d+): (.+)$/, (_, n, a) => `第 ${n} 口：${zhBit(a)}`],
   [/^(\d+) of (\d+) thawed\.$/, '已解冻 $1 / $2。'],
   [/^(\d+) real records? saved\.$/, '已保存 $1 条真实记录。'],
