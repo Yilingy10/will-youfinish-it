@@ -702,7 +702,7 @@ body[data-screen=graveyard] { background: linear-gradient(var(--sky) 0, var(--sk
 .cmem[data-order] .cmem-tip { bottom: auto; top: calc(100% + 4px); }
 
 /* the front of the chest: two drawers and a little name plate */
-.chest-front { position: absolute; left: 6.5%; right: 6.5%; top: 75.4%; height: 18.8%; z-index: 460; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 2.4cqw; }
+.chest-front { position: absolute; left: 6.5%; right: 6.5%; top: 75.4%; height: 18.8%; z-index: 460; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2.4cqw; }
 .chest-note { justify-self: center; display: flex; flex-direction: column; align-items: center; gap: .3cqw; padding: 0; border: 0; background: none; color: var(--ink); transform: rotate(-3deg); transition: transform .15s; }
 .chest-note svg { width: 8.6cqw; min-width: 50px; height: auto; display: block; overflow: visible; }
 .chest-note .note-ic { filter: url(#riso); }
@@ -710,17 +710,18 @@ body[data-screen=graveyard] { background: linear-gradient(var(--sky) 0, var(--sk
 .chest-note:hover { transform: rotate(1deg) translateY(-2px); }
 .chest-note.on span { text-decoration-color: #EE6B83; }
 .chest-drawer { position: relative; display: flex; align-items: center; gap: 1.4cqw; height: 100%; min-height: 44px; padding: .9cqw 1.4cqw; border: 0; border-radius: 1.6cqw; text-align: left; color: var(--ink);
-  background: linear-gradient(#F3FAFC, #DDEFF5); box-shadow: inset 0 0 0 2px #B9DBE7, 0 .5cqw 0 #B9DBE7; transition: transform .12s; }
-.chest-drawer:active { transform: translateY(.4cqw); box-shadow: inset 0 0 0 2px #B9DBE7, 0 .1cqw 0 #B9DBE7; }
-.chest-drawer.on { background: linear-gradient(#FFF4F6, #FFE0E7); box-shadow: inset 0 0 0 2px #FFB9CA, 0 .5cqw 0 #FFB9CA; }
-.chest-drawer .crisper-window { flex: 0 0 42%; display: flex; justify-content: space-around; align-items: center; height: 100%; overflow: hidden; border-radius: 1cqw; background: rgba(255, 255, 255, .7); }
+  background: linear-gradient(175deg, #EEF8FB, #CBE6F0); box-shadow: 0 .5cqw .9cqw rgba(90, 140, 160, .16); transition: transform .12s; isolation: isolate; }
+.chest-drawer::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--grain) 0 0 / 180px; opacity: .3; pointer-events: none; }
+.chest-drawer:active { transform: translateY(.4cqw); }
+.chest-drawer.on { background: linear-gradient(175deg, #FFF3F6, #FFD6E0); }
+.chest-drawer .crisper-window { flex: 0 0 58%; display: flex; justify-content: space-around; align-items: center; height: 100%; overflow: hidden; border-radius: 1cqw; background: rgba(255, 255, 255, .7); }
 .chest-drawer .crisper-window i { width: 22%; height: 62%; border-radius: 40% 40% 30% 30%; filter: blur(3px); opacity: .85; }
 .crisper-window i:nth-child(1) { background: #FFC6D5; } .crisper-window i:nth-child(2) { background: #FFE29A; height: 44%; }
 .crisper-window i:nth-child(3) { background: #D3D5FB; } .crisper-window i:nth-child(4) { background: #D6EDBC; height: 50%; } .crisper-window i:nth-child(5) { background: #E2C7AB; }
 .chest-drawer:hover .crisper-window i { filter: blur(1.5px); }
 .chest-drawer .crisper-tag { font-size: max(9px, 1.15cqw); line-height: 1.15; }
 .fresh-window { justify-content: center !important; gap: 2%; }
-.fresh-window .fz { width: 30%; height: 90%; display: flex; align-items: center; justify-content: center; }
+.fresh-window .fz { width: 15%; height: 100%; display: flex; align-items: center; justify-content: center; }
 .fresh-window .fz svg { width: 100%; height: 100%; }
 .fresh-window em { font-size: max(9px, 1cqw); font-style: normal; color: var(--muted); }
 .chest-drawer.thawed .crisper-tag::after { content: ''; display: inline-block; width: 6px; height: 6px; margin-left: 5px; vertical-align: 2px; border-radius: 50%; background: #E3A6B4; }
@@ -1338,6 +1339,39 @@ html[data-lang=zh] .rm-sign span { margin: 0 !important; font-size: inherit !imp
 .rm-react.overall .rr-q { flex: 1 1 100%; text-align: center; font-size: 13px; margin: 0 0 2px; }
 .rm-react.overall .rr-face { width: 40px; height: 40px; opacity: .8; }
 @media (prefers-reduced-motion: reduce) { .rm-react.hint .rr-face { animation: none; } }
+
+/* the shop's name, painted on the front of the counter */
+.rm-title { z-index: 3; transform: rotate(-5deg); font-size: calc(62 * var(--u)); }
+.rm-title span:nth-child(1) { margin-right: calc(46 * var(--u)); }
+.rm-title span:nth-child(2) { font-size: calc(68 * var(--u)); margin-left: calc(14 * var(--u)); }
+
+/* the door, and the light behind it */
+.rm-door { padding: 0; border: 0; background: none; perspective: calc(1400 * var(--u)); cursor: pointer; z-index: 1; }
+.rm-door svg { position: absolute; display: block; overflow: visible; }
+.rm-door .door-frame { inset: 0; width: 100%; height: 100%; }
+.rm-door .door-panel { left: calc(16 / 236 * 100%); top: calc(16 / 570 * 100%); width: calc(204 / 236 * 100%); height: calc(554 / 570 * 100%); transform-origin: 0 50%; transition: transform .6s cubic-bezier(.3, .8, .3, 1); }
+.rm-door:hover .door-panel { transform: rotateY(-8deg); }
+.rm-door.open .door-panel { transform: rotateY(-52deg); }
+.rm-door:focus-visible { outline: 3px solid #EE6B83; outline-offset: 4px; border-radius: 20px; }
+@media (prefers-reduced-motion: reduce) { .rm-door .door-panel { transition: none; } }
+
+/* Next Scoop, in its window */
+.next-scoop .ns-k { font-size: 12px; letter-spacing: .1em; color: #D9708C; text-align: center; }
+.ns-pick { display: grid; grid-template-columns: 96px 1fr; gap: 12px; align-items: center; margin-top: 8px; }
+.ns-art svg { width: 96px; height: auto; display: block; }
+.ns-label { font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+.ns-title { font-size: clamp(24px, 6.4vw, 32px); line-height: 1; margin: 2px 0 6px; }
+.ns-why { font-size: 13.5px; line-height: 1.4; margin-top: 2px; }
+.ns-shops { position: relative; isolation: isolate; margin-top: 16px; padding: 14px 14px 12px; border-radius: 20px; background: linear-gradient(170deg, #F3FAFC, #DDEFF5); }
+.ns-shops::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--grain) 0 0 / 180px; opacity: .25; pointer-events: none; }
+.ns-status { font-weight: 700; text-align: center; padding: 8px 0; }
+.ns-note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 8px; }
+.ns-shop { font: 700 22px/1.15 var(--text); margin: 2px 0 4px; }
+.ns-meta { font-size: 13px; line-height: 1.4; }
+.ns-go { margin-top: 10px; display: block; text-align: center; text-decoration: none; }
+.ns-more { list-style: none; margin: 4px 0 0; padding: 0; }
+.ns-more li { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1.5px dotted rgba(188, 155, 134, .5); font-size: 14px; }
+.ns-more a { color: var(--ink); font-weight: 700; }
 
 
 /* Motion off: everything still works, just still */
@@ -2552,7 +2586,26 @@ const ZH = {
 "Still pretty good. Noted.": "还是挺好吃。记下了。",
 "Fine. Holding steady.": "还行。保持稳定。",
 "The hmmmm is growing.": "这个“嗯……”越来越长了。",
-"And yet it’s still in your hand.": "可它还在你手里。"
+"And yet it’s still in your hand.": "可它还在你手里。",
+"Next Scoop: where to get the next one": "下一勺：下一支去哪儿买",
+"NEXT SCOOP": "下一勺",
+"The machine suggests": "机器建议",
+"FIND ONE NEAR ME": "找找我附近的",
+"Your location is only used for this one search. It isn’t saved.": "你的位置只用于这一次搜索，不会被保存。",
+"CLOSE THE DOOR": "关上门",
+"Looking around you…": "正在看看你周围…",
+"This browser can’t tell where you are. The flavor advice still stands.": "这个浏览器不知道你在哪儿。口味建议依然有效。",
+"No location, no shop. The flavor advice still stands.": "没有位置，就找不到店。口味建议依然有效。",
+"TRY AGAIN": "再试一次",
+"No ice cream shop anywhere near you. That might be for the best.": "你附近没有雪糕店。这也许是件好事。",
+"Couldn’t reach the map just now.": "暂时连不上地图。",
+"Closest to you": "离你最近",
+"GET DIRECTIONS": "怎么去",
+"Also nearby": "附近还有",
+"Shops from OpenStreetMap. Check they’re open before you go.": "店铺信息来自 OpenStreetMap。出发前确认一下有没有开门。",
+"A small cup of vanilla.": "一小杯香草。",
+"No history yet. Start small. The machine will learn.": "还没有记录。先从小份开始，机器会慢慢了解你。",
+"Small cup. History says the big ones don’t make it.": "小杯就好。历史表明，大份的撑不到最后。"
 };
 // Sentences with numbers, dates or someone's own words in them.
 const ZH_MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12,
@@ -2601,6 +2654,13 @@ const ZH_PATTERNS = [
   [/^(\d+) bites?, predicted (\d+)$/, '$1 口，预测 $2 口'],
   [/^BITE (\d+)$/, '第 $1 口'],
   [/^MACHINE SAYS (\d+)$/, '机器说 $1 口'],
+  [/^You finished (\d+) of your last (\d+)\.$/, '你最近 $2 支吃完了 $1 支。'],
+  [/^(.+) has your best record: finished (\d+) of (\d+)\.$/, (_, f, a, b) => `${zhBit(f.toUpperCase())}的记录最好：${b} 支吃完了 ${a} 支。`],
+  [/^Your best bites came from (.+)\.$/, (_, f) => `你吃得最开心的是${zhBit(f.toUpperCase())}。`],
+  [/^(.+), a small cup\.$/, (_, f) => { const t = zhOf(f.toUpperCase()); return t ? `${t}，小杯。` : null; }],
+  [/^(.+), as a (.+)\.$/, (_, f, m) => { const t = zhOf(f.toUpperCase()), u = zhOf(m.toUpperCase()); return t && u ? `${t}，${u}。` : null; }],
+  [/^(\d[\d.,]*) (ft|mi|m|km) · about (\d+) min on foot(.*)$/, (_, n, u, w, rest) => `${n} ${({ ft: '英尺', mi: '英里', m: '米', km: '公里' })[u]} · 步行约 ${w} 分钟${rest}`],
+  [/^Hours: (.*)$/, '营业时间：$1'],
   [/^TODAY: (.+)$/, (_, f) => { const t = zhOf(f); return t ? '今日：' + t : null; }],
   [/^Bite (\d+): (.+)$/, (_, n, a) => `第 ${n} 口：${zhBit(a)}`],
   [/^(\d+) of (\d+) thawed\.$/, '已解冻 $1 / $2。'],
@@ -5407,21 +5467,19 @@ function chestHTML() {
     ${MEMORIES.map(chestItem).join('')}
     ${CHEST_FRONT}
     <div class="chest-front">
-      <button class="crisper chest-drawer ${thawedList().includes('more') ? 'thawed' : ''}" data-act="pickMemory" data-val="more" aria-label="${esc(MEMORY_MORE.title)}">
-        <span class="crisper-window" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="chunky crisper-tag">${esc(MEMORY_COPY.drawer)}</span></button>
+      ${freshDrawerButton()}
       <button class="chest-note" data-act="openDoor" aria-label="The archive: everything the machine thinks it knows">
         <svg viewBox="0 0 120 70" aria-hidden="true"><g class="note-ic"><path d="M8 6 H112 L108 64 H12 Z" fill="#FFF0A6"/><path d="M44 0 H76 V12 H44 Z" fill="#F7C9D4" opacity=".9"/>
           <path d="M24 50 V38 M38 50 V28 M52 50 V42 M66 50 V24 M80 50 V34 M94 50 V30" stroke="#E3A6B4" stroke-width="7" stroke-linecap="round"/></g></svg>
         <span class="chunky">ARCHIVE</span></button>
-      ${freshDrawerButton()}
     </div>
   </div>`;
 }
-// The Freshly Frozen drawer on the front: the newest three peek through
+// The Freshly Frozen drawer across the front: the newest six peek through
 function freshDrawerButton() {
   const fresh = sortedEntries();
   return `<button class="crisper chest-drawer fresh-drawer ${fz.view === 'fresh' ? 'on' : ''}" data-act="openFresh" aria-label="Freshly Frozen: ${fresh.length} new records">
-        <span class="crisper-window fresh-window">${fresh.slice(-3).reverse().map(r => `<span class="fz">${entryThumb(r)}</span>`).join('') || '<em>Empty, for now.</em>'}</span>
+        <span class="crisper-window fresh-window">${fresh.slice(-6).reverse().map(r => `<span class="fz">${entryThumb(r)}</span>`).join('') || '<em>Empty, for now.</em>'}</span>
         <span class="chunky crisper-tag">FRESHLY FROZEN · ${fresh.length}</span></button>`;
 }
 // New records arrived from the shared sheet: only the drawer changes, so a memory
@@ -6641,8 +6699,9 @@ const ROOM_W = 1500, ROOM_H = 900;
 // x, y, width, height in room units, as CSS for an absolutely placed thing
 const at = (x, y, w, h) => `left:calc(${x} * var(--u));top:calc(${y} * var(--u));width:calc(${w} * var(--u));${h != null ? `height:calc(${h} * var(--u));` : ''}`;
 // the parts of the room, left to right (the phone snaps to these)
-const ROOM_ZONES = { freezer: [0, 300], machine: [300, 600], counter: [600, 900], shelves: [900, 1200], case: [1200, 1500] };
-let roomScrollKeep = null;   // where the phone was scrolled, kept across redraws of the same room
+const ROOM_ZONES = { door: [0, 290], machine: [290, 600], counter: [600, 920], shelves: [920, 1200], case: [1200, 1500] };
+let roomScrollKeep = null;
+let lastRoomRoute = null;   // so the door can swing shut after Next Scoop   // where the phone was scrolled, kept across redraws of the same room
 
 function roomMode() {
   if (game) return 'play';
@@ -6665,40 +6724,8 @@ function roomBackSVG() {
   ${tiles.join('')}
   <rect x="-600" y="866" width="2700" height="6" fill="#D9E4E8"/>
 
-  <!-- the shop sign, top left: a soft serve on a waffle cone, hanging from an iron arm.
-       No outlines: soft gradients, and the grain does the rest. -->
-  <defs>
-    <clipPath id="rmConeClip"><path d="M90 222 H282 L188 378 Z"/></clipPath>
-    <linearGradient id="sgScoop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFDF8"/><stop offset="1" stop-color="#FFE1E9"/></linearGradient>
-    <linearGradient id="sgScoopShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD3DE"/><stop offset="1" stop-color="#F9BFCE"/></linearGradient>
-    <linearGradient id="sgCone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FDDFA8"/><stop offset="1" stop-color="#EDAE68"/></linearGradient>
-    <linearGradient id="sgRim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFEDB7"/><stop offset="1" stop-color="#FAD58C"/></linearGradient>
-    <linearGradient id="sgIron" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9C6E53"/><stop offset="1" stop-color="#B98C6E"/></linearGradient>
-    <radialGradient id="sgGlow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFF6DD" stop-opacity=".9"/><stop offset="1" stop-color="#FFF6DD" stop-opacity="0"/></radialGradient>
-  </defs>
-  <g class="rm-riso" transform="translate(0 26)">
-    <ellipse cx="188" cy="190" rx="200" ry="170" fill="url(#sgGlow)"/>
-    <rect x="0" y="22" width="14" height="56" rx="4" fill="#9C6E53"/>
-    <rect x="8" y="32" width="332" height="8" rx="4" fill="url(#sgIron)"/>
-    <path d="M14 68 L118 36" stroke="#A97A5E" stroke-width="5" stroke-linecap="round"/>
-    <path d="M338 36 q16 0 16 13 q0 11 -11 11 q-8 0 -8 -8" fill="none" stroke="#B98C6E" stroke-width="5" stroke-linecap="round"/>
-    <path d="M132 36 V106 M240 36 V106" stroke="#CDB9AC" stroke-width="4" stroke-dasharray="5 4"/>
-    <path d="M90 222 H282 L188 378 Z" fill="url(#sgCone)"/>
-    <g clip-path="url(#rmConeClip)" opacity=".5"><path d="${[0, 1, 2, 3, 4, 5, 6, 7].map(k => `M${40 + k * 34} 210 l120 180 M${300 - k * 34} 210 l-120 180`).join(' ')}" stroke="#FFF1D4" stroke-width="4"/></g>
-    <rect x="80" y="206" width="212" height="22" rx="10" fill="url(#sgRim)"/>
-    <g fill="url(#sgScoopShade)">
-      <rect x="70" y="170" width="232" height="46" rx="23"/>
-      <rect x="98" y="132" width="176" height="44" rx="22"/>
-      <rect x="126" y="100" width="122" height="40" rx="20"/>
-    </g>
-    <g fill="url(#sgScoop)">
-      <rect x="70" y="162" width="232" height="46" rx="23"/>
-      <rect x="98" y="126" width="176" height="42" rx="21"/>
-      <rect x="126" y="94" width="122" height="38" rx="19"/>
-      <path d="M150 100 C150 72 176 66 196 60 C206 57 212 48 210 38 C226 52 224 80 200 94 Z"/>
-    </g>
-    <path d="M100 176 q56 -10 140 -4 M128 138 q46 -8 104 -2 M154 106 q28 -5 64 -1" stroke="#FFFFFF" stroke-width="6" fill="none" stroke-linecap="round" opacity=".75"/>
-  </g>
+  <!-- a little mat in front of the door -->
+  <ellipse cx="146" cy="872" rx="118" ry="13" fill="#F6C9D3" opacity=".9" class="rm-riso"/>
 
   <!-- the wall shelves: shapes, toppings, decorations -->
   <g class="rm-riso">
@@ -6732,8 +6759,8 @@ function roomBackSVG() {
     <rect x="924" y="390" width="564" height="20" rx="8" fill="#FFF8EE"/>
   </g>
 
-  <!-- the Memory Freezer, in the corner -->
-  <g class="rm-riso">
+  <!-- the Memory Freezer, standing in front of the counter -->
+  <g class="rm-riso" transform="translate(300 619) scale(.84) translate(-16 -572)">
     <ellipse cx="160" cy="866" rx="150" ry="11" fill="#8B5E45" opacity=".1"/>
     <path d="M30 610 H290 L282 848 Q281 858 270 858 H50 Q39 858 38 848 Z" fill="#C9E6F0"/>
     <path d="M30 610 H290 L282 848 Q281 858 270 858 H50 Q39 858 38 848 Z" fill="url(#rmDots)" opacity=".6"/>
@@ -6837,7 +6864,7 @@ function reactRowHTML(kind = 'bite') {
 const overallAskHTML = () => game && !game.firstReaction && !game.laterReactions.length ? reactRowHTML('overall') : '';
 
 // The room, with whatever is happening in it. `win` is a small window on top.
-function screenRoom(win) {
+function screenRoom(win, route) {
   const mode = roomMode();
   if (!win) setFlood('#F1F2F2', null, '#F1F2F2');
   const d = draft, g = game;
@@ -6876,10 +6903,11 @@ function screenRoom(win) {
     <div class="room" id="room">
       ${roomBackSVG()}
       ${Object.entries(ROOM_ZONES).map(([k, [a, b]]) => `<i class="rm-zone" data-zone="${k}" style="${at(a, 0, b - a, ROOM_H)}"></i>`).join('')}
-      <h1 class="rm-sign" style="${at(26, 176, 330, 150)}" aria-label="Will you finish it?"><span>Will you</span><span>finish it?</span></h1>
+      <h1 class="rm-sign rm-title" style="${at(1104, 652, 370, 176)}" aria-label="Will you finish it?"><span>Will you</span><span>finish it?</span></h1>
+      ${doorHTML(route === 'nextscoop' || lastRoomRoute === 'nextscoop')}
 
-      <button class="rm-freezer" data-go="freezer" style="${at(14, 560, 296, 304)}" aria-label="The Memory Freezer"><span class="chunky rm-fz-name" style="${at(58, 172, 180, null)}">THE MEMORY FREEZER</span></button>
-      ${mode === 'idle' ? `<button class="rm-ghost" data-act="iResisted" style="${at(200, 436, 120, 130)}">${ghostSVG('hmm', 'rl-ghost')}<span class="chunky">I resisted one</span></button>` : ''}
+      <button class="rm-freezer" data-go="freezer" style="${at(300, 616, 244, 252)}" aria-label="The Memory Freezer"><span class="chunky rm-fz-name" style="${at(46, 136, 152, null)}">THE MEMORY FREEZER</span></button>
+      ${mode === 'idle' ? `<button class="rm-ghost" data-act="iResisted" style="${at(84, 116, 130, 140)}">${ghostSVG('hmm', 'rl-ghost')}<span class="chunky">I resisted one</span></button>` : ''}
 
       <button class="rm-machine ${mode}" data-act="${mode === 'play' ? (g.stage === 'bite' ? 'bite' : 'resume') : mode === 'making' ? 'enterArena' : 'machine'}" style="${at(330, 296, 268, 300)}"
         aria-label="${mode === 'making' ? 'Enter the arena' : mode === 'play' ? 'The machine' : 'Make an ice cream'}">
@@ -6926,6 +6954,7 @@ function idlePlateSVG() {
 // The small windows: a screen's own content, in a card over the room
 function roomWindowFor(route, param) {
   if (route === 'about') return screenAbout();
+  if (route === 'nextscoop') return screenNextScoop();
   if (route === 'resisted') return screenResisted(param);
   if (route === 'result') return screenResult(param);
   if (route === 'play' && game && game.stage !== 'bite') {
@@ -6936,10 +6965,13 @@ function roomWindowFor(route, param) {
 
 // After the room is drawn: keep the phone's place, or bring the right part into view
 function afterRoom(prevMode) {
+  const door = document.querySelector('.rm-door.open');
+  if (door && !location.hash.startsWith('#nextscoop')) requestAnimationFrame(() => requestAnimationFrame(() => door.classList.remove('open')));
+  lastRoomRoute = (location.hash.slice(1).split('/')[0]) || 'home';
   const sc = document.getElementById('roomScroll');
   if (!sc || sc.scrollWidth <= sc.clientWidth + 4) return;
   const mode = roomMode();
-  const zone = mode === 'idle' ? 'freezer' : 'counter';   // a phone opens at the left: the sign first
+  const zone = mode === 'idle' ? 'case' : 'counter';   // a phone opens where the name is written, on the counter
   if (roomScrollKeep != null && prevMode === mode) { sc.scrollLeft = roomScrollKeep; return; }
   scrollRoomTo(zone, false);
 }
@@ -7050,6 +7082,163 @@ const ROOM_ACTIONS = {
 };
 
 
+/* --- THE DOOR: Next Scoop ------------------------------------------------------
+   A door on the left wall with a little sign. Press it: it swings open a little,
+   and a window suggests a flavor from how your recent ice creams went, and the
+   nearest real ice cream shops around you (from OpenStreetMap). Your location is
+   asked for only when you press FIND ONE NEAR ME, used for that one search, and
+   never saved or sent anywhere else. */
+function doorHTML(open) {
+  const arch = (i, top) => `M${i} 570 V${110 + i / 2} Q${i} ${top} 118 ${top} Q${236 - i} ${top} ${236 - i} ${110 + i / 2} V570 Z`;
+  return `<button class="rm-door ${open ? 'open' : ''}" data-act="openNextScoop" style="${at(26, 296, 236, 570)}" aria-label="Next Scoop: where to get the next one">
+    <svg class="door-frame" viewBox="0 0 236 570" aria-hidden="true"><defs>
+      <linearGradient id="dfFrame" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFBF4"/><stop offset="1" stop-color="#F1E4D3"/></linearGradient>
+      <radialGradient id="dfLight" cx=".5" cy=".35" r=".8"><stop offset="0" stop-color="#FFF6D8"/><stop offset=".6" stop-color="#FFE1A0"/><stop offset="1" stop-color="#F8C98A"/></radialGradient></defs>
+      <g class="rm-riso"><path d="${arch(0, 0)}" fill="url(#dfFrame)"/><path d="${arch(16, 16)}" fill="url(#dfLight)"/></g></svg>
+    <svg class="door-panel" viewBox="16 16 204 554" aria-hidden="true"><defs>
+      <linearGradient id="dpBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFEDB5"/><stop offset="1" stop-color="#F6C873"/></linearGradient>
+      <linearGradient id="dpGlass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E6F4F9"/><stop offset="1" stop-color="#B8DCEA"/></linearGradient>
+      <linearGradient id="dpKnob" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8B98F"/><stop offset="1" stop-color="#BE8660"/></linearGradient>
+      <linearGradient id="dpSign" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFDF8"/><stop offset="1" stop-color="#FFE6EC"/></linearGradient>
+      <linearGradient id="dpInk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C98F66"/><stop offset="1" stop-color="#8B5E45"/></linearGradient></defs>
+      <g class="rm-riso">
+        <path d="${arch(16, 16)}" fill="url(#dpBody)"/>
+        <path d="M44 236 V${118} Q44 44 118 44 Q192 44 192 118 V236 Z" fill="url(#dpGlass)"/>
+        <path d="M70 90 L56 190 M98 70 L80 210" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" opacity=".6"/>
+        <rect x="40" y="378" width="156" height="72" rx="12" fill="#F2BE62" opacity=".45"/>
+        <rect x="40" y="466" width="156" height="72" rx="12" fill="#F2BE62" opacity=".45"/>
+        <rect x="16" y="548" width="204" height="22" fill="#EDB760"/>
+        <circle cx="192" cy="352" r="11" fill="url(#dpKnob)"/>
+        <path d="M118 226 L72 262 M118 226 L164 262" stroke="#CDB9AC" stroke-width="3"/><circle cx="118" cy="226" r="4" fill="#B98C6E"/>
+        <rect x="46" y="258" width="144" height="70" rx="14" fill="url(#dpSign)" transform="rotate(-3 118 293)"/>
+        <text x="118" y="305" text-anchor="middle" font-family="'Sign Script', cursive" font-size="34" fill="url(#dpInk)" transform="rotate(-3 118 293)" data-noi18n>Next Scoop</text>
+      </g></svg>
+  </button>`;
+}
+
+// What to get: from how your recent ice creams went (records only, never the memories)
+function nextScoopAdvice() {
+  const recs = allRecords().slice(-8);
+  if (!recs.length) return { flavor: 'vanilla', form: 'cup', title: 'A small cup of vanilla.', why: ['No history yet. Start small. The machine will learn.'] };
+  const fin = recs.filter(r => r.finished).length;
+  const rate = fin / recs.length;
+  const by = {};
+  for (const r of recs) {
+    const k = r.flavorCategory; if (!FLAVORS[k]) continue;
+    const scores = [r.firstReaction, ...(r.laterReactions || [])].filter(Boolean).map(x => x.score);
+    const taste = scores.length ? (mean(scores) - 3) / 4 : 0;
+    const got = r.finished ? 1 : Math.min(1, r.actualBites / Math.max(1, r.predictedBites));
+    (by[k] = by[k] || { k, n: 0, fin: 0, sum: 0 });
+    by[k].n++; by[k].fin += r.finished ? 1 : 0; by[k].sum += got + taste;
+  }
+  const best = Object.values(by).sort((a, b) => b.sum / b.n - a.sum / a.n || b.n - a.n)[0] || { k: 'vanilla', n: 0, fin: 0 };
+  const forms = recs.filter(r => r.finished).map(r => r.form);
+  const form = rate < .5 ? 'cup' : (forms.sort((a, b) => forms.filter(x => x === b).length - forms.filter(x => x === a).length)[0] || 'cup');
+  const fl = FLAVORS[best.k].label, fm = FORMS[form] ? FORMS[form].label : 'CUP';
+  const why = [`You finished ${fin} of your last ${recs.length}.`];
+  why.push(best.fin ? `${capFirst(fl.toLowerCase())} has your best record: finished ${best.fin} of ${best.n}.` : `Your best bites came from ${fl.toLowerCase()}.`);
+  if (rate < .5) why.push('Small cup. History says the big ones don’t make it.');
+  return { flavor: best.k, form, title: `${capFirst(fl.toLowerCase())}, ${rate < .5 ? 'a small cup' : 'as a ' + fm.toLowerCase()}.`, why };
+}
+function screenNextScoop() {
+  const a = nextScoopAdvice();
+  return `<section class="screen next-scoop" id="nextScoop">
+    <p class="chunky ns-k">NEXT SCOOP</p>
+    <div class="ns-pick">
+      <span class="ns-art">${iceCream({ form: a.form, flavor: a.flavor, mood: 'happy', label: FLAVORS[a.flavor].label })}</span>
+      <div><p class="chunky ns-label">The machine suggests</p><h1 class="melty ns-title">${esc(a.title)}</h1>
+      ${a.why.map(w => `<p class="ns-why">${esc(w)}</p>`).join('')}</div>
+    </div>
+    <div class="ns-shops" id="nsShops">
+      <button class="btn c-lemon" data-act="findScoop">FIND ONE NEAR ME</button>
+      <p class="ns-note">Your location is only used for this one search. It isn’t saved.</p>
+    </div>
+    <button class="btn c-white" data-act="closeWindow" style="margin-top:12px">CLOSE THE DOOR</button>
+  </section>`;
+}
+const metersTo = (a, b) => {
+  const R = 6371000, rad = x => x * Math.PI / 180;
+  const dLat = rad(b.lat - a.lat), dLon = rad(b.lon - a.lon);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+};
+const usUnits = () => /^en-US$/i.test(navigator.language || '');
+function distanceText(m) {
+  if (usUnits()) { const mi = m / 1609.34; return mi < .2 ? `${Math.round(m * 3.281 / 50) * 50} ft` : `${mi.toFixed(mi < 10 ? 1 : 0)} mi`; }
+  return m < 1000 ? `${Math.round(m / 10) * 10} m` : `${(m / 1000).toFixed(1)} km`;
+}
+const OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter'];
+async function nearbyIceCream(here, radius) {
+  const q = `[out:json][timeout:15];(nwr["amenity"="ice_cream"](around:${radius},${here.lat},${here.lon});nwr["shop"="ice_cream"](around:${radius},${here.lat},${here.lon});nwr["cuisine"~"ice_cream|gelato|frozen_yogurt"](around:${radius},${here.lat},${here.lon}););out center tags 60;`;
+  let last;
+  for (const url of OVERPASS) {
+    try {
+      const res = await fetch(url + '?data=' + encodeURIComponent(q));
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      const seen = new Set();
+      return (data.elements || []).map(e => {
+        const lat = e.lat ?? (e.center && e.center.lat), lon = e.lon ?? (e.center && e.center.lon), t = e.tags || {};
+        if (lat == null || !t.name) return null;
+        const key = t.name.toLowerCase() + Math.round(lat * 1000) + Math.round(lon * 1000);
+        if (seen.has(key)) return null; seen.add(key);
+        const street = [t['addr:housenumber'], t['addr:street']].filter(Boolean).join(' ');
+        return { name: t.name, lat, lon, d: metersTo(here, { lat, lon }), hours: t.opening_hours || '', street, web: t.website || t['contact:website'] || '' };
+      }).filter(Boolean).sort((x, y) => x.d - y.d);
+    } catch (e) { last = e; }
+  }
+  throw last || new Error('no map');
+}
+function mapsLink(s) {
+  const apple = /iPhone|iPad|Macintosh/.test(navigator.userAgent);
+  return apple ? `https://maps.apple.com/?q=${encodeURIComponent(s.name)}&ll=${s.lat},${s.lon}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.name)}%20${s.lat}%2C${s.lon}`;
+}
+function shopsHTML(list) {
+  const [top, ...rest] = list;
+  const walk = m => Math.max(1, Math.round(m / 80));
+  return `<div class="ns-top">
+      <p class="chunky ns-label">Closest to you</p>
+      <h2 class="ns-shop" data-noi18n>${esc(top.name)}</h2>
+      <p class="ns-meta">${distanceText(top.d)} · about ${walk(top.d)} min on foot${top.street ? ` · <span data-noi18n>${esc(top.street)}</span>` : ''}</p>
+      ${top.hours ? `<p class="ns-meta">Hours: <span data-noi18n>${esc(top.hours)}</span></p>` : ''}
+      <a class="btn c-strawberry ns-go" href="${mapsLink(top)}" target="_blank" rel="noopener">GET DIRECTIONS</a>
+    </div>
+    ${rest.length ? `<p class="chunky ns-label" style="margin-top:12px">Also nearby</p><ul class="ns-more">${rest.slice(0, 3).map(s => `<li><a href="${mapsLink(s)}" target="_blank" rel="noopener"><span data-noi18n>${esc(s.name)}</span></a><span>${distanceText(s.d)}</span></li>`).join('')}</ul>` : ''}
+    <p class="ns-note">Shops from OpenStreetMap. Check they’re open before you go.</p>`;
+}
+Object.assign(ROOM_ACTIONS, {
+  // the door swings open a little, then the window
+  openNextScoop() {
+    const d = document.querySelector('.rm-door');
+    if (d) d.classList.add('open');
+    setTimeout(() => go('nextscoop'), d && !reducedMotion() ? 620 : 0);
+  },
+  async findScoop() {
+    const box = document.getElementById('nsShops');
+    if (!box) return;
+    const say = (t, extra = '') => { box.innerHTML = `<p class="ns-status">${esc(t)}</p>${extra}`; };
+    if (!navigator.geolocation) { say('This browser can’t tell where you are. The flavor advice still stands.'); return; }
+    say('Looking around you…');
+    let here;
+    try {
+      here = await new Promise((ok, no) => navigator.geolocation.getCurrentPosition(p => ok({ lat: p.coords.latitude, lon: p.coords.longitude }), no, { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 }));
+    } catch (e) {
+      say('No location, no shop. The flavor advice still stands.', `<button class="btn c-white" data-act="findScoop" style="margin-top:8px">TRY AGAIN</button>`);
+      return;
+    }
+    try {
+      let list = await nearbyIceCream(here, 2500);
+      if (!list.length) list = await nearbyIceCream(here, 8000);
+      if (!document.getElementById('nsShops')) return;
+      if (!list.length) { say('No ice cream shop anywhere near you. That might be for the best.'); return; }
+      box.innerHTML = shopsHTML(list);
+    } catch (e) {
+      say('Couldn’t reach the map just now.', `<button class="btn c-white" data-act="findScoop" style="margin-top:8px">TRY AGAIN</button>`);
+    }
+  },
+});
+
+
 /* ==========================================================================
    ROUTER: the part after # in the address decides the screen, which keeps the
    phone's back button working.
@@ -7079,12 +7268,12 @@ function render() {
   roomScrollKeep = document.getElementById('roomScroll')?.scrollLeft ?? null;
   document.body.dataset.screen = route || 'home';
   let html = null;
-  if (['', 'home', 'create', 'play', 'result', 'about', 'resisted'].includes(route || '')) {
+  if (['', 'home', 'create', 'play', 'result', 'about', 'resisted', 'nextscoop'].includes(route || '')) {
     if (route === 'create' && !draft) startDraft();
     const win = roomWindowFor(route, decodeURIComponent(param || ''));
     if (!(['result', 'resisted'].includes(route) && win === null)) {
       document.body.dataset.screen = 'room';
-      app.innerHTML = screenRoom(win);
+      app.innerHTML = screenRoom(win, route);
       window.scrollTo(0, 0);
       afterRender(route);
       afterRoom(prevMode);

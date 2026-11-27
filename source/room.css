@@ -206,3 +206,36 @@ html[data-lang=zh] .rm-sign span { margin: 0 !important; font-size: inherit !imp
 .rm-react.overall .rr-q { flex: 1 1 100%; text-align: center; font-size: 13px; margin: 0 0 2px; }
 .rm-react.overall .rr-face { width: 40px; height: 40px; opacity: .8; }
 @media (prefers-reduced-motion: reduce) { .rm-react.hint .rr-face { animation: none; } }
+
+/* the shop's name, painted on the front of the counter */
+.rm-title { z-index: 3; transform: rotate(-5deg); font-size: calc(62 * var(--u)); }
+.rm-title span:nth-child(1) { margin-right: calc(46 * var(--u)); }
+.rm-title span:nth-child(2) { font-size: calc(68 * var(--u)); margin-left: calc(14 * var(--u)); }
+
+/* the door, and the light behind it */
+.rm-door { padding: 0; border: 0; background: none; perspective: calc(1400 * var(--u)); cursor: pointer; z-index: 1; }
+.rm-door svg { position: absolute; display: block; overflow: visible; }
+.rm-door .door-frame { inset: 0; width: 100%; height: 100%; }
+.rm-door .door-panel { left: calc(16 / 236 * 100%); top: calc(16 / 570 * 100%); width: calc(204 / 236 * 100%); height: calc(554 / 570 * 100%); transform-origin: 0 50%; transition: transform .6s cubic-bezier(.3, .8, .3, 1); }
+.rm-door:hover .door-panel { transform: rotateY(-8deg); }
+.rm-door.open .door-panel { transform: rotateY(-52deg); }
+.rm-door:focus-visible { outline: 3px solid #EE6B83; outline-offset: 4px; border-radius: 20px; }
+@media (prefers-reduced-motion: reduce) { .rm-door .door-panel { transition: none; } }
+
+/* Next Scoop, in its window */
+.next-scoop .ns-k { font-size: 12px; letter-spacing: .1em; color: #D9708C; text-align: center; }
+.ns-pick { display: grid; grid-template-columns: 96px 1fr; gap: 12px; align-items: center; margin-top: 8px; }
+.ns-art svg { width: 96px; height: auto; display: block; }
+.ns-label { font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+.ns-title { font-size: clamp(24px, 6.4vw, 32px); line-height: 1; margin: 2px 0 6px; }
+.ns-why { font-size: 13.5px; line-height: 1.4; margin-top: 2px; }
+.ns-shops { position: relative; isolation: isolate; margin-top: 16px; padding: 14px 14px 12px; border-radius: 20px; background: linear-gradient(170deg, #F3FAFC, #DDEFF5); }
+.ns-shops::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--grain) 0 0 / 180px; opacity: .25; pointer-events: none; }
+.ns-status { font-weight: 700; text-align: center; padding: 8px 0; }
+.ns-note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 8px; }
+.ns-shop { font: 700 22px/1.15 var(--text); margin: 2px 0 4px; }
+.ns-meta { font-size: 13px; line-height: 1.4; }
+.ns-go { margin-top: 10px; display: block; text-align: center; text-decoration: none; }
+.ns-more { list-style: none; margin: 4px 0 0; padding: 0; }
+.ns-more li { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1.5px dotted rgba(188, 155, 134, .5); font-size: 14px; }
+.ns-more a { color: var(--ink); font-weight: 700; }

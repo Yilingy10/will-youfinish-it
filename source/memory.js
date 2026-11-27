@@ -249,21 +249,19 @@ function chestHTML() {
     ${MEMORIES.map(chestItem).join('')}
     ${CHEST_FRONT}
     <div class="chest-front">
-      <button class="crisper chest-drawer ${thawedList().includes('more') ? 'thawed' : ''}" data-act="pickMemory" data-val="more" aria-label="${esc(MEMORY_MORE.title)}">
-        <span class="crisper-window" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="chunky crisper-tag">${esc(MEMORY_COPY.drawer)}</span></button>
+      ${freshDrawerButton()}
       <button class="chest-note" data-act="openDoor" aria-label="The archive: everything the machine thinks it knows">
         <svg viewBox="0 0 120 70" aria-hidden="true"><g class="note-ic"><path d="M8 6 H112 L108 64 H12 Z" fill="#FFF0A6"/><path d="M44 0 H76 V12 H44 Z" fill="#F7C9D4" opacity=".9"/>
           <path d="M24 50 V38 M38 50 V28 M52 50 V42 M66 50 V24 M80 50 V34 M94 50 V30" stroke="#E3A6B4" stroke-width="7" stroke-linecap="round"/></g></svg>
         <span class="chunky">ARCHIVE</span></button>
-      ${freshDrawerButton()}
     </div>
   </div>`;
 }
-// The Freshly Frozen drawer on the front: the newest three peek through
+// The Freshly Frozen drawer across the front: the newest six peek through
 function freshDrawerButton() {
   const fresh = sortedEntries();
   return `<button class="crisper chest-drawer fresh-drawer ${fz.view === 'fresh' ? 'on' : ''}" data-act="openFresh" aria-label="Freshly Frozen: ${fresh.length} new records">
-        <span class="crisper-window fresh-window">${fresh.slice(-3).reverse().map(r => `<span class="fz">${entryThumb(r)}</span>`).join('') || '<em>Empty, for now.</em>'}</span>
+        <span class="crisper-window fresh-window">${fresh.slice(-6).reverse().map(r => `<span class="fz">${entryThumb(r)}</span>`).join('') || '<em>Empty, for now.</em>'}</span>
         <span class="chunky crisper-tag">FRESHLY FROZEN · ${fresh.length}</span></button>`;
 }
 // New records arrived from the shared sheet: only the drawer changes, so a memory

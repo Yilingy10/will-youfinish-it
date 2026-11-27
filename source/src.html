@@ -2726,12 +2726,12 @@ function render() {
   roomScrollKeep = document.getElementById('roomScroll')?.scrollLeft ?? null;
   document.body.dataset.screen = route || 'home';
   let html = null;
-  if (['', 'home', 'create', 'play', 'result', 'about', 'resisted'].includes(route || '')) {
+  if (['', 'home', 'create', 'play', 'result', 'about', 'resisted', 'nextscoop'].includes(route || '')) {
     if (route === 'create' && !draft) startDraft();
     const win = roomWindowFor(route, decodeURIComponent(param || ''));
     if (!(['result', 'resisted'].includes(route) && win === null)) {
       document.body.dataset.screen = 'room';
-      app.innerHTML = screenRoom(win);
+      app.innerHTML = screenRoom(win, route);
       window.scrollTo(0, 0);
       afterRender(route);
       afterRoom(prevMode);

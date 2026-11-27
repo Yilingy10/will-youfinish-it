@@ -13,8 +13,9 @@ const ROOM_W = 1500, ROOM_H = 900;
 // x, y, width, height in room units, as CSS for an absolutely placed thing
 const at = (x, y, w, h) => `left:calc(${x} * var(--u));top:calc(${y} * var(--u));width:calc(${w} * var(--u));${h != null ? `height:calc(${h} * var(--u));` : ''}`;
 // the parts of the room, left to right (the phone snaps to these)
-const ROOM_ZONES = { freezer: [0, 300], machine: [300, 600], counter: [600, 900], shelves: [900, 1200], case: [1200, 1500] };
-let roomScrollKeep = null;   // where the phone was scrolled, kept across redraws of the same room
+const ROOM_ZONES = { door: [0, 290], machine: [290, 600], counter: [600, 920], shelves: [920, 1200], case: [1200, 1500] };
+let roomScrollKeep = null;
+let lastRoomRoute = null;   // so the door can swing shut after Next Scoop   // where the phone was scrolled, kept across redraws of the same room
 
 function roomMode() {
   if (game) return 'play';
@@ -37,40 +38,8 @@ function roomBackSVG() {
   ${tiles.join('')}
   <rect x="-600" y="866" width="2700" height="6" fill="#D9E4E8"/>
 
-  <!-- the shop sign, top left: a soft serve on a waffle cone, hanging from an iron arm.
-       No outlines: soft gradients, and the grain does the rest. -->
-  <defs>
-    <clipPath id="rmConeClip"><path d="M90 222 H282 L188 378 Z"/></clipPath>
-    <linearGradient id="sgScoop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFDF8"/><stop offset="1" stop-color="#FFE1E9"/></linearGradient>
-    <linearGradient id="sgScoopShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD3DE"/><stop offset="1" stop-color="#F9BFCE"/></linearGradient>
-    <linearGradient id="sgCone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FDDFA8"/><stop offset="1" stop-color="#EDAE68"/></linearGradient>
-    <linearGradient id="sgRim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFEDB7"/><stop offset="1" stop-color="#FAD58C"/></linearGradient>
-    <linearGradient id="sgIron" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9C6E53"/><stop offset="1" stop-color="#B98C6E"/></linearGradient>
-    <radialGradient id="sgGlow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFF6DD" stop-opacity=".9"/><stop offset="1" stop-color="#FFF6DD" stop-opacity="0"/></radialGradient>
-  </defs>
-  <g class="rm-riso" transform="translate(0 26)">
-    <ellipse cx="188" cy="190" rx="200" ry="170" fill="url(#sgGlow)"/>
-    <rect x="0" y="22" width="14" height="56" rx="4" fill="#9C6E53"/>
-    <rect x="8" y="32" width="332" height="8" rx="4" fill="url(#sgIron)"/>
-    <path d="M14 68 L118 36" stroke="#A97A5E" stroke-width="5" stroke-linecap="round"/>
-    <path d="M338 36 q16 0 16 13 q0 11 -11 11 q-8 0 -8 -8" fill="none" stroke="#B98C6E" stroke-width="5" stroke-linecap="round"/>
-    <path d="M132 36 V106 M240 36 V106" stroke="#CDB9AC" stroke-width="4" stroke-dasharray="5 4"/>
-    <path d="M90 222 H282 L188 378 Z" fill="url(#sgCone)"/>
-    <g clip-path="url(#rmConeClip)" opacity=".5"><path d="${[0, 1, 2, 3, 4, 5, 6, 7].map(k => `M${40 + k * 34} 210 l120 180 M${300 - k * 34} 210 l-120 180`).join(' ')}" stroke="#FFF1D4" stroke-width="4"/></g>
-    <rect x="80" y="206" width="212" height="22" rx="10" fill="url(#sgRim)"/>
-    <g fill="url(#sgScoopShade)">
-      <rect x="70" y="170" width="232" height="46" rx="23"/>
-      <rect x="98" y="132" width="176" height="44" rx="22"/>
-      <rect x="126" y="100" width="122" height="40" rx="20"/>
-    </g>
-    <g fill="url(#sgScoop)">
-      <rect x="70" y="162" width="232" height="46" rx="23"/>
-      <rect x="98" y="126" width="176" height="42" rx="21"/>
-      <rect x="126" y="94" width="122" height="38" rx="19"/>
-      <path d="M150 100 C150 72 176 66 196 60 C206 57 212 48 210 38 C226 52 224 80 200 94 Z"/>
-    </g>
-    <path d="M100 176 q56 -10 140 -4 M128 138 q46 -8 104 -2 M154 106 q28 -5 64 -1" stroke="#FFFFFF" stroke-width="6" fill="none" stroke-linecap="round" opacity=".75"/>
-  </g>
+  <!-- a little mat in front of the door -->
+  <ellipse cx="146" cy="872" rx="118" ry="13" fill="#F6C9D3" opacity=".9" class="rm-riso"/>
 
   <!-- the wall shelves: shapes, toppings, decorations -->
   <g class="rm-riso">
@@ -104,8 +73,8 @@ function roomBackSVG() {
     <rect x="924" y="390" width="564" height="20" rx="8" fill="#FFF8EE"/>
   </g>
 
-  <!-- the Memory Freezer, in the corner -->
-  <g class="rm-riso">
+  <!-- the Memory Freezer, standing in front of the counter -->
+  <g class="rm-riso" transform="translate(300 619) scale(.84) translate(-16 -572)">
     <ellipse cx="160" cy="866" rx="150" ry="11" fill="#8B5E45" opacity=".1"/>
     <path d="M30 610 H290 L282 848 Q281 858 270 858 H50 Q39 858 38 848 Z" fill="#C9E6F0"/>
     <path d="M30 610 H290 L282 848 Q281 858 270 858 H50 Q39 858 38 848 Z" fill="url(#rmDots)" opacity=".6"/>
@@ -209,7 +178,7 @@ function reactRowHTML(kind = 'bite') {
 const overallAskHTML = () => game && !game.firstReaction && !game.laterReactions.length ? reactRowHTML('overall') : '';
 
 // The room, with whatever is happening in it. `win` is a small window on top.
-function screenRoom(win) {
+function screenRoom(win, route) {
   const mode = roomMode();
   if (!win) setFlood('#F1F2F2', null, '#F1F2F2');
   const d = draft, g = game;
@@ -248,10 +217,11 @@ function screenRoom(win) {
     <div class="room" id="room">
       ${roomBackSVG()}
       ${Object.entries(ROOM_ZONES).map(([k, [a, b]]) => `<i class="rm-zone" data-zone="${k}" style="${at(a, 0, b - a, ROOM_H)}"></i>`).join('')}
-      <h1 class="rm-sign" style="${at(26, 176, 330, 150)}" aria-label="Will you finish it?"><span>Will you</span><span>finish it?</span></h1>
+      <h1 class="rm-sign rm-title" style="${at(1104, 652, 370, 176)}" aria-label="Will you finish it?"><span>Will you</span><span>finish it?</span></h1>
+      ${doorHTML(route === 'nextscoop' || lastRoomRoute === 'nextscoop')}
 
-      <button class="rm-freezer" data-go="freezer" style="${at(14, 560, 296, 304)}" aria-label="The Memory Freezer"><span class="chunky rm-fz-name" style="${at(58, 172, 180, null)}">THE MEMORY FREEZER</span></button>
-      ${mode === 'idle' ? `<button class="rm-ghost" data-act="iResisted" style="${at(200, 436, 120, 130)}">${ghostSVG('hmm', 'rl-ghost')}<span class="chunky">I resisted one</span></button>` : ''}
+      <button class="rm-freezer" data-go="freezer" style="${at(300, 616, 244, 252)}" aria-label="The Memory Freezer"><span class="chunky rm-fz-name" style="${at(46, 136, 152, null)}">THE MEMORY FREEZER</span></button>
+      ${mode === 'idle' ? `<button class="rm-ghost" data-act="iResisted" style="${at(84, 116, 130, 140)}">${ghostSVG('hmm', 'rl-ghost')}<span class="chunky">I resisted one</span></button>` : ''}
 
       <button class="rm-machine ${mode}" data-act="${mode === 'play' ? (g.stage === 'bite' ? 'bite' : 'resume') : mode === 'making' ? 'enterArena' : 'machine'}" style="${at(330, 296, 268, 300)}"
         aria-label="${mode === 'making' ? 'Enter the arena' : mode === 'play' ? 'The machine' : 'Make an ice cream'}">
@@ -298,6 +268,7 @@ function idlePlateSVG() {
 // The small windows: a screen's own content, in a card over the room
 function roomWindowFor(route, param) {
   if (route === 'about') return screenAbout();
+  if (route === 'nextscoop') return screenNextScoop();
   if (route === 'resisted') return screenResisted(param);
   if (route === 'result') return screenResult(param);
   if (route === 'play' && game && game.stage !== 'bite') {
@@ -308,10 +279,13 @@ function roomWindowFor(route, param) {
 
 // After the room is drawn: keep the phone's place, or bring the right part into view
 function afterRoom(prevMode) {
+  const door = document.querySelector('.rm-door.open');
+  if (door && !location.hash.startsWith('#nextscoop')) requestAnimationFrame(() => requestAnimationFrame(() => door.classList.remove('open')));
+  lastRoomRoute = (location.hash.slice(1).split('/')[0]) || 'home';
   const sc = document.getElementById('roomScroll');
   if (!sc || sc.scrollWidth <= sc.clientWidth + 4) return;
   const mode = roomMode();
-  const zone = mode === 'idle' ? 'freezer' : 'counter';   // a phone opens at the left: the sign first
+  const zone = mode === 'idle' ? 'case' : 'counter';   // a phone opens where the name is written, on the counter
   if (roomScrollKeep != null && prevMode === mode) { sc.scrollLeft = roomScrollKeep; return; }
   scrollRoomTo(zone, false);
 }
@@ -420,3 +394,160 @@ const ROOM_ACTIONS = {
     if (game.stage === 'bite') updateBiteScreen(false);
   },
 };
+
+
+/* --- THE DOOR: Next Scoop ------------------------------------------------------
+   A door on the left wall with a little sign. Press it: it swings open a little,
+   and a window suggests a flavor from how your recent ice creams went, and the
+   nearest real ice cream shops around you (from OpenStreetMap). Your location is
+   asked for only when you press FIND ONE NEAR ME, used for that one search, and
+   never saved or sent anywhere else. */
+function doorHTML(open) {
+  const arch = (i, top) => `M${i} 570 V${110 + i / 2} Q${i} ${top} 118 ${top} Q${236 - i} ${top} ${236 - i} ${110 + i / 2} V570 Z`;
+  return `<button class="rm-door ${open ? 'open' : ''}" data-act="openNextScoop" style="${at(26, 296, 236, 570)}" aria-label="Next Scoop: where to get the next one">
+    <svg class="door-frame" viewBox="0 0 236 570" aria-hidden="true"><defs>
+      <linearGradient id="dfFrame" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFBF4"/><stop offset="1" stop-color="#F1E4D3"/></linearGradient>
+      <radialGradient id="dfLight" cx=".5" cy=".35" r=".8"><stop offset="0" stop-color="#FFF6D8"/><stop offset=".6" stop-color="#FFE1A0"/><stop offset="1" stop-color="#F8C98A"/></radialGradient></defs>
+      <g class="rm-riso"><path d="${arch(0, 0)}" fill="url(#dfFrame)"/><path d="${arch(16, 16)}" fill="url(#dfLight)"/></g></svg>
+    <svg class="door-panel" viewBox="16 16 204 554" aria-hidden="true"><defs>
+      <linearGradient id="dpBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFEDB5"/><stop offset="1" stop-color="#F6C873"/></linearGradient>
+      <linearGradient id="dpGlass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E6F4F9"/><stop offset="1" stop-color="#B8DCEA"/></linearGradient>
+      <linearGradient id="dpKnob" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8B98F"/><stop offset="1" stop-color="#BE8660"/></linearGradient>
+      <linearGradient id="dpSign" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFDF8"/><stop offset="1" stop-color="#FFE6EC"/></linearGradient>
+      <linearGradient id="dpInk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C98F66"/><stop offset="1" stop-color="#8B5E45"/></linearGradient></defs>
+      <g class="rm-riso">
+        <path d="${arch(16, 16)}" fill="url(#dpBody)"/>
+        <path d="M44 236 V${118} Q44 44 118 44 Q192 44 192 118 V236 Z" fill="url(#dpGlass)"/>
+        <path d="M70 90 L56 190 M98 70 L80 210" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" opacity=".6"/>
+        <rect x="40" y="378" width="156" height="72" rx="12" fill="#F2BE62" opacity=".45"/>
+        <rect x="40" y="466" width="156" height="72" rx="12" fill="#F2BE62" opacity=".45"/>
+        <rect x="16" y="548" width="204" height="22" fill="#EDB760"/>
+        <circle cx="192" cy="352" r="11" fill="url(#dpKnob)"/>
+        <path d="M118 226 L72 262 M118 226 L164 262" stroke="#CDB9AC" stroke-width="3"/><circle cx="118" cy="226" r="4" fill="#B98C6E"/>
+        <rect x="46" y="258" width="144" height="70" rx="14" fill="url(#dpSign)" transform="rotate(-3 118 293)"/>
+        <text x="118" y="305" text-anchor="middle" font-family="'Sign Script', cursive" font-size="34" fill="url(#dpInk)" transform="rotate(-3 118 293)" data-noi18n>Next Scoop</text>
+      </g></svg>
+  </button>`;
+}
+
+// What to get: from how your recent ice creams went (records only, never the memories)
+function nextScoopAdvice() {
+  const recs = allRecords().slice(-8);
+  if (!recs.length) return { flavor: 'vanilla', form: 'cup', title: 'A small cup of vanilla.', why: ['No history yet. Start small. The machine will learn.'] };
+  const fin = recs.filter(r => r.finished).length;
+  const rate = fin / recs.length;
+  const by = {};
+  for (const r of recs) {
+    const k = r.flavorCategory; if (!FLAVORS[k]) continue;
+    const scores = [r.firstReaction, ...(r.laterReactions || [])].filter(Boolean).map(x => x.score);
+    const taste = scores.length ? (mean(scores) - 3) / 4 : 0;
+    const got = r.finished ? 1 : Math.min(1, r.actualBites / Math.max(1, r.predictedBites));
+    (by[k] = by[k] || { k, n: 0, fin: 0, sum: 0 });
+    by[k].n++; by[k].fin += r.finished ? 1 : 0; by[k].sum += got + taste;
+  }
+  const best = Object.values(by).sort((a, b) => b.sum / b.n - a.sum / a.n || b.n - a.n)[0] || { k: 'vanilla', n: 0, fin: 0 };
+  const forms = recs.filter(r => r.finished).map(r => r.form);
+  const form = rate < .5 ? 'cup' : (forms.sort((a, b) => forms.filter(x => x === b).length - forms.filter(x => x === a).length)[0] || 'cup');
+  const fl = FLAVORS[best.k].label, fm = FORMS[form] ? FORMS[form].label : 'CUP';
+  const why = [`You finished ${fin} of your last ${recs.length}.`];
+  why.push(best.fin ? `${capFirst(fl.toLowerCase())} has your best record: finished ${best.fin} of ${best.n}.` : `Your best bites came from ${fl.toLowerCase()}.`);
+  if (rate < .5) why.push('Small cup. History says the big ones don’t make it.');
+  return { flavor: best.k, form, title: `${capFirst(fl.toLowerCase())}, ${rate < .5 ? 'a small cup' : 'as a ' + fm.toLowerCase()}.`, why };
+}
+function screenNextScoop() {
+  const a = nextScoopAdvice();
+  return `<section class="screen next-scoop" id="nextScoop">
+    <p class="chunky ns-k">NEXT SCOOP</p>
+    <div class="ns-pick">
+      <span class="ns-art">${iceCream({ form: a.form, flavor: a.flavor, mood: 'happy', label: FLAVORS[a.flavor].label })}</span>
+      <div><p class="chunky ns-label">The machine suggests</p><h1 class="melty ns-title">${esc(a.title)}</h1>
+      ${a.why.map(w => `<p class="ns-why">${esc(w)}</p>`).join('')}</div>
+    </div>
+    <div class="ns-shops" id="nsShops">
+      <button class="btn c-lemon" data-act="findScoop">FIND ONE NEAR ME</button>
+      <p class="ns-note">Your location is only used for this one search. It isn’t saved.</p>
+    </div>
+    <button class="btn c-white" data-act="closeWindow" style="margin-top:12px">CLOSE THE DOOR</button>
+  </section>`;
+}
+const metersTo = (a, b) => {
+  const R = 6371000, rad = x => x * Math.PI / 180;
+  const dLat = rad(b.lat - a.lat), dLon = rad(b.lon - a.lon);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+};
+const usUnits = () => /^en-US$/i.test(navigator.language || '');
+function distanceText(m) {
+  if (usUnits()) { const mi = m / 1609.34; return mi < .2 ? `${Math.round(m * 3.281 / 50) * 50} ft` : `${mi.toFixed(mi < 10 ? 1 : 0)} mi`; }
+  return m < 1000 ? `${Math.round(m / 10) * 10} m` : `${(m / 1000).toFixed(1)} km`;
+}
+const OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter'];
+async function nearbyIceCream(here, radius) {
+  const q = `[out:json][timeout:15];(nwr["amenity"="ice_cream"](around:${radius},${here.lat},${here.lon});nwr["shop"="ice_cream"](around:${radius},${here.lat},${here.lon});nwr["cuisine"~"ice_cream|gelato|frozen_yogurt"](around:${radius},${here.lat},${here.lon}););out center tags 60;`;
+  let last;
+  for (const url of OVERPASS) {
+    try {
+      const res = await fetch(url + '?data=' + encodeURIComponent(q));
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      const seen = new Set();
+      return (data.elements || []).map(e => {
+        const lat = e.lat ?? (e.center && e.center.lat), lon = e.lon ?? (e.center && e.center.lon), t = e.tags || {};
+        if (lat == null || !t.name) return null;
+        const key = t.name.toLowerCase() + Math.round(lat * 1000) + Math.round(lon * 1000);
+        if (seen.has(key)) return null; seen.add(key);
+        const street = [t['addr:housenumber'], t['addr:street']].filter(Boolean).join(' ');
+        return { name: t.name, lat, lon, d: metersTo(here, { lat, lon }), hours: t.opening_hours || '', street, web: t.website || t['contact:website'] || '' };
+      }).filter(Boolean).sort((x, y) => x.d - y.d);
+    } catch (e) { last = e; }
+  }
+  throw last || new Error('no map');
+}
+function mapsLink(s) {
+  const apple = /iPhone|iPad|Macintosh/.test(navigator.userAgent);
+  return apple ? `https://maps.apple.com/?q=${encodeURIComponent(s.name)}&ll=${s.lat},${s.lon}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.name)}%20${s.lat}%2C${s.lon}`;
+}
+function shopsHTML(list) {
+  const [top, ...rest] = list;
+  const walk = m => Math.max(1, Math.round(m / 80));
+  return `<div class="ns-top">
+      <p class="chunky ns-label">Closest to you</p>
+      <h2 class="ns-shop" data-noi18n>${esc(top.name)}</h2>
+      <p class="ns-meta">${distanceText(top.d)} · about ${walk(top.d)} min on foot${top.street ? ` · <span data-noi18n>${esc(top.street)}</span>` : ''}</p>
+      ${top.hours ? `<p class="ns-meta">Hours: <span data-noi18n>${esc(top.hours)}</span></p>` : ''}
+      <a class="btn c-strawberry ns-go" href="${mapsLink(top)}" target="_blank" rel="noopener">GET DIRECTIONS</a>
+    </div>
+    ${rest.length ? `<p class="chunky ns-label" style="margin-top:12px">Also nearby</p><ul class="ns-more">${rest.slice(0, 3).map(s => `<li><a href="${mapsLink(s)}" target="_blank" rel="noopener"><span data-noi18n>${esc(s.name)}</span></a><span>${distanceText(s.d)}</span></li>`).join('')}</ul>` : ''}
+    <p class="ns-note">Shops from OpenStreetMap. Check they’re open before you go.</p>`;
+}
+Object.assign(ROOM_ACTIONS, {
+  // the door swings open a little, then the window
+  openNextScoop() {
+    const d = document.querySelector('.rm-door');
+    if (d) d.classList.add('open');
+    setTimeout(() => go('nextscoop'), d && !reducedMotion() ? 620 : 0);
+  },
+  async findScoop() {
+    const box = document.getElementById('nsShops');
+    if (!box) return;
+    const say = (t, extra = '') => { box.innerHTML = `<p class="ns-status">${esc(t)}</p>${extra}`; };
+    if (!navigator.geolocation) { say('This browser can’t tell where you are. The flavor advice still stands.'); return; }
+    say('Looking around you…');
+    let here;
+    try {
+      here = await new Promise((ok, no) => navigator.geolocation.getCurrentPosition(p => ok({ lat: p.coords.latitude, lon: p.coords.longitude }), no, { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 }));
+    } catch (e) {
+      say('No location, no shop. The flavor advice still stands.', `<button class="btn c-white" data-act="findScoop" style="margin-top:8px">TRY AGAIN</button>`);
+      return;
+    }
+    try {
+      let list = await nearbyIceCream(here, 2500);
+      if (!list.length) list = await nearbyIceCream(here, 8000);
+      if (!document.getElementById('nsShops')) return;
+      if (!list.length) { say('No ice cream shop anywhere near you. That might be for the best.'); return; }
+      box.innerHTML = shopsHTML(list);
+    } catch (e) {
+      say('Couldn’t reach the map just now.', `<button class="btn c-white" data-act="findScoop" style="margin-top:8px">TRY AGAIN</button>`);
+    }
+  },
+});
