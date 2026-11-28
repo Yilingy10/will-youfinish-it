@@ -227,7 +227,9 @@ function screenRoom(win, route) {
       <button class="rm-machine ${mode}" data-act="${mode === 'play' ? (g.stage === 'bite' ? 'bite' : 'resume') : mode === 'making' ? 'enterArena' : 'machine'}" style="${at(330, 296, 268, 300)}"
         aria-label="${mode === 'making' ? 'Enter the arena' : mode === 'play' ? 'The machine' : 'Make an ice cream'}">
         <span class="m-screen" style="${at(40, 22, 188, 64)}">${machineScreenHTML(mode)}</span>
-        <span class="m-lever" style="${at(214, 104, 22, 70)}" aria-hidden="true"></span>
+        <span class="m-hub" style="${at(246, 168, 22, 22)}" aria-hidden="true"></span>
+        <span class="m-lever" style="${at(250, 70, 30, 112)}" aria-hidden="true"><svg viewBox="0 0 30 112"><defs><linearGradient id="lvRod" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E9E2DB"/><stop offset="1" stop-color="#CFC6BD"/></linearGradient><radialGradient id="lvKnob" cx=".35" cy=".35" r=".7"><stop offset="0" stop-color="#FFC2D2"/><stop offset="1" stop-color="#F2839F"/></radialGradient></defs>
+          <g class="rm-riso"><rect x="11" y="18" width="8" height="90" rx="4" fill="url(#lvRod)"/><circle cx="15" cy="15" r="14" fill="url(#lvKnob)"/></g></svg></span>
         ${mode !== 'play' ? `<span class="m-swirl" style="${at(104, 158, 60, 72)}" aria-hidden="true"></span>` : ''}
       </button>
       ${mode === 'making' ? `<button class="rm-dice" id="diceBtn" data-act="randomize" style="${at(884, 546, 50, 50)}" aria-label="${esc(COPY.bench.random)}" title="${esc(COPY.bench.random)}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="#FFC6D5"/><g fill="#8B5E45"><circle cx="8.5" cy="8.5" r="1.7"/><circle cx="15.5" cy="8.5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="8.5" cy="15.5" r="1.7"/><circle cx="15.5" cy="15.5" r="1.7"/></g></svg></button>` : ''}
@@ -280,6 +282,7 @@ function roomWindowFor(route, param) {
 
 // After the room is drawn: keep the phone's place, or bring the right part into view
 function afterRoom(prevMode) {
+  if (Date.now() - leverPulledAt < 200) document.querySelector('.rm-machine')?.classList.add('pulled');
   const door = document.querySelector('.rm-door.open');
   if (door && !location.hash.startsWith('#nextscoop')) requestAnimationFrame(() => requestAnimationFrame(() => door.classList.remove('open')));
   lastRoomRoute = (location.hash.slice(1).split('/')[0]) || 'home';
@@ -350,9 +353,11 @@ function ensureMaking() {
   render();
   return true;
 }
+let leverPulledAt = 0;   // the room may be redrawn mid-pull: the new machine carries on the swing
 function pullLever() {
   const m = document.querySelector('.rm-machine');
   if (!m || reducedMotion()) return;
+  leverPulledAt = Date.now();
   m.classList.remove('pulled'); void m.offsetWidth; m.classList.add('pulled');
 }
 

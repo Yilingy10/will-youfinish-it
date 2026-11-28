@@ -38,11 +38,13 @@ body[data-screen=room] .ticket-strip { display: none; }
 .ms-big { font-size: calc(30 * var(--u)); color: #FFFEFA; line-height: 1; }
 .rm-machine.idle .ms-big { animation: msBlink 1.6s steps(1) infinite; }
 @keyframes msBlink { 0%, 70% { opacity: 1 } 71%, 100% { opacity: .55 } }
-.m-lever { background: linear-gradient(#FF9DB8, #F2839F); border-radius: calc(11 * var(--u)) calc(11 * var(--u)) calc(4 * var(--u)) calc(4 * var(--u)); transform-origin: 50% 100%; transform: rotate(14deg); transition: transform .2s; }
-.m-lever::before { content: ''; position: absolute; left: 30%; right: 30%; top: 100%; height: calc(20 * var(--u)); background: #E1DAD3; }
+.m-lever { transform-origin: 50% 94%; transform: rotate(12deg); transition: transform .2s; }
+.m-lever svg { width: 100%; height: 100%; display: block; overflow: visible; }
+/* the lever's pivot, bolted to the right side of the machine */
+.m-hub { border-radius: 50%; background: radial-gradient(circle at 40% 40%, #F3EDE7, #D6CCC2); z-index: 1; }
 .rm-machine:hover .m-lever { transform: rotate(4deg); }
 .rm-machine.pulled .m-lever { animation: leverPull .5s ease; }
-@keyframes leverPull { 0% { transform: rotate(14deg) } 40% { transform: rotate(-28deg) } 100% { transform: rotate(14deg) } }
+@keyframes leverPull { 0% { transform: rotate(12deg) } 40% { transform: rotate(62deg) } 100% { transform: rotate(12deg) } }
 /* a swirl of soft serve, coming out when you press the machine */
 .m-swirl { background: radial-gradient(circle at 50% 30%, #FFFDF5 0 38%, transparent 40%), radial-gradient(ellipse at 50% 70%, #FFF6D6 0 46%, transparent 48%); opacity: 0; transform: translateY(-20%); pointer-events: none; }
 .rm-machine.pulled .m-swirl { animation: swirlOut .9s ease; }
