@@ -403,10 +403,10 @@ const ROOM_ACTIONS = {
    asked for only when you press FIND ONE NEAR ME, used for that one search, and
    never saved or sent anywhere else. */
 function doorHTML(open) {
-  const W = 256, H = 830, i = 16, top = 16;
+  const W = 330, H = 830, i = 18, top = 18;
   const arch = (k, t) => `M${k} ${H} V${120 + k / 2} Q${k} ${t} ${W / 2} ${t} Q${W - k} ${t} ${W - k} ${120 + k / 2} V${H} Z`;
   const cx = W / 2, gl = 44, gb = Math.round(H * .4), knobY = Math.round(H * .56), signY = Math.round(H * .43);
-  return `<button class="rm-door ${open ? 'open' : ''}" data-act="openNextScoop" style="${at(22, 36, W, H)}" aria-label="Next Scoop: where to get the next one">
+  return `<button class="rm-door ${open ? 'open' : ''}" data-act="openNextScoop" style="${at(6, 36, W, H)}" aria-label="Next Scoop: where to get the next one">
     <svg class="door-frame" viewBox="0 0 ${W} ${H}" aria-hidden="true"><defs>
       <linearGradient id="dfFrame" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFBF4"/><stop offset="1" stop-color="#F1E4D3"/></linearGradient>
       <radialGradient id="dfLight" cx=".5" cy=".35" r=".8"><stop offset="0" stop-color="#FFF6D8"/><stop offset=".6" stop-color="#FFE1A0"/><stop offset="1" stop-color="#F8C98A"/></radialGradient></defs>
@@ -420,14 +420,14 @@ function doorHTML(open) {
       <g class="rm-riso">
         <path d="${arch(i, top)}" fill="url(#dpBody)"/>
         <path d="M${gl} ${gb} V${top + 110} Q${gl} ${top + 30} ${cx} ${top + 30} Q${W - gl} ${top + 30} ${W - gl} ${top + 110} V${gb} Z" fill="url(#dpGlass)"/>
-        <path d="M74 110 L58 ${gb - 70} M104 84 L84 ${gb - 40}" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" opacity=".6"/>
+        <path d="M84 120 L64 ${gb - 70} M120 92 L96 ${gb - 40}" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" opacity=".6"/>
         <rect x="40" y="${Math.round(H * .6)}" width="${W - 80}" height="${Math.round(H * .13)}" rx="12" fill="#F2BE62" opacity=".45"/>
         <rect x="40" y="${Math.round(H * .76)}" width="${W - 80}" height="${Math.round(H * .13)}" rx="12" fill="#F2BE62" opacity=".45"/>
         <rect x="${i}" y="${H - 24}" width="${W - 2 * i}" height="24" fill="#EDB760"/>
         <circle cx="${W - 46}" cy="${knobY}" r="12" fill="url(#dpKnob)"/>
-        <path d="M${cx} ${signY - 34} L${cx - 50} ${signY} M${cx} ${signY - 34} L${cx + 50} ${signY}" stroke="#CDB9AC" stroke-width="3"/><circle cx="${cx}" cy="${signY - 34}" r="4" fill="#B98C6E"/>
-        <g transform="rotate(-3 ${cx} ${signY + 34})"><rect x="${cx - 76}" y="${signY - 4}" width="152" height="72" rx="14" fill="url(#dpSign)"/>
-        <text x="${cx}" y="${signY + 44}" text-anchor="middle" font-family="'Sign Script', cursive" font-size="35" fill="url(#dpInk)" data-noi18n>Next Scoop</text></g>
+        <path d="M${cx} ${signY - 38} L${cx - 66} ${signY - 4} M${cx} ${signY - 38} L${cx + 66} ${signY - 4}" stroke="#CDB9AC" stroke-width="3"/><circle cx="${cx}" cy="${signY - 38}" r="4" fill="#B98C6E"/>
+        <g transform="rotate(-3 ${cx} ${signY + 34})"><rect x="${cx - 96}" y="${signY - 6}" width="192" height="80" rx="16" fill="url(#dpSign)"/>
+        <text x="${cx}" y="${signY + 44}" text-anchor="middle" font-family="'Sign Script', cursive" font-size="42" fill="url(#dpInk)" data-noi18n>Next Scoop</text></g>
       </g></svg>
   </button>`;
 }
@@ -552,4 +552,12 @@ Object.assign(ROOM_ACTIONS, {
       say('Couldn’t reach the map just now.', `<button class="btn c-white" data-act="findScoop" style="margin-top:8px">TRY AGAIN</button>`);
     }
   },
+});
+
+// A window you only read (the verdict, About, Next Scoop, an ending): a tap
+// anywhere outside it closes it. Windows that are asking you something stay.
+document.addEventListener('click', e => {
+  if (e.target.id !== 'roomWindow') return;
+  const route = location.hash.slice(1).split('/')[0];
+  if (['result', 'about', 'resisted', 'nextscoop'].includes(route)) ROOM_ACTIONS.closeWindow();
 });

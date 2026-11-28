@@ -217,7 +217,7 @@ html[data-lang=zh] .rm-sign span { margin: 0 !important; font-size: inherit !imp
 .rm-door { padding: 0; border: 0; background: none; perspective: calc(1400 * var(--u)); cursor: pointer; z-index: 1; }
 .rm-door svg { position: absolute; display: block; overflow: visible; }
 .rm-door .door-frame { inset: 0; width: 100%; height: 100%; }
-.rm-door .door-panel { left: calc(16 / 256 * 100%); top: calc(16 / 830 * 100%); width: calc(224 / 256 * 100%); height: calc(814 / 830 * 100%); transform-origin: 0 50%; transition: transform .6s cubic-bezier(.3, .8, .3, 1); }
+.rm-door .door-panel { left: calc(18 / 330 * 100%); top: calc(18 / 830 * 100%); width: calc(294 / 330 * 100%); height: calc(812 / 830 * 100%); transform-origin: 0 50%; transition: transform .6s cubic-bezier(.3, .8, .3, 1); }
 .rm-door:hover .door-panel { transform: rotateY(-8deg); }
 .rm-door.open .door-panel { transform: rotateY(-52deg); }
 .rm-door:focus-visible { outline: 3px solid #EE6B83; outline-offset: 4px; border-radius: 20px; }
@@ -244,3 +244,5 @@ html[data-lang=zh] .rm-sign span { margin: 0 !important; font-size: inherit !imp
 /* the Memory Freezer, in front of the door */
 .rm-freezer { z-index: 4; }
 .rm-fz-art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; pointer-events: none; }
+
+#roomWindow { cursor: default; }
