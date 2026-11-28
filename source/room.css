@@ -209,9 +209,9 @@ html[data-lang=zh] .rm-sign span { margin: 0 !important; font-size: inherit !imp
 @media (prefers-reduced-motion: reduce) { .rm-react.hint .rr-face { animation: none; } }
 
 /* the shop's name, painted on the front of the counter */
-.rm-title { z-index: 3; transform: rotate(-5deg); font-size: calc(62 * var(--u)); }
+.rm-title { z-index: 3; transform: rotate(-5deg); font-size: calc(70 * var(--u)); }
 .rm-title span:nth-child(1) { margin-right: calc(46 * var(--u)); }
-.rm-title span:nth-child(2) { font-size: calc(68 * var(--u)); margin-left: calc(14 * var(--u)); }
+.rm-title span:nth-child(2) { font-size: calc(78 * var(--u)); margin-left: calc(14 * var(--u)); }
 
 /* the door, and the light behind it */
 .rm-door { padding: 0; border: 0; background: none; perspective: calc(1400 * var(--u)); cursor: pointer; z-index: 1; }
