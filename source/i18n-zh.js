@@ -1200,7 +1200,12 @@ const ZH = {
 "Asking the map about shops near you…": "正在问地图你附近有哪些店…",
 "Picked from recent NYC ice cream guides. Check they’re open before you go.": "选自最近的纽约雪糕店指南。出发前确认一下有没有开门。",
 "Try:": "推荐：",
-"Hours:": "营业时间："
+"Hours:": "营业时间：",
+"Or pick a spot:": "或者选一个地方：",
+"Pratt": "Pratt",
+"Downtown Brooklyn": "Downtown Brooklyn",
+"SoHo": "SoHo",
+"Midtown": "中城"
 };
 // Sentences with numbers, dates or someone's own words in them.
 const ZH_MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12,
@@ -1257,6 +1262,7 @@ const ZH_PATTERNS = [
   [/^(\d[\d.,]*) (ft|mi|m|km) · about (\d+) min on foot(.*)$/, (_, n, u, w, rest) => `${n} ${({ ft: '英尺', mi: '英里', m: '米', km: '公里' })[u]} · 步行约 ${w} 分钟${rest}`],
   [/^Hours: (.*)$/, '营业时间：$1'],
   [/^Try: (.*)$/, '推荐：$1'],
+  [/^Around (Pratt|Downtown Brooklyn|SoHo|Midtown)$/, (_, p) => `在 ${p === 'Midtown' ? '中城' : p} 附近`],
   [/^Near you, and good for (.+)$/, (_, f) => `离你近，而且适合${zhBit(f.toUpperCase())}`],
   [/^TODAY: (.+)$/, (_, f) => { const t = zhOf(f); return t ? '今日：' + t : null; }],
   [/^Bite (\d+): (.+)$/, (_, n, a) => `第 ${n} 口：${zhBit(a)}`],

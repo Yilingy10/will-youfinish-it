@@ -247,3 +247,7 @@ html[data-lang=zh] .rm-sign span { margin: 0 !important; font-size: inherit !imp
 
 #roomWindow { cursor: default; }
 .ns-more li > span { white-space: nowrap; }
+
+.ns-places { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px 12px; margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+.ns-places .link { font-size: 13px; padding: 6px 0; }
+.ns-at { text-align: center; color: #D9708C; margin-bottom: 4px; }
