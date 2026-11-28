@@ -505,6 +505,37 @@ async function nearbyIceCream(here, radius) {
   }
   throw last || new Error('no map');
 }
+// Shops near Pratt, Downtown Brooklyn / DUMBO, and Lower and Midtown Manhattan, picked
+// from recent Time Out and Infatuation guides (checked Nov 2026). Built in, so the answer
+// comes at once, without waiting for the map. `f` = flavors of ours they're good for.
+const NYC_SHOPS = [
+  { name: 'Biddrina Gelato', lat: 40.6855, lon: -73.9622, street: '129 Gates Ave, Clinton Hill', try: 'turmeric amarena cherry, or crema with marmalade', f: ['fruit', 'vanilla', 'other', 'weird'] },
+  { name: 'Brooklyn Ice Cream Factory', lat: 40.7026, lon: -73.9937, street: '14 Old Fulton St, DUMBO', try: 'French vanilla or butter pecan', f: ['vanilla', 'nutty', 'chocolate'] },
+  { name: 'Van Leeuwen', lat: 40.7034, lon: -73.9952, street: '1 Water St, Fulton Ferry Landing', try: 'Sicilian pistachio or honeycomb', f: ['pistachio', 'caramel', 'chocolate', 'oreo'] },
+  { name: 'L’Artigiano Gelato (Time Out Market)', lat: 40.7036, lon: -73.9918, street: '55 Water St, DUMBO', try: 'stracciatella or tiramisù', f: ['vanilla', 'coffee', 'chocolate'] },
+  { name: 'Malai', lat: 40.6820, lon: -73.9932, street: '268 Smith St, Carroll Gardens', try: 'saffron pistachio or masala chai', f: ['pistachio', 'tea', 'thaitea', 'weird', 'nutty'] },
+  { name: 'Brooklyn Farmacy & Soda Fountain', lat: 40.6813, lon: -74.0003, street: '513 Henry St, Carroll Gardens', try: 'a sundae or an egg cream', f: ['vanilla', 'chocolate', 'caramel'] },
+  { name: 'Morgenstern’s Finest Ice Cream', lat: 40.7272, lon: -74.0009, street: '88 W Houston St, Greenwich Village', try: 'caramel crème fraîche or bitter chocolate ash', f: ['caramel', 'chocolate', 'weird', 'other'] },
+  { name: 'Julia Jean’s', lat: 40.7139, lon: -73.9866, street: '202 Clinton St, Lower East Side', try: 'butter pecan or orange sherbet', f: ['nutty', 'fruit', 'vanilla'] },
+  { name: 'Il Laboratorio del Gelato', lat: 40.7221, lon: -73.9870, street: '188 Ludlow St, Lower East Side', try: 'hazelnut or dark chocolate', f: ['nutty', 'chocolate', 'fruit', 'mango'] },
+  { name: 'Chinatown Ice Cream Factory', lat: 40.7154, lon: -73.9984, street: '65 Bayard St, Chinatown', try: 'black sesame, egg custard or red bean', f: ['weird', 'tea', 'coconut', 'mango', 'other'] },
+  { name: 'Taiyaki NYC', lat: 40.7182, lon: -73.9995, street: '119 Baxter St, Chinatown', try: 'matcha-hojicha soft serve in a fish cone', f: ['tea', 'softserve'] },
+  { name: 'Sundaes and Cones', lat: 40.7309, lon: -73.9892, street: '95 E 10th St, East Village', try: 'black sesame or Thai iced tea', f: ['thaitea', 'tea', 'oreo', 'weird'] },
+  { name: 'Caffè Panna', lat: 40.7369, lon: -73.9868, street: '77 Irving Pl, Gramercy', try: 'stracciatella, or a sundae with panna', f: ['vanilla', 'coffee', 'oreo', 'fruit'] },
+  { name: 'Salt & Straw', lat: 40.7346, lon: -74.0066, street: '540 Hudson St, West Village', try: 'sea salt with caramel ribbons or honey lavender', f: ['caramel', 'other', 'weird', 'vanilla'] },
+  { name: 'Sundaes Best', lat: 40.7470, lon: -73.9857, street: '319 5th Ave, Koreatown', try: 'miso caramel or Jeju mandarin sorbet', f: ['caramel', 'fruit', 'mango', 'tea'] },
+  { name: 'Eataly Flatiron (gelato counter)', lat: 40.7421, lon: -73.9896, street: '200 5th Ave, Flatiron', try: 'pistachio or nocciola gelato', f: ['pistachio', 'nutty', 'chocolate', 'coffee'] },
+  { name: 'Milky Ice', lat: 40.7612, lon: -73.9700, street: '130 E 57th St, Midtown', try: 'the tall soft serve', f: ['softserve', 'vanilla'] },
+];
+// From the built-in list: the ones near you, the best match for the suggested flavor first
+function builtInShops(here, flavor) {
+  const all = NYC_SHOPS.map(s => ({ ...s, d: metersTo(here, s) })).sort((a, b) => a.d - b.d);
+  if (!all.length || all[0].d > 6000) return null;   // not around these neighborhoods
+  const near = all.filter(s => s.d <= Math.max(1500, all[0].d * 1.8));
+  const match = near.find(s => s.f.includes(flavor));
+  if (match) { match.why = 'good for ' + FLAVORS[flavor].label.toLowerCase(); return [match, ...all.filter(s => s !== match)]; }
+  return all;
+}
 function mapsLink(s) {
   const apple = /iPhone|iPad|Macintosh/.test(navigator.userAgent);
   return apple ? `https://maps.apple.com/?q=${encodeURIComponent(s.name)}&ll=${s.lat},${s.lon}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.name)}%20${s.lat}%2C${s.lon}`;
@@ -513,14 +544,15 @@ function shopsHTML(list) {
   const [top, ...rest] = list;
   const walk = m => Math.max(1, Math.round(m / 80));
   return `<div class="ns-top">
-      <p class="chunky ns-label">Closest to you</p>
+      <p class="chunky ns-label">${top.why ? 'Near you, and ' + esc(top.why) : 'Closest to you'}</p>
       <h2 class="ns-shop" data-noi18n>${esc(top.name)}</h2>
       <p class="ns-meta">${distanceText(top.d)} · about ${walk(top.d)} min on foot${top.street ? ` · <span data-noi18n>${esc(top.street)}</span>` : ''}</p>
+      ${top.try ? `<p class="ns-meta">Try: <span data-noi18n>${esc(top.try)}</span></p>` : ''}
       ${top.hours ? `<p class="ns-meta">Hours: <span data-noi18n>${esc(top.hours)}</span></p>` : ''}
       <a class="btn c-strawberry ns-go" href="${mapsLink(top)}" target="_blank" rel="noopener">GET DIRECTIONS</a>
     </div>
     ${rest.length ? `<p class="chunky ns-label" style="margin-top:12px">Also nearby</p><ul class="ns-more">${rest.slice(0, 3).map(s => `<li><a href="${mapsLink(s)}" target="_blank" rel="noopener"><span data-noi18n>${esc(s.name)}</span></a><span>${distanceText(s.d)}</span></li>`).join('')}</ul>` : ''}
-    <p class="ns-note">Shops from OpenStreetMap. Check they’re open before you go.</p>`;
+    <p class="ns-note">${top.try ? 'Picked from recent NYC ice cream guides.' : 'Shops from OpenStreetMap.'} Check they’re open before you go.</p>`;
 }
 Object.assign(ROOM_ACTIONS, {
   // the door swings open a little, then the window
@@ -537,11 +569,15 @@ Object.assign(ROOM_ACTIONS, {
     say('Looking around you…');
     let here;
     try {
-      here = await new Promise((ok, no) => navigator.geolocation.getCurrentPosition(p => ok({ lat: p.coords.latitude, lon: p.coords.longitude }), no, { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 }));
+      here = await new Promise((ok, no) => navigator.geolocation.getCurrentPosition(p => ok({ lat: p.coords.latitude, lon: p.coords.longitude }), no, { enableHighAccuracy: false, timeout: 8000, maximumAge: 1800000 }));
     } catch (e) {
       say('No location, no shop. The flavor advice still stands.', `<button class="btn c-white" data-act="findScoop" style="margin-top:8px">TRY AGAIN</button>`);
       return;
     }
+    // around Pratt, Downtown Brooklyn or Lower/Midtown Manhattan: answer at once from the built-in list
+    const local = builtInShops(here, nextScoopAdvice().flavor);
+    if (local) { box.innerHTML = shopsHTML(local); return; }
+    say('Asking the map about shops near you…');
     try {
       let list = await nearbyIceCream(here, 2500);
       if (!list.length) list = await nearbyIceCream(here, 8000);

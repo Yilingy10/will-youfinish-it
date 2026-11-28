@@ -52,6 +52,8 @@ const ZH_PATTERNS = [
   [/^(.+), as a (.+)\.$/, (_, f, m) => { const t = zhOf(f.toUpperCase()), u = zhOf(m.toUpperCase()); return t && u ? `${t}，${u}。` : null; }],
   [/^(\d[\d.,]*) (ft|mi|m|km) · about (\d+) min on foot(.*)$/, (_, n, u, w, rest) => `${n} ${({ ft: '英尺', mi: '英里', m: '米', km: '公里' })[u]} · 步行约 ${w} 分钟${rest}`],
   [/^Hours: (.*)$/, '营业时间：$1'],
+  [/^Try: (.*)$/, '推荐：$1'],
+  [/^Near you, and good for (.+)$/, (_, f) => `离你近，而且适合${zhBit(f.toUpperCase())}`],
   [/^TODAY: (.+)$/, (_, f) => { const t = zhOf(f); return t ? '今日：' + t : null; }],
   [/^Bite (\d+): (.+)$/, (_, n, a) => `第 ${n} 口：${zhBit(a)}`],
   [/^(\d+) of (\d+) thawed\.$/, '已解冻 $1 / $2。'],
