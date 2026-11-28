@@ -46,6 +46,8 @@ function roomBackSVG() {
     ${[150, 262, 374].map(y => `<rect x="926" y="${y}" width="560" height="18" rx="4" fill="#EBC197"/><rect x="926" y="${y + 14}" width="560" height="4" fill="#D9A877"/><path d="M960 ${y + 18} v22 h16 M1452 ${y + 18} v22 h-16" stroke="#D9A877" stroke-width="7" fill="none"/>`).join('')}
   </g>
 
+</svg>
+<svg class="room-back room-front" viewBox="0 0 ${ROOM_W} ${ROOM_H}" preserveAspectRatio="none" aria-hidden="true">
   <!-- the counter -->
   <rect x="284" y="626" width="1820" height="212" fill="#9BD0E5"/>
   ${stripes.join('')}
@@ -215,10 +217,9 @@ function screenRoom(win, route) {
     </header>
     <div class="room-scroll" id="roomScroll">
     <div class="room" id="room">
-      ${roomBackSVG()}
+      ${roomBackSVG().replace('</svg>\n<svg class="room-back room-front"', `</svg>\n${doorHTML(route === 'nextscoop' || lastRoomRoute === 'nextscoop')}\n<svg class="room-back room-front"`)}
       ${Object.entries(ROOM_ZONES).map(([k, [a, b]]) => `<i class="rm-zone" data-zone="${k}" style="${at(a, 0, b - a, ROOM_H)}"></i>`).join('')}
       <h1 class="rm-sign rm-title" style="${at(1104, 652, 370, 176)}" aria-label="Will you finish it?"><span>Will you</span><span>finish it?</span></h1>
-      ${doorHTML(route === 'nextscoop' || lastRoomRoute === 'nextscoop')}
 
       <button class="rm-freezer" data-go="freezer" style="${at(0, 556, 320, 320)}" aria-label="The Memory Freezer">${ROOM_FREEZER}<span class="chunky rm-fz-name" style="${at(70, 172, 180, null)}">THE MEMORY FREEZER</span></button>
       ${mode === 'idle' ? `<button class="rm-ghost" data-act="iResisted" style="${at(392, 196, 200, 104)}">${ghostSVG('hmm', 'rl-ghost')}<span class="chunky">I resisted one</span></button>` : ''}

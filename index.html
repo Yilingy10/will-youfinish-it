@@ -1354,7 +1354,7 @@ html[data-lang=zh] .rm-sign span { margin: 0 !important; font-size: inherit !imp
 .rm-title span:nth-child(2) { font-size: calc(78 * var(--u)); margin-left: calc(14 * var(--u)); }
 
 /* the door, and the light behind it */
-.rm-door { padding: 0; border: 0; background: none; perspective: calc(1400 * var(--u)); cursor: pointer; z-index: 1; }
+.rm-door { padding: 0; border: 0; background: none; perspective: calc(1400 * var(--u)); cursor: pointer; }   /* behind the counter: it comes right after the back wall */
 .rm-door svg { position: absolute; display: block; overflow: visible; }
 .rm-door .door-frame { inset: 0; width: 100%; height: 100%; }
 .rm-door .door-panel { left: calc(18 / 330 * 100%); top: calc(18 / 830 * 100%); width: calc(294 / 330 * 100%); height: calc(812 / 830 * 100%); transform-origin: 0 50%; transition: transform .6s cubic-bezier(.3, .8, .3, 1); }
@@ -6765,6 +6765,8 @@ function roomBackSVG() {
     ${[150, 262, 374].map(y => `<rect x="926" y="${y}" width="560" height="18" rx="4" fill="#EBC197"/><rect x="926" y="${y + 14}" width="560" height="4" fill="#D9A877"/><path d="M960 ${y + 18} v22 h16 M1452 ${y + 18} v22 h-16" stroke="#D9A877" stroke-width="7" fill="none"/>`).join('')}
   </g>
 
+</svg>
+<svg class="room-back room-front" viewBox="0 0 ${ROOM_W} ${ROOM_H}" preserveAspectRatio="none" aria-hidden="true">
   <!-- the counter -->
   <rect x="284" y="626" width="1820" height="212" fill="#9BD0E5"/>
   ${stripes.join('')}
@@ -6934,10 +6936,9 @@ function screenRoom(win, route) {
     </header>
     <div class="room-scroll" id="roomScroll">
     <div class="room" id="room">
-      ${roomBackSVG()}
+      ${roomBackSVG().replace('</svg>\n<svg class="room-back room-front"', `</svg>\n${doorHTML(route === 'nextscoop' || lastRoomRoute === 'nextscoop')}\n<svg class="room-back room-front"`)}
       ${Object.entries(ROOM_ZONES).map(([k, [a, b]]) => `<i class="rm-zone" data-zone="${k}" style="${at(a, 0, b - a, ROOM_H)}"></i>`).join('')}
       <h1 class="rm-sign rm-title" style="${at(1104, 652, 370, 176)}" aria-label="Will you finish it?"><span>Will you</span><span>finish it?</span></h1>
-      ${doorHTML(route === 'nextscoop' || lastRoomRoute === 'nextscoop')}
 
       <button class="rm-freezer" data-go="freezer" style="${at(0, 556, 320, 320)}" aria-label="The Memory Freezer">${ROOM_FREEZER}<span class="chunky rm-fz-name" style="${at(70, 172, 180, null)}">THE MEMORY FREEZER</span></button>
       ${mode === 'idle' ? `<button class="rm-ghost" data-act="iResisted" style="${at(392, 196, 200, 104)}">${ghostSVG('hmm', 'rl-ghost')}<span class="chunky">I resisted one</span></button>` : ''}
