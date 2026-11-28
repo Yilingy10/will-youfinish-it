@@ -496,7 +496,7 @@ html[data-lang="zh"] .cover-title span:nth-child(n) { font-size: min(calc((100vw
 .pagehead p { font-weight: 700; margin-top: 4px; }
 .ticket-strip {
   position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 20;
-  width: min(calc(100% - 24px), 340px); display: grid; grid-template-columns: repeat(3, 1fr); padding: 4px; gap: 2px;
+  width: min(calc(100% - 24px), 240px); display: grid; grid-template-columns: repeat(2, 1fr); padding: 4px; gap: 2px;
   background: #FFFEFA; border: 2px solid transparent; border-radius: 18px; box-shadow: none;
 }
 .ticket-strip button { border: 0; background: none; border-radius: 13px; padding: 12px 1px 13px; color: var(--ink); font: 400 min(13px, 3.4vw)/1 var(--chunky); text-transform: uppercase; }
@@ -2473,12 +2473,10 @@ function screenResult(id) {
    a record looks in the freezer's Freshly Frozen drawer: a trophy for the ones you
    finished, a little tombstone for the ones you didn't, a ghost for the ones you
    resisted. Each record is there once, under its own id. */
-// The strip along the bottom of the gallery screens: home, play, freezer.
+// The strip along the bottom of the freezer: back to the room, or the freezer itself
 function ticketStrip(active) {
-  const playing = game && game.stage !== 'loading';
   return `<nav class="ticket-strip">
     <button class="${active === 'home' ? 'on' : ''}" data-go="home">HOME</button>
-    <button data-act="${playing ? 'resume' : 'start'}">PLAY</button>
     <button class="${active === 'freezer' ? 'on' : ''}" data-go="freezer">FREEZER</button></nav>`;
 }
 function plaqueHTML(r) {
