@@ -73,8 +73,10 @@ function roomBackSVG() {
     <rect x="924" y="390" width="564" height="20" rx="8" fill="#FFF8EE"/>
   </g>
 
-  <!-- the Memory Freezer, standing in front of the counter -->
-  <g class="rm-riso" transform="translate(300 619) scale(.84) translate(-16 -572)">
+</svg>`;
+}
+// The Memory Freezer: in the corner, standing in front of the door
+const ROOM_FREEZER = `<svg class="rm-fz-art" viewBox="0 556 320 320" aria-hidden="true"><g class="rm-riso">
     <ellipse cx="160" cy="866" rx="150" ry="11" fill="#8B5E45" opacity=".1"/>
     <path d="M30 610 H290 L282 848 Q281 858 270 858 H50 Q39 858 38 848 Z" fill="#C9E6F0"/>
     <path d="M30 610 H290 L282 848 Q281 858 270 858 H50 Q39 858 38 848 Z" fill="url(#rmDots)" opacity=".6"/>
@@ -84,9 +86,7 @@ function roomBackSVG() {
     <g opacity=".9"><path d="M64 598 q0 -26 20 -26 q20 0 20 26 l-6 -5 l-7 5 l-7 -5 l-7 5 l-7 -5z" fill="#FFFFFF"/><rect x="124" y="570" width="26" height="30" rx="8" fill="#FFC6D5"/><path d="M184 600 l12 -26 l12 26z" fill="#F2CD95"/><circle cx="196" cy="575" r="12" fill="#FFF6D6"/><rect x="238" y="574" width="22" height="26" rx="6" fill="#D0D2FB"/></g>
     <rect x="122" y="700" width="76" height="12" rx="6" fill="#FFFBF3"/>
     <g stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity=".85">${[[64, 770, 9], [246, 800, 7], [224, 730, 5]].map(([x, y, s]) => `<path d="M${x} ${y - s} V${y + s} M${x - s * .87} ${y - s / 2} L${x + s * .87} ${y + s / 2} M${x - s * .87} ${y + s / 2} L${x + s * .87} ${y - s / 2}"/>`).join('')}</g>
-  </g>
-</svg>`;
-}
+  </g></svg>`;
 // The glass in front of the tubs, drawn over them
 const ROOM_GLASS = `<svg class="room-glass" viewBox="924 390 564 170" preserveAspectRatio="none" aria-hidden="true">
   <rect x="934" y="404" width="544" height="152" fill="#DDEFF6" opacity=".18"/>
@@ -220,8 +220,8 @@ function screenRoom(win, route) {
       <h1 class="rm-sign rm-title" style="${at(1104, 652, 370, 176)}" aria-label="Will you finish it?"><span>Will you</span><span>finish it?</span></h1>
       ${doorHTML(route === 'nextscoop' || lastRoomRoute === 'nextscoop')}
 
-      <button class="rm-freezer" data-go="freezer" style="${at(300, 616, 244, 252)}" aria-label="The Memory Freezer"><span class="chunky rm-fz-name" style="${at(46, 136, 152, null)}">THE MEMORY FREEZER</span></button>
-      ${mode === 'idle' ? `<button class="rm-ghost" data-act="iResisted" style="${at(84, 116, 130, 140)}">${ghostSVG('hmm', 'rl-ghost')}<span class="chunky">I resisted one</span></button>` : ''}
+      <button class="rm-freezer" data-go="freezer" style="${at(0, 556, 320, 320)}" aria-label="The Memory Freezer">${ROOM_FREEZER}<span class="chunky rm-fz-name" style="${at(70, 172, 180, null)}">THE MEMORY FREEZER</span></button>
+      ${mode === 'idle' ? `<button class="rm-ghost" data-act="iResisted" style="${at(392, 196, 200, 104)}">${ghostSVG('hmm', 'rl-ghost')}<span class="chunky">I resisted one</span></button>` : ''}
 
       <button class="rm-machine ${mode}" data-act="${mode === 'play' ? (g.stage === 'bite' ? 'bite' : 'resume') : mode === 'making' ? 'enterArena' : 'machine'}" style="${at(330, 296, 268, 300)}"
         aria-label="${mode === 'making' ? 'Enter the arena' : mode === 'play' ? 'The machine' : 'Make an ice cream'}">
@@ -403,29 +403,31 @@ const ROOM_ACTIONS = {
    asked for only when you press FIND ONE NEAR ME, used for that one search, and
    never saved or sent anywhere else. */
 function doorHTML(open) {
-  const arch = (i, top) => `M${i} 570 V${110 + i / 2} Q${i} ${top} 118 ${top} Q${236 - i} ${top} ${236 - i} ${110 + i / 2} V570 Z`;
-  return `<button class="rm-door ${open ? 'open' : ''}" data-act="openNextScoop" style="${at(26, 296, 236, 570)}" aria-label="Next Scoop: where to get the next one">
-    <svg class="door-frame" viewBox="0 0 236 570" aria-hidden="true"><defs>
+  const W = 256, H = 830, i = 16, top = 16;
+  const arch = (k, t) => `M${k} ${H} V${120 + k / 2} Q${k} ${t} ${W / 2} ${t} Q${W - k} ${t} ${W - k} ${120 + k / 2} V${H} Z`;
+  const cx = W / 2, gl = 44, gb = Math.round(H * .4), knobY = Math.round(H * .56), signY = Math.round(H * .43);
+  return `<button class="rm-door ${open ? 'open' : ''}" data-act="openNextScoop" style="${at(22, 36, W, H)}" aria-label="Next Scoop: where to get the next one">
+    <svg class="door-frame" viewBox="0 0 ${W} ${H}" aria-hidden="true"><defs>
       <linearGradient id="dfFrame" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFBF4"/><stop offset="1" stop-color="#F1E4D3"/></linearGradient>
       <radialGradient id="dfLight" cx=".5" cy=".35" r=".8"><stop offset="0" stop-color="#FFF6D8"/><stop offset=".6" stop-color="#FFE1A0"/><stop offset="1" stop-color="#F8C98A"/></radialGradient></defs>
-      <g class="rm-riso"><path d="${arch(0, 0)}" fill="url(#dfFrame)"/><path d="${arch(16, 16)}" fill="url(#dfLight)"/></g></svg>
-    <svg class="door-panel" viewBox="16 16 204 554" aria-hidden="true"><defs>
+      <g class="rm-riso"><path d="${arch(0, 0)}" fill="url(#dfFrame)"/><path d="${arch(i, top)}" fill="url(#dfLight)"/></g></svg>
+    <svg class="door-panel" viewBox="${i} ${top} ${W - 2 * i} ${H - top}" aria-hidden="true"><defs>
       <linearGradient id="dpBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFEDB5"/><stop offset="1" stop-color="#F6C873"/></linearGradient>
       <linearGradient id="dpGlass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E6F4F9"/><stop offset="1" stop-color="#B8DCEA"/></linearGradient>
       <linearGradient id="dpKnob" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8B98F"/><stop offset="1" stop-color="#BE8660"/></linearGradient>
       <linearGradient id="dpSign" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFDF8"/><stop offset="1" stop-color="#FFE6EC"/></linearGradient>
       <linearGradient id="dpInk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C98F66"/><stop offset="1" stop-color="#8B5E45"/></linearGradient></defs>
       <g class="rm-riso">
-        <path d="${arch(16, 16)}" fill="url(#dpBody)"/>
-        <path d="M44 236 V${118} Q44 44 118 44 Q192 44 192 118 V236 Z" fill="url(#dpGlass)"/>
-        <path d="M70 90 L56 190 M98 70 L80 210" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" opacity=".6"/>
-        <rect x="40" y="378" width="156" height="72" rx="12" fill="#F2BE62" opacity=".45"/>
-        <rect x="40" y="466" width="156" height="72" rx="12" fill="#F2BE62" opacity=".45"/>
-        <rect x="16" y="548" width="204" height="22" fill="#EDB760"/>
-        <circle cx="192" cy="352" r="11" fill="url(#dpKnob)"/>
-        <path d="M118 226 L72 262 M118 226 L164 262" stroke="#CDB9AC" stroke-width="3"/><circle cx="118" cy="226" r="4" fill="#B98C6E"/>
-        <rect x="46" y="258" width="144" height="70" rx="14" fill="url(#dpSign)" transform="rotate(-3 118 293)"/>
-        <text x="118" y="305" text-anchor="middle" font-family="'Sign Script', cursive" font-size="34" fill="url(#dpInk)" transform="rotate(-3 118 293)" data-noi18n>Next Scoop</text>
+        <path d="${arch(i, top)}" fill="url(#dpBody)"/>
+        <path d="M${gl} ${gb} V${top + 110} Q${gl} ${top + 30} ${cx} ${top + 30} Q${W - gl} ${top + 30} ${W - gl} ${top + 110} V${gb} Z" fill="url(#dpGlass)"/>
+        <path d="M74 110 L58 ${gb - 70} M104 84 L84 ${gb - 40}" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" opacity=".6"/>
+        <rect x="40" y="${Math.round(H * .6)}" width="${W - 80}" height="${Math.round(H * .13)}" rx="12" fill="#F2BE62" opacity=".45"/>
+        <rect x="40" y="${Math.round(H * .76)}" width="${W - 80}" height="${Math.round(H * .13)}" rx="12" fill="#F2BE62" opacity=".45"/>
+        <rect x="${i}" y="${H - 24}" width="${W - 2 * i}" height="24" fill="#EDB760"/>
+        <circle cx="${W - 46}" cy="${knobY}" r="12" fill="url(#dpKnob)"/>
+        <path d="M${cx} ${signY - 34} L${cx - 50} ${signY} M${cx} ${signY - 34} L${cx + 50} ${signY}" stroke="#CDB9AC" stroke-width="3"/><circle cx="${cx}" cy="${signY - 34}" r="4" fill="#B98C6E"/>
+        <g transform="rotate(-3 ${cx} ${signY + 34})"><rect x="${cx - 76}" y="${signY - 4}" width="152" height="72" rx="14" fill="url(#dpSign)"/>
+        <text x="${cx}" y="${signY + 44}" text-anchor="middle" font-family="'Sign Script', cursive" font-size="35" fill="url(#dpInk)" data-noi18n>Next Scoop</text></g>
       </g></svg>
   </button>`;
 }

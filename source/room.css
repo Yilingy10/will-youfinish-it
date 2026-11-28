@@ -53,7 +53,7 @@ body[data-screen=room] .ticket-strip { display: none; }
 /* speech bubbles */
 .rm-say, .rm-bubble { position: absolute; max-width: calc(220 * var(--u)); font-size: max(12px, calc(15 * var(--u))); }
 .rm-say { z-index: 4; }
-.rm-bubble { left: calc(-100 * var(--u)); top: calc(160 * var(--u)); right: auto; z-index: 5; max-width: calc(210 * var(--u)); }
+.rm-bubble { left: calc(150 * var(--u)); top: calc(0 * var(--u)); right: auto; z-index: 5; max-width: calc(210 * var(--u)); }
 .rm-bubble small { display: block; margin-top: 4px; font-size: .8em; opacity: .8; }
 
 /* the Memory Freezer in the corner */
@@ -63,7 +63,8 @@ body[data-screen=room] .ticket-strip { display: none; }
 .rm-arrow svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .rm-arrow span { position: absolute; left: 0; right: 0; top: calc(16 * var(--u)); text-align: center; font-size: max(11px, calc(18 * var(--u))); line-height: 1; }
 .rm-arrow:hover { transform: rotate(1deg) translateY(calc(-3 * var(--u))); }
-.rm-ghost { display: flex; flex-direction: column; align-items: center; gap: calc(4 * var(--u)); color: #C0607A; }
+.rm-ghost { display: flex; flex-direction: row; align-items: flex-end; justify-content: center; gap: calc(8 * var(--u)); color: #C0607A; z-index: 3; }
+.rm-ghost span { margin-bottom: calc(10 * var(--u)); }
 .rm-ghost .rl-ghost { width: calc(62 * var(--u)); height: auto; filter: url(#riso) drop-shadow(0 3px 4px rgba(120, 95, 80, .2)); animation: rlFloat 2.8s ease-in-out infinite; }
 .rm-ghost span { font-size: max(11px, calc(15 * var(--u))); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: #E8A9B8; white-space: nowrap; }
 
@@ -216,7 +217,7 @@ html[data-lang=zh] .rm-sign span { margin: 0 !important; font-size: inherit !imp
 .rm-door { padding: 0; border: 0; background: none; perspective: calc(1400 * var(--u)); cursor: pointer; z-index: 1; }
 .rm-door svg { position: absolute; display: block; overflow: visible; }
 .rm-door .door-frame { inset: 0; width: 100%; height: 100%; }
-.rm-door .door-panel { left: calc(16 / 236 * 100%); top: calc(16 / 570 * 100%); width: calc(204 / 236 * 100%); height: calc(554 / 570 * 100%); transform-origin: 0 50%; transition: transform .6s cubic-bezier(.3, .8, .3, 1); }
+.rm-door .door-panel { left: calc(16 / 256 * 100%); top: calc(16 / 830 * 100%); width: calc(224 / 256 * 100%); height: calc(814 / 830 * 100%); transform-origin: 0 50%; transition: transform .6s cubic-bezier(.3, .8, .3, 1); }
 .rm-door:hover .door-panel { transform: rotateY(-8deg); }
 .rm-door.open .door-panel { transform: rotateY(-52deg); }
 .rm-door:focus-visible { outline: 3px solid #EE6B83; outline-offset: 4px; border-radius: 20px; }
@@ -239,3 +240,7 @@ html[data-lang=zh] .rm-sign span { margin: 0 !important; font-size: inherit !imp
 .ns-more { list-style: none; margin: 4px 0 0; padding: 0; }
 .ns-more li { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1.5px dotted rgba(188, 155, 134, .5); font-size: 14px; }
 .ns-more a { color: var(--ink); font-weight: 700; }
+
+/* the Memory Freezer, in front of the door */
+.rm-freezer { z-index: 4; }
+.rm-fz-art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; pointer-events: none; }
