@@ -1193,7 +1193,10 @@ const ZH = {
 "Shops from OpenStreetMap. Check they’re open before you go.": "店铺信息来自 OpenStreetMap。出发前确认一下有没有开门。",
 "A small cup of vanilla.": "一小杯香草。",
 "No history yet. Start small. The machine will learn.": "还没有记录。先从小份开始，机器会慢慢了解你。",
-"Small cup. History says the big ones don’t make it.": "小杯就好。历史表明，大份的撑不到最后。"
+"Small cup. History says the big ones don’t make it.": "小杯就好。历史表明，大份的撑不到最后。",
+"Stories": "故事",
+"STORIES": "故事",
+"‹ Stories": "‹ 故事"
 };
 // Sentences with numbers, dates or someone's own words in them.
 const ZH_MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12,

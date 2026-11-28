@@ -298,7 +298,7 @@ function freezerBarHTML() {
   return `<div class="fz-bar">
     <div class="fz-modes" role="tablist">
       <button class="chunky ${fz.mode === 'all' ? 'on' : ''}" role="tab" aria-selected="${fz.mode === 'all'}" data-act="freezerMode" data-val="all">All Ice Creams</button>
-      <button class="chunky ${fz.mode === 'stories' ? 'on' : ''}" role="tab" aria-selected="${fz.mode === 'stories'}" data-act="freezerMode" data-val="stories">Our Stories</button>
+      <button class="chunky ${fz.mode === 'stories' ? 'on' : ''}" role="tab" aria-selected="${fz.mode === 'stories'}" data-act="freezerMode" data-val="stories">Stories</button>
     </div>
     ${fz.mode === 'all' ? `<details class="fz-filter"><summary class="chunky">${fz.filter === 'all' ? 'Filter' : esc(KIND_FILTERS[fz.filter])}</summary>
       <div class="fz-filter-list">${Object.entries(KIND_FILTERS).map(([k, l]) => `<button class="${fz.filter === k ? 'on' : ''}" data-act="freezerFilter" data-val="${k}">${esc(l)}</button>`).join('')}</div></details>` : ''}
@@ -313,12 +313,12 @@ function stageHTML() {
     <button class="stage-close" data-act="closeStage" aria-label="Put it back"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M4 4 L16 16 M16 4 L4 16" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>`;
   if (fz.view === 'fresh') return up + freshDrawerHTML();
   if (fz.view === 'door') return up + `<div class="door-view">${archiveBodyHTML()}</div>`;
-  if (fz.view === 'stories') return up + `<div class="stage-empty stories-index"><p class="chunky stage-k">OUR STORIES</p>
+  if (fz.view === 'stories') return up + `<div class="stage-empty stories-index"><p class="chunky stage-k">STORIES</p>
     ${STORY_KEYS.map(k => { const s = MEMORY_SERIES[k]; return `<button class="story-pick" data-act="openStory" data-val="${k}"><b class="melty">${esc(s.title)}</b><span>${esc(s.note)}</span><small class="chunky">${s.ids.length} ICE CREAMS</small></button>`; }).join('')}</div>`;
   if (fz.view === 'story') {
     const s = MEMORY_SERIES[fz.story], id = s.ids[fz.step];
     return `${up}<div class="story-bar">
-        <button class="link" data-act="freezerMode" data-val="stories">‹ Our Stories</button>
+        <button class="link" data-act="freezerMode" data-val="stories">‹ Stories</button>
         <span class="chunky story-name">${esc(s.title)}</span>
         <span class="story-steps"><button class="step-btn" data-act="storyStep" data-val="-1" ${fz.step ? '' : 'disabled'} aria-label="Previous">‹</button><span class="chunky">${fz.step + 1} / ${s.ids.length}</span><button class="step-btn" data-act="storyStep" data-val="1" ${fz.step < s.ids.length - 1 ? '' : 'disabled'} aria-label="Next">›</button></span>
       </div>${memoryCardHTML(memoryById(id), { stage: true })}`;

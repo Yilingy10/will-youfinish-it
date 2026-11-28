@@ -166,26 +166,26 @@
 @media (min-width: 820px) {
   .fz-title { font-size: clamp(30px, 2.8vw, 42px); }
   /* closed: the chest has the whole width; open: it slides over and the stage comes in */
-  .fz-scene { --scene-h: max(440px, calc(100dvh - 166px)); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0fr); column-gap: 0; height: var(--scene-h); margin-top: 6px;
+  .fz-scene { --scene-h: max(440px, calc(100dvh - 162px)); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0fr); column-gap: 0; height: var(--scene-h); margin-top: 6px;
     transition: grid-template-columns .55s cubic-bezier(.3, .8, .3, 1), column-gap .55s; }
-  #freezer[data-open="true"] .fz-scene { grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); column-gap: 22px; }
+  #freezer[data-open="true"] .fz-scene { grid-template-columns: minmax(0, 57fr) minmax(0, 43fr); column-gap: 18px; }
   .chest-scroll { margin: 0; padding: 0; overflow: visible; display: flex; align-items: center; justify-content: center; min-height: 0; }
   .chest { min-width: 0; width: min(100%, calc((var(--scene-h) - 30px) / .68)); }
   .mem-stage-panel, .mem-stage-panel:empty { display: block; margin: 0; height: 100%; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; container-type: size; padding: 0 2px; }
   #freezer[data-open="true"] .mem-stage-panel > * { animation: stageIn .45s cubic-bezier(.2, 1.1, .4, 1) .12s both; }
   .stage-empty { min-height: 100%; }
   /* on a wide stage, the words sit left and the ice cream right, so it can be big */
-  .bigmem.in-stage { display: grid; grid-template-columns: minmax(190px, 1fr) auto; grid-template-rows: auto auto 1fr; column-gap: 18px; align-items: start; }
+  .bigmem.in-stage { display: grid; grid-template-columns: minmax(150px, 1fr) auto; grid-template-rows: auto auto 1fr; column-gap: 18px; align-items: start; }
   .bigmem.in-stage .bm-head { grid-column: 1; grid-row: 1; margin-top: 2px; }
   .bigmem.in-stage .bm-under { grid-column: 1; grid-row: 2; text-align: left; margin-top: 14px; }
   .bigmem.in-stage .bm-under .bm-skip { margin: 4px 0 0; }
   .bigmem.in-stage .bm-after { grid-column: 1; grid-row: 2 / 4; margin-top: 14px; width: auto; }
-  .bigmem.in-stage .bm-stage { grid-column: 2; grid-row: 1 / 4; margin: 0; width: min(calc(100cqw - 208px), calc((100cqh - 120px) * .652)); }
+  .bigmem.in-stage .bm-stage { grid-column: 2; grid-row: 1 / 4; margin: 0; width: min(calc(100cqw - 166px), calc((100cqh - 100px) * .652)); }
   .bigmem.in-stage .mem-after-btns { align-items: flex-start; }
   .bigmem.in-stage .bm-title { font-size: clamp(21px, 1.9vw, 29px); }
   .story-pick { width: 100%; }
 }
-@media (min-width: 1360px) { #freezer[data-open="true"] .fz-scene { grid-template-columns: minmax(0, 58fr) minmax(0, 42fr); } }
+@media (min-width: 1360px) { #freezer[data-open="true"] .fz-scene { grid-template-columns: minmax(0, 60fr) minmax(0, 40fr); } }
 @keyframes stageIn { from { opacity: 0; transform: translateX(24px) } to { opacity: 1; transform: none } }
 @container (max-width: 440px) {
   .bigmem.in-stage { display: block; }
@@ -296,3 +296,10 @@
   .mini.m3 { top: 62%; } .mini.m4 { top: 61%; }
   .cover-nav button { padding: 5px 0; }
 }
+
+/* on the stage the fate stamp sits bottom-left, clear of anything drawn beside the ice cream */
+.bigmem.in-stage .bm-stamp { right: auto; left: 0; }
+/* on the stage, the 'not sure about' note waits beside the ice cream, so the story fits the scoop */
+.bigmem.in-stage .bm-text .bm-unsure { display: none; }
+.bm-unsure-side { font-size: 12.5px; color: var(--muted); margin-top: 8px; opacity: 0; transition: opacity .4s .3s; }
+.bigmem.thawed .bm-unsure-side { opacity: 1; }

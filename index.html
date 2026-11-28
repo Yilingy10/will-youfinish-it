@@ -799,26 +799,26 @@ body[data-screen=graveyard] { background: linear-gradient(var(--sky) 0, var(--sk
 @media (min-width: 820px) {
   .fz-title { font-size: clamp(30px, 2.8vw, 42px); }
   /* closed: the chest has the whole width; open: it slides over and the stage comes in */
-  .fz-scene { --scene-h: max(440px, calc(100dvh - 166px)); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0fr); column-gap: 0; height: var(--scene-h); margin-top: 6px;
+  .fz-scene { --scene-h: max(440px, calc(100dvh - 162px)); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0fr); column-gap: 0; height: var(--scene-h); margin-top: 6px;
     transition: grid-template-columns .55s cubic-bezier(.3, .8, .3, 1), column-gap .55s; }
-  #freezer[data-open="true"] .fz-scene { grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); column-gap: 22px; }
+  #freezer[data-open="true"] .fz-scene { grid-template-columns: minmax(0, 57fr) minmax(0, 43fr); column-gap: 18px; }
   .chest-scroll { margin: 0; padding: 0; overflow: visible; display: flex; align-items: center; justify-content: center; min-height: 0; }
   .chest { min-width: 0; width: min(100%, calc((var(--scene-h) - 30px) / .68)); }
   .mem-stage-panel, .mem-stage-panel:empty { display: block; margin: 0; height: 100%; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; container-type: size; padding: 0 2px; }
   #freezer[data-open="true"] .mem-stage-panel > * { animation: stageIn .45s cubic-bezier(.2, 1.1, .4, 1) .12s both; }
   .stage-empty { min-height: 100%; }
   /* on a wide stage, the words sit left and the ice cream right, so it can be big */
-  .bigmem.in-stage { display: grid; grid-template-columns: minmax(190px, 1fr) auto; grid-template-rows: auto auto 1fr; column-gap: 18px; align-items: start; }
+  .bigmem.in-stage { display: grid; grid-template-columns: minmax(150px, 1fr) auto; grid-template-rows: auto auto 1fr; column-gap: 18px; align-items: start; }
   .bigmem.in-stage .bm-head { grid-column: 1; grid-row: 1; margin-top: 2px; }
   .bigmem.in-stage .bm-under { grid-column: 1; grid-row: 2; text-align: left; margin-top: 14px; }
   .bigmem.in-stage .bm-under .bm-skip { margin: 4px 0 0; }
   .bigmem.in-stage .bm-after { grid-column: 1; grid-row: 2 / 4; margin-top: 14px; width: auto; }
-  .bigmem.in-stage .bm-stage { grid-column: 2; grid-row: 1 / 4; margin: 0; width: min(calc(100cqw - 208px), calc((100cqh - 120px) * .652)); }
+  .bigmem.in-stage .bm-stage { grid-column: 2; grid-row: 1 / 4; margin: 0; width: min(calc(100cqw - 166px), calc((100cqh - 100px) * .652)); }
   .bigmem.in-stage .mem-after-btns { align-items: flex-start; }
   .bigmem.in-stage .bm-title { font-size: clamp(21px, 1.9vw, 29px); }
   .story-pick { width: 100%; }
 }
-@media (min-width: 1360px) { #freezer[data-open="true"] .fz-scene { grid-template-columns: minmax(0, 58fr) minmax(0, 42fr); } }
+@media (min-width: 1360px) { #freezer[data-open="true"] .fz-scene { grid-template-columns: minmax(0, 60fr) minmax(0, 40fr); } }
 @keyframes stageIn { from { opacity: 0; transform: translateX(24px) } to { opacity: 1; transform: none } }
 @container (max-width: 440px) {
   .bigmem.in-stage { display: block; }
@@ -929,6 +929,13 @@ body[data-screen=graveyard] { background: linear-gradient(var(--sky) 0, var(--sk
   .mini.m3 { top: 62%; } .mini.m4 { top: 61%; }
   .cover-nav button { padding: 5px 0; }
 }
+
+/* on the stage the fate stamp sits bottom-left, clear of anything drawn beside the ice cream */
+.bigmem.in-stage .bm-stamp { right: auto; left: 0; }
+/* on the stage, the 'not sure about' note waits beside the ice cream, so the story fits the scoop */
+.bigmem.in-stage .bm-text .bm-unsure { display: none; }
+.bm-unsure-side { font-size: 12.5px; color: var(--muted); margin-top: 8px; opacity: 0; transition: opacity .4s .3s; }
+.bigmem.thawed .bm-unsure-side { opacity: 1; }
 
 /* --------------------------------------------------------------------------
    EXPANSION: the temptation, quick record, the three-part verdict, the waste
@@ -2612,7 +2619,10 @@ const ZH = {
 "Shops from OpenStreetMap. Check they’re open before you go.": "店铺信息来自 OpenStreetMap。出发前确认一下有没有开门。",
 "A small cup of vanilla.": "一小杯香草。",
 "No history yet. Start small. The machine will learn.": "还没有记录。先从小份开始，机器会慢慢了解你。",
-"Small cup. History says the big ones don’t make it.": "小杯就好。历史表明，大份的撑不到最后。"
+"Small cup. History says the big ones don’t make it.": "小杯就好。历史表明，大份的撑不到最后。",
+"Stories": "故事",
+"STORIES": "故事",
+"‹ Stories": "‹ 故事"
 };
 // Sentences with numbers, dates or someone's own words in them.
 const ZH_MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12,
@@ -5521,7 +5531,7 @@ function freezerBarHTML() {
   return `<div class="fz-bar">
     <div class="fz-modes" role="tablist">
       <button class="chunky ${fz.mode === 'all' ? 'on' : ''}" role="tab" aria-selected="${fz.mode === 'all'}" data-act="freezerMode" data-val="all">All Ice Creams</button>
-      <button class="chunky ${fz.mode === 'stories' ? 'on' : ''}" role="tab" aria-selected="${fz.mode === 'stories'}" data-act="freezerMode" data-val="stories">Our Stories</button>
+      <button class="chunky ${fz.mode === 'stories' ? 'on' : ''}" role="tab" aria-selected="${fz.mode === 'stories'}" data-act="freezerMode" data-val="stories">Stories</button>
     </div>
     ${fz.mode === 'all' ? `<details class="fz-filter"><summary class="chunky">${fz.filter === 'all' ? 'Filter' : esc(KIND_FILTERS[fz.filter])}</summary>
       <div class="fz-filter-list">${Object.entries(KIND_FILTERS).map(([k, l]) => `<button class="${fz.filter === k ? 'on' : ''}" data-act="freezerFilter" data-val="${k}">${esc(l)}</button>`).join('')}</div></details>` : ''}
@@ -5536,12 +5546,12 @@ function stageHTML() {
     <button class="stage-close" data-act="closeStage" aria-label="Put it back"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M4 4 L16 16 M16 4 L4 16" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>`;
   if (fz.view === 'fresh') return up + freshDrawerHTML();
   if (fz.view === 'door') return up + `<div class="door-view">${archiveBodyHTML()}</div>`;
-  if (fz.view === 'stories') return up + `<div class="stage-empty stories-index"><p class="chunky stage-k">OUR STORIES</p>
+  if (fz.view === 'stories') return up + `<div class="stage-empty stories-index"><p class="chunky stage-k">STORIES</p>
     ${STORY_KEYS.map(k => { const s = MEMORY_SERIES[k]; return `<button class="story-pick" data-act="openStory" data-val="${k}"><b class="melty">${esc(s.title)}</b><span>${esc(s.note)}</span><small class="chunky">${s.ids.length} ICE CREAMS</small></button>`; }).join('')}</div>`;
   if (fz.view === 'story') {
     const s = MEMORY_SERIES[fz.story], id = s.ids[fz.step];
     return `${up}<div class="story-bar">
-        <button class="link" data-act="freezerMode" data-val="stories">‹ Our Stories</button>
+        <button class="link" data-act="freezerMode" data-val="stories">‹ Stories</button>
         <span class="chunky story-name">${esc(s.title)}</span>
         <span class="story-steps"><button class="step-btn" data-act="storyStep" data-val="-1" ${fz.step ? '' : 'disabled'} aria-label="Previous">‹</button><span class="chunky">${fz.step + 1} / ${s.ids.length}</span><button class="step-btn" data-act="storyStep" data-val="1" ${fz.step < s.ids.length - 1 ? '' : 'disabled'} aria-label="Next">›</button></span>
       </div>${memoryCardHTML(memoryById(id), { stage: true })}`;
@@ -5863,6 +5873,7 @@ function memoryCardHTML(m, ctx = {}) {
       <p class="bm-what">${esc(m.what)}. Flavor: ${esc(m.flavor)}</p>
       ${m.isRecord ? `<span class="bm-chip rec-chip">${m.kept ? 'A kept memory, from a game record' : 'A game record. Melts into the machine’s log.'}</span>` : ''}
       ${chips}
+      ${ctx.stage && !m.isRecord && m.unsure.length ? `<p class="bm-unsure bm-unsure-side">${esc(MEMORY_COPY.unsure)}: ${m.unsure.map(esc).join(', ').toLowerCase()}.</p>` : ''}
     </header>
     <div class="bm-stage" id="bigStage">
       <svg class="bm-layer bm-back" viewBox="0 0 ${BIG_W} ${BIG_H}" aria-hidden="true">${bigBack(m, spec, sid)}</svg>

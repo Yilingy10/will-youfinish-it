@@ -191,6 +191,7 @@ function memoryCardHTML(m, ctx = {}) {
       <p class="bm-what">${esc(m.what)}. Flavor: ${esc(m.flavor)}</p>
       ${m.isRecord ? `<span class="bm-chip rec-chip">${m.kept ? 'A kept memory, from a game record' : 'A game record. Melts into the machine’s log.'}</span>` : ''}
       ${chips}
+      ${ctx.stage && !m.isRecord && m.unsure.length ? `<p class="bm-unsure bm-unsure-side">${esc(MEMORY_COPY.unsure)}: ${m.unsure.map(esc).join(', ').toLowerCase()}.</p>` : ''}
     </header>
     <div class="bm-stage" id="bigStage">
       <svg class="bm-layer bm-back" viewBox="0 0 ${BIG_W} ${BIG_H}" aria-hidden="true">${bigBack(m, spec, sid)}</svg>
